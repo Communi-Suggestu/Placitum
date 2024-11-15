@@ -1,0 +1,12 @@
+[versions]
+neogradle = "7.+"
+maven-artifact = "3.8.1"
+
+[libraries]
+neogradle-userdev = { module = "net.neoforged.gradle:userdev", version.ref = "neogradle" }
+neogradle-vanilla = { module = "net.neoforged.gradle:vanilla", version.ref = "neogradle" }
+maven-artifact = { module = "org.apache.maven:maven-artifact", version.ref = "maven-artifact" }
+
+[bundles]
+neogradle = ["neogradle-userdev", "neogradle-vanilla"]
+maven = ["maven-artifact"]
