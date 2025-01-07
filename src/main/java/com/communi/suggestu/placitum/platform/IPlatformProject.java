@@ -11,8 +11,9 @@ public interface IPlatformProject {
     /**
      * Configures the project with the necessary settings and plugins.
      *
-     * @param project     The project to configure.
-     * @param coreProjects The set of core projects.
+     * @param project         The project to configure.
+     * @param coreCodeProject
+     * @param commonProjects  The set of core projects.
      */
-    void configure(Project project, Set<String> coreProjects);
+    void configure(Project project, String coreCodeProject, Set<String> commonProjects);
 }

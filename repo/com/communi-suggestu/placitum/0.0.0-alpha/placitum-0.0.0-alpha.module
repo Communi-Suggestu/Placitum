@@ -1,0 +1,120 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.communi-suggestu",
+    "module": "placitum",
+    "version": "0.0.0-alpha",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.12"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "net.neoforged.gradle",
+          "module": "userdev",
+          "version": {
+            "requires": "7.+"
+          }
+        },
+        {
+          "group": "net.neoforged.gradle",
+          "module": "vanilla",
+          "version": {
+            "requires": "7.+"
+          }
+        },
+        {
+          "group": "net.fabricmc",
+          "module": "fabric-loom",
+          "version": {
+            "requires": "1.+"
+          }
+        },
+        {
+          "group": "org.apache.maven",
+          "module": "maven-artifact",
+          "version": {
+            "requires": "3.8.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "placitum-0.0.0-alpha.jar",
+          "url": "placitum-0.0.0-alpha.jar",
+          "size": 56096,
+          "sha512": "41cbf77cd26847e6f4f31cf8df069b49e9e32aebaeca042b056b10fe9e0c474c52c5055b633522961a0faf47c2d2492e236f3efdd7d005e0b1d4eea06bb02817",
+          "sha256": "3fb4a7f500b43bb8c7164aa51b6194e918d23cc7106e33ce72eb4f1912472405",
+          "sha1": "15e8e35089855248390cd86e7dce5f33300f16b4",
+          "md5": "8e1547d1c8e1ced428f0800aabbb3cec"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "net.neoforged.gradle",
+          "module": "userdev",
+          "version": {
+            "requires": "7.+"
+          }
+        },
+        {
+          "group": "net.neoforged.gradle",
+          "module": "vanilla",
+          "version": {
+            "requires": "7.+"
+          }
+        },
+        {
+          "group": "net.fabricmc",
+          "module": "fabric-loom",
+          "version": {
+            "requires": "1.+"
+          }
+        },
+        {
+          "group": "org.apache.maven",
+          "module": "maven-artifact",
+          "version": {
+            "requires": "3.8.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "placitum-0.0.0-alpha.jar",
+          "url": "placitum-0.0.0-alpha.jar",
+          "size": 56096,
+          "sha512": "41cbf77cd26847e6f4f31cf8df069b49e9e32aebaeca042b056b10fe9e0c474c52c5055b633522961a0faf47c2d2492e236f3efdd7d005e0b1d4eea06bb02817",
+          "sha256": "3fb4a7f500b43bb8c7164aa51b6194e918d23cc7106e33ce72eb4f1912472405",
+          "sha1": "15e8e35089855248390cd86e7dce5f33300f16b4",
+          "md5": "8e1547d1c8e1ced428f0800aabbb3cec"
+        }
+      ]
+    }
+  ]
+}

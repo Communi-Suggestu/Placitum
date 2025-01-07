@@ -6,4 +6,13 @@
  * This project uses @Incubating APIs which are subject to change.
  */
 
-rootProject.name = 'Placitum'
+pluginManagement {
+    repositories {
+        maven {
+            url 'https://ldtteam.jfrog.io/artifactory/tableau'
+            name 'Tableau Maven'
+        }
+    }
+}
+
+rootProject.name = 'placitum'

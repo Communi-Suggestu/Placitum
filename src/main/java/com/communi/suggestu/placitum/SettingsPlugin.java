@@ -8,6 +8,8 @@ import org.gradle.api.Project;
 import org.gradle.api.initialization.Settings;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 public class SettingsPlugin implements Plugin<Settings> {
     @Override
     public void apply(@NotNull Settings target) {
@@ -39,9 +41,14 @@ public class SettingsPlugin implements Plugin<Settings> {
         public void execute(@NotNull Project project) {
             final SettingsPlatformExtension projectManagementExtension = settings.getExtensions().getByType(SettingsPlatformExtension.class);
 
-            final IPlatformProject platformProject = projectManagementExtension.findProject(project.getPath());
-            if (platformProject != null) {
-                platformProject.configure(project, projectManagementExtension.getCoreProject());
+            final Supplier<IPlatformProject> builder = projectManagementExtension.findProject(project.getPath());
+            if (builder != null) {
+                final IPlatformProject platformProject = builder.get();
+                platformProject.configure(
+                        project,
+                        projectManagementExtension.getCoreProjectPath(),
+                        projectManagementExtension.getCommonProjectPaths()
+                );
             }
         }
     }

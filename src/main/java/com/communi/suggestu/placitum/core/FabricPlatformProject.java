@@ -1,0 +1,298 @@
+package com.communi.suggestu.placitum.core;
+
+import com.communi.suggestu.placitum.util.ValueCallable;
+import net.fabricmc.loom.api.LoomGradleExtensionAPI;
+import net.fabricmc.loom.bootstrap.LoomGradlePluginBootstrap;
+import net.fabricmc.loom.task.RemapJarTask;
+import org.gradle.api.Action;
+import org.gradle.api.GradleException;
+import org.gradle.api.Project;
+import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.attributes.Attribute;
+import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.*;
+import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.language.jvm.tasks.ProcessResources;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class FabricPlatformProject extends CommonPlatformProject {
+
+    @SuppressWarnings("UnstableApiUsage")
+    @Override
+    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths) {
+        super.configure(project, coreProjectPath, commonProjectPaths);
+
+        project.getPlugins().apply(LoomGradlePluginBootstrap.class);
+
+        commonProjectPaths.add(coreProjectPath);
+        final Set<Project> commonProjects = commonProjectPaths.stream()
+                .map(project::project)
+                .collect(Collectors.toSet());
+        final Project coreProject = project.project(coreProjectPath);
+
+        final Platform platform = project.getExtensions().getByType(Platform.class);
+
+        for (Project commonProject : commonProjects) {
+            final Provider<Dependency> coreProjectProvider = commonProject.provider(new ValueCallable<>(commonProject))
+                    .map(project.getDependencies()::create);
+
+            project.getDependencies().addProvider(JavaPlugin.API_CONFIGURATION_NAME, coreProjectProvider, CommonPlatformProject::excludeMinecraftDependencies);
+
+            Provider<File> metadataGenerationFile = project.getLayout().getBuildDirectory()
+                    .dir("generated/fabric/metadata/placitum/projects/core/%s".formatted(commonProject.getName()))
+                    .map(dir -> dir.file("fabric.mod.json"))
+                    .map(file -> {
+                        final File targetFile = file.getAsFile();
+                        final File directory = targetFile.getParentFile();
+                        if (!directory.exists() && !directory.mkdirs()) {
+                            throw new GradleException("Failed to create directory: %s".formatted(directory));
+                        }
+
+                        try {
+                            Files.writeString(targetFile.toPath(), """
+                                    {
+                                      "schemaVersion": 1,
+                                      "id": "%s",
+                                      "version": "%s",
+                                      "name": "%s",
+                                      "custom": {
+                                        "fabric-loom:generated": true
+                                      }
+                                    }
+                                    """.formatted(
+                                    "%s_%s".formatted(commonProject.getGroup().toString().replace(".", "_"), commonProject.getName()),
+                                    commonProject.getVersion(),
+                                    "%s - %s".formatted(commonProject.getRootProject().getName(), commonProject.getName())
+                            ));
+                        } catch (IOException e) {
+                            throw new GradleException("Failed to write metadata file: %s".formatted(targetFile), e);
+                        }
+
+                        return targetFile;
+                    });
+
+            final TaskProvider<Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
+                task.from(project.getTasks().named("jar", Jar.class).flatMap(Jar::getArchiveFile).map(project::zipTree));
+                task.from(metadataGenerationFile);
+                task.getArchiveClassifier().set("%s-bundled".formatted(commonProject.getName()));
+            });
+
+            final TaskProvider<RemapJarTask> remapBundledTask = project.getTasks().register("remapBundled%s".formatted(commonProject.getName()), RemapJarTask.class, task -> {
+                task.dependsOn(bundleFmjTask);
+                task.getInputFile().set(bundleFmjTask.flatMap(Jar::getArchiveFile));
+                task.getArchiveClassifier().set("%s-remapped".formatted(commonProject.getName()));
+            });
+
+            project.getTasks().named("remapJar", RemapJarTask.class, task -> {
+                task.getNestedJars().from(remapBundledTask.flatMap(RemapJarTask::getArchiveFile));
+                task.dependsOn(remapBundledTask);
+            });
+
+            final Configuration outgoingRemappedElements = project.getConfigurations().maybeCreate("remappedRuntimeElements");
+            outgoingRemappedElements.setCanBeResolved(false);
+            outgoingRemappedElements.extendsFrom(commonProject.getConfigurations().maybeCreate("runtimeElements"));
+
+            final Attribute<Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
+            outgoingRemappedElements.getAttributes().attribute(remappedAttribute, true);
+
+            commonProject.getComponents().named("java", AdhocComponentWithVariants.class, component -> {
+                component.addVariantsFromConfiguration(outgoingRemappedElements, variant -> {
+                    variant.mapToMavenScope("runtime");
+                    variant.mapToOptional();
+                });
+            });
+
+            commonProject.getArtifacts().add("remappedRuntimeElements", remapBundledTask.flatMap(RemapJarTask::getArchiveFile), artifact -> {
+                artifact.builtBy(remapBundledTask);
+                artifact.setType("jar");
+            });
+        }
+
+        final Attribute<Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
+        project.getConfigurations().matching(config -> config.getName().startsWith("mod")).configureEach(config -> {
+            config.getAttributes().attribute(remappedAttribute, true);
+        });
+
+        project.getDependencies().addProvider("minecraft", platform.getMinecraft().getVersion()
+                .map("com.mojang:minecraft:%s"::formatted));
+        project.getDependencies().addProvider("modImplementation", platform.getFabric().getLoaderVersion()
+                .map("net.fabricmc:fabric-loader:%s"::formatted));
+        project.getDependencies().addProvider("modImplementation",
+                platform.getFabric().getApiVersion().zip(
+                        platform.getMinecraft().getVersion(),
+                        "net.fabricmc.fabric-api:fabric-api:%s+%s"::formatted
+                ));
+
+        final LoomGradleExtensionAPI loom = project.getExtensions().getByType(LoomGradleExtensionAPI.class);
+        project.getDependencies().add("mappings", loom.layered(layer -> {
+            layer.officialMojangMappings();
+            layer.parchment(
+                    platform.getParchment().getMinecraftVersion().zip(
+                            platform.getParchment().getVersion(),
+                            "org.parchmentmc.data:parchment-%s:%s@zip"::formatted
+                    )
+            );
+        }));
+
+        loom.getAccessWidenerPath().set(platform.getFabric().getAccessWideners());
+        project.getTasks().named("processResources", ProcessResources.class, processResources -> {
+            processResources.from(platform.getFabric().getAccessWideners());
+        });
+
+        project.getTasks().named("remapJar", RemapJarTask.class, task -> {
+            task.getAddNestedDependencies().set(true);
+        });
+
+        loom.getRuns().register("client", client -> {
+            client.client();
+            client.setConfigName("Fabric Client");
+            client.ideConfigGenerated(true);
+            client.runDir("runs/client");
+        });
+        loom.getRuns().register("server", server -> {
+            server.server();
+            server.setConfigName("Fabric Server");
+            server.ideConfigGenerated(true);
+            server.runDir("runs/server");
+        });
+
+        final SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+        loom.getMods().register(project.getRootProject().getName(), mod -> {
+            commonProjects.forEach(p -> {
+                final SourceSetContainer projectSourceSets = p.getExtensions().getByType(SourceSetContainer.class);
+                mod.sourceSet(projectSourceSets.getByName("main"), p);
+            });
+            mod.sourceSet(sourceSets.getByName("main"), project);
+        });
+
+        if (isRunningWithIdea(project)) {
+            //We are in a special mode that requires us to redirect the process resources tasks to the idea out directory.
+            //We only care for our own output for now, dependency projects will need to be handled separately.
+            var copyIdeaResources = project.getTasks().register("copyIdeaResources", Copy.class, copy -> {
+                copy.from(project.getTasks().named("processResources", ProcessResources.class).map(ProcessResources::getDestinationDir), spec -> {
+                    spec.into(project.file("out/production/resources"));
+                });
+            });
+
+            project.getTasks().named("processResources", ProcessResources.class, processResources -> processResources.dependsOn(copyIdeaResources));
+        }
+
+        final String relativeProjectDirectory = project.getRootDir().toPath().relativize(project.getProjectDir().toPath()).toString();
+        final TaskProvider<Task> ideaSyncRegistrar = project.getTasks().register("ideaSyncRunModifier", task -> {
+            task.doLast(t -> {
+                final File runConfigurationsDir = new File(project.getRootDir(), ".idea/runConfigurations");
+                for (File file : Objects.requireNonNull(runConfigurationsDir.listFiles())) {
+                    if (!file.getName().endsWith(".xml")) {
+                        continue;
+                    }
+
+                    try {
+                        final String content = Files.readString(file.toPath());
+                        final String targetContent = "<option name=\"Gradle.BeforeRunTask\" enabled=\"true\" tasks=\"processResources\" externalProjectPath=\"$PROJECT_DIR$/%s\" vmOptions=\"\" scriptParameters=\"-PrunsWithIdea=true\" />".formatted(relativeProjectDirectory);
+                        final String alternativeTarget = "<option enabled=\"true\" externalProjectPath=\"$PROJECT_DIR$/%s\" name=\"Gradle.BeforeRunTask\" scriptParameters=\"-PrunsWithIdea=true\" tasks=\"processResources\" vmOptions=\"\"/>".formatted(relativeProjectDirectory);
+                        final String beforeMarker = "</method>";
+
+                        if (content.contains(targetContent) || content.contains(alternativeTarget)) {
+                            continue;
+                        }
+
+                        final String[] contentParts = content.split(beforeMarker);
+                        if (contentParts.length != 2) {
+                            continue;
+                        }
+
+                        final String newContent = "%s%s%s%s".formatted(contentParts[0], targetContent, beforeMarker, contentParts[1]);
+                        Files.writeString(file.toPath(), newContent);
+                    } catch (IOException e) {
+                        throw new GradleException("Failed to read or write file: %s".formatted(file), e);
+                    }
+                }
+            });
+        });
+
+        project.getTasks().named("ideaSyncTask", idea -> {
+            idea.finalizedBy(ideaSyncRegistrar);
+        });
+    }
+
+    @Override
+    protected Platform registerPlatformExtension(Project project) {
+        return project.getExtensions().create(Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, Platform.class, project);
+    }
+
+    @Override
+    protected Provider<String> getLoaderVersion(CommonPlatformProject.Platform platform) {
+        if (platform instanceof Platform fabricPlatform) {
+            return fabricPlatform.getFabric().getLoaderVersion();
+        } else {
+            throw new GradleException("Platform is not an instance of PlatformFabric");
+        }
+    }
+
+    @Override
+    protected Map<String, ?> getInterpolatedProperties(CommonPlatformProject.Platform platform) {
+        if (platform instanceof Platform fabricPlatform) {
+            return Map.of(
+                    "supportedFabricLoaderVersionNpmVersionRange", fabricPlatform.getFabric().getLoaderVersion()
+                            .map(version -> CommonPlatformProject.createSupportedVersionRange(version, true)),
+                    "supportedFabricApiNpmVersionRange", fabricPlatform.getFabric().getApiVersion()
+                            .map(version -> CommonPlatformProject.createSupportedVersionRange(version, true))
+            );
+        } else {
+            throw new GradleException("Platform is not an instance of PlatformFabric");
+        }
+    }
+
+
+    public static class Platform extends CommonPlatformProject.Platform {
+
+        private final PlatformFabric fabric;
+
+        public Platform(Project project) {
+            super(project);
+
+            this.fabric = project.getExtensions().create("fabric", PlatformFabric.class);
+        }
+
+        public static abstract class PlatformFabric {
+
+            @Inject
+            public PlatformFabric(Project project) {
+                getLoaderVersion().convention(project.getProviders().gradleProperty("fabric.loader.version").map(String::trim));
+                getApiVersion().convention(project.getProviders().gradleProperty("fabric.api.version").map(String::trim));
+            }
+
+            @Input
+            public abstract Property<String> getLoaderVersion();
+
+            @Input
+            public abstract Property<String> getApiVersion();
+
+            @InputFile
+            @PathSensitive(PathSensitivity.NONE)
+            public abstract RegularFileProperty getAccessWideners();
+        }
+
+        public PlatformFabric getFabric() {
+            return fabric;
+        }
+
+        public void fabric(Action<? super PlatformFabric> action) {
+            action.execute(getFabric());
+        }
+    }
+}

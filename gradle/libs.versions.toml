@@ -1,12 +1,15 @@
 [versions]
 neogradle = "7.+"
+loom = "1.+"
 maven-artifact = "3.8.1"
 
 [libraries]
 neogradle-userdev = { module = "net.neoforged.gradle:userdev", version.ref = "neogradle" }
 neogradle-vanilla = { module = "net.neoforged.gradle:vanilla", version.ref = "neogradle" }
+loom = { module = "net.fabricmc:fabric-loom", version.ref = "loom" }
 maven-artifact = { module = "org.apache.maven:maven-artifact", version.ref = "maven-artifact" }
 
 [bundles]
 neogradle = ["neogradle-userdev", "neogradle-vanilla"]
+loom = ["loom"]
 maven = ["maven-artifact"]
