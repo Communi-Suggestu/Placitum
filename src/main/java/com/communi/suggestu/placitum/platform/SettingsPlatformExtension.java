@@ -51,6 +51,10 @@ public class SettingsPlatformExtension {
 
     @Nullable
     public Supplier<IPlatformProject> findProject(String path) {
+        if (!knownDynamicDescriptors.containsKey(path)) {
+            return null;
+        }
+
         return knownDynamicDescriptors.get(path).builder();
     }
 
