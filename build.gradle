@@ -39,9 +39,11 @@ tableau {
         versioning {
             version = environmentVariable("VERSION")
                     .orElse(property("localVersion"))
+            suffix = ""
         }
     }
     maven {
+        disableDefaultPublication()
         publishToLDTTeamMaven('communi-suggestu-placitum')
         publishLocally()
         pom({
