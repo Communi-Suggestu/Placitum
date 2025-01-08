@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class SettingsPlugin implements Plugin<Settings> {
     @Override
     public void apply(@NotNull Settings target) {
-        target.getExtensions().create(SettingsPlatformExtension.EXTENSION_NAME, SettingsPlatformExtension.class);
+        target.getExtensions().create(SettingsPlatformExtension.EXTENSION_NAME, SettingsPlatformExtension.class, target);
 
         target.getPlugins().apply("org.gradle.toolchains.foojay-resolver-convention");
 
