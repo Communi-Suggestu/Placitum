@@ -19,6 +19,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.jvm.tasks.Jar;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.language.jvm.tasks.ProcessResources;
@@ -40,16 +41,20 @@ public abstract class CommonPlatformProject implements IPlatformProject {
     public CommonPlatformProject() {
     }
 
-    static void excludeMinecraftDependencies(ExternalModuleDependency dependency) {
-        dependency.exclude(Map.of(
+    static void excludeMinecraftDependencies(Dependency dependency) {
+        if (!(dependency instanceof ModuleDependency module)) {
+            return;
+        }
+
+        module.exclude(Map.of(
                 "group", "net.minecraft",
                 "module", "client"
         ));
-        dependency.exclude(Map.of(
+        module.exclude(Map.of(
                 "group", "net.minecraft",
                 "module", "server"
         ));
-        dependency.exclude(Map.of(
+        module.exclude(Map.of(
                 "group", "net.minecraft",
                 "module", "joined"
         ));
@@ -66,7 +71,7 @@ public abstract class CommonPlatformProject implements IPlatformProject {
         project.getPlugins().apply("maven-publish");
 
         project.getRepositories().maven(mavenConfig -> {
-            mavenConfig.setUrl("https://ldtteam.jrog.io/ldtteam/minecraft");
+            mavenConfig.setUrl("https://ldtteam.jfrog.io/ldtteam/modding");
             mavenConfig.setName("LDT Team Maven");
         });
         project.getRepositories().mavenCentral();
@@ -105,38 +110,138 @@ public abstract class CommonPlatformProject implements IPlatformProject {
         });
 
         project.getTasks().named("processResources", ProcessResources.class, task -> {
-            final File resourcesDir = new File(project.getProjectDir(), "src/main/resources");
-            final File mainDir = resourcesDir.getParentFile();
-            final File templatesDir = new File(mainDir, "templates");
+            final Map<String, Object> interpolate = new HashMap<>(Map.of(
+                    "version", project.getVersion().toString(),
+                    "name", project.getRootProject().getName(),
+                    "package", "%s.%s".formatted(project.getRootProject().getGroup(), project.getName().toLowerCase(Locale.ROOT)),
+                    "minecraft", new HashMap<>(Map.of(
+                            "version", platform.getMinecraft().getVersion()
+                    )),
+                    "loader", new HashMap<>(Map.of(
+                            "version", getLoaderVersion(platform)
+                    ))
+            ));
 
-            task.from(templatesDir, copy -> {
-                final Map<String, Object> interpolate = new HashMap<>(Map.of(
-                        "version", project.getVersion().toString(),
-                        "name", project.getRootProject().getName(),
-                        "package", "%s.%s".formatted(project.getRootProject().getGroup(), project.getName().toLowerCase(Locale.ROOT)),
-                        "minecraftVersion", platform.getParchment().getMinecraftVersion(),
-                        "loaderVersion", getLoaderVersion(platform)
-                ));
+            processPropertiesMap(interpolate, getInterpolatedProperties(platform));
+            processPropertiesMap(interpolate, project.getRootProject().getProperties());
+            processPropertiesMap(interpolate, project.getProperties());
 
-                interpolate.putAll(getInterpolatedProperties(platform));
-                interpolate.putAll(project.getRootProject().getProperties());
-                interpolate.putAll(project.getProperties());
-
-                final Configuration runtimeClasspath = project.getConfigurations().getByName("runtimeClasspath");
-                final Multimap<String, ExternalDependency> dependenciesByName = runtimeClasspath.getAllDependencies()
+            getDependencyInterpolationConfigurations(project).forEach(configuration -> {
+                final Multimap<String, ExternalDependency> dependenciesByName = configuration.getAllDependencies()
                         .stream()
                         .filter(ExternalDependency.class::isInstance)
                         .map(ExternalDependency.class::cast)
                         .collect(Multimaps.toMultimap(ExternalDependency::getName, d -> d, HashMultimap::create));
 
                 dependenciesByName.asMap().forEach((name, dependencies) -> {
-                    convertToNotations(name, dependencies).forEach(entry -> interpolate.put(entry.getKey(), entry.getValue()));
+                    final Map<String, ?> dependencyInterpolations = convertToNotations(name, dependencies)
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    processPropertiesMap(interpolate, dependencyInterpolations);
                 });
-
-                task.getInputs().properties(interpolate);
-
-                copy.expand(interpolate);
             });
+
+            task.getInputs().properties(interpolate);
+
+            task.expand(interpolate);
+        });
+
+        final SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+
+        sourceSets.configureEach(sourceSet -> {
+            project.getDependencies().addProvider(
+                    sourceSet.getImplementationConfigurationName(),
+                    platform.getDefaults().getJetbrainsAnnotationsVersion()
+                            .map("org.jetbrains:annotations:%s"::formatted)
+                            .map(project.getDependencies()::create)
+            );
+        });
+    }
+
+    record PropertyMapEntry(String key, Object value) {}
+
+    @SuppressWarnings("unchecked")
+    private static void processPropertiesMap(final Map<String, Object> result, final Map<String, ?> input) {
+        final Multimap<String, PropertyMapEntry> keyPrefixedInputMap = HashMultimap.create();
+        input.forEach((key, value) -> {
+            if (key.equals("properties")) {
+                //Don't recurse down project properties, gets into a SOE
+                return;
+            }
+            if (!key.contains(".") && !key.toLowerCase(Locale.ROOT).equals(key)) {
+                //We have a camel case string, turn it into a snake case string
+                key = key.replaceAll("([a-z])([A-Z])", "$1.$2").toLowerCase(Locale.ROOT);
+            }
+            final String[] keyParts = key.split("\\.");
+            if (keyParts.length == 1) {
+                keyPrefixedInputMap.put(keyParts[0], new PropertyMapEntry("", value));
+            } else {
+                final String newKey = String.join(".", Arrays.copyOfRange(keyParts, 1, keyParts.length));
+                keyPrefixedInputMap.put(keyParts[0], new PropertyMapEntry(newKey, value));
+            }
+        });
+
+        keyPrefixedInputMap.asMap().forEach((rootKey, values) -> {
+            //Check if we have an overlap within the root key
+            if (values.stream().anyMatch(v -> v.key().isBlank()) &&
+                    values.stream().anyMatch(v -> !v.key().isBlank())) {
+                final PropertyMapEntry rootValue = values.stream().filter(v -> v.key().isBlank()).findFirst().orElseThrow();
+                values.remove(rootValue);
+                values.add(new PropertyMapEntry("_", rootValue.value()));
+            }
+
+            if (values.stream().anyMatch(v -> v.key().isBlank())) {
+                final Object value = values.iterator().next().value();
+                //Assume providers are safe, but you will never really know without resolving them.
+                if (value instanceof String || value instanceof Number || value instanceof Boolean) {
+                    result.put(rootKey, value);
+                } else if (value instanceof Provider<?> provider) {
+                    result.put(rootKey, provider.map(Object::toString));
+                }
+            } else {
+                final Map<String, ?> newInputMap = values.stream()
+                        .filter(v -> v.value() != null)
+                        .collect(Collectors.toMap(PropertyMapEntry::key, PropertyMapEntry::value));
+                final Map<String, Object> newResultMap = new HashMap<>();
+                processPropertiesMap(newResultMap, newInputMap);
+                if (newResultMap.isEmpty()) {
+                    return;
+                }
+                if (!result.containsKey(rootKey)) {
+                    result.put(rootKey, newResultMap);
+                } else if (result.get(rootKey) instanceof Map) {
+                    MergeMaps((Map<String, Object>) result.get(rootKey), newResultMap);
+                } else if (newResultMap.size() == 1 && newResultMap.containsKey("_")) {
+                    result.put(rootKey, newResultMap.get("_"));
+                } else {
+                    throw new InvalidUserDataException("Cannot merge a map with a non-map value");
+                }
+            }
+        });
+
+        final Set<String> emptyOrNullKeys = result.keySet().stream()
+                .filter(key -> result.get(key) == null || (result.get(key) instanceof Map && ((Map<?, ?>) result.get(key)).isEmpty()))
+                .filter(key -> result.get(key) instanceof String ||
+                        result.get(key) instanceof Number ||
+                        result.get(key) instanceof Boolean ||
+                        result.get(key) instanceof Provider<?>)
+                .collect(Collectors.toSet());
+
+        emptyOrNullKeys.forEach(result::remove);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void MergeMaps(final Map<String, Object> left, final Map<String, Object> right) {
+        right.forEach((key, value) -> {
+            if (left.containsKey(key)) {
+                final Object leftValue = left.get(key);
+                if (value instanceof Map && leftValue instanceof Map) {
+                    MergeMaps((Map<String, Object>) leftValue, (Map<String, Object>) value);
+                } else {
+                    left.put(key, value);
+                }
+            } else {
+                left.put(key, value);
+            }
         });
     }
 
@@ -170,11 +275,11 @@ public abstract class CommonPlatformProject implements IPlatformProject {
     private static Stream<Map.Entry<String, String>> convertToNotations(String name, ExternalDependency dependency) {
         return Stream.of(
                 Map.entry(
-                        "supported%sNpmVersionRange".formatted(StringUtils.capitalize(name)),
+                        "dependencies%sNpm".formatted(StringUtils.capitalize(name)),
                         createSupportedVersionRange(dependency, true)
                 ),
                 Map.entry(
-                        "supported%sMavenVersionRange".formatted(StringUtils.capitalize(name)),
+                        "dependencies%sMaven".formatted(StringUtils.capitalize(name)),
                         createSupportedVersionRange(dependency, false)
                 )
         );
@@ -185,6 +290,8 @@ public abstract class CommonPlatformProject implements IPlatformProject {
     protected abstract Provider<String> getLoaderVersion(Platform platform);
 
     protected abstract Map<String, ?> getInterpolatedProperties(Platform platform);
+
+    protected abstract Set<Configuration> getDependencyInterpolationConfigurations(Project project);
 
     protected final void disableCompiling(Project project) {
         var disabledTasks = List.of("build", "jar", "assemble", "compileJava", "compileTestJava", "test", "check");
@@ -234,6 +341,14 @@ public abstract class CommonPlatformProject implements IPlatformProject {
     private static final Pattern VERSION_RANGE_PATTERN = Pattern.compile("(?<range>([(\\[])(?<min>[0-9a-zA-Z.\\-]+)(, ?(?<max>[0-9a-zA-Z.\\-]*))?)(?<closer>[)\\]])");
 
     protected static String createSupportedVersionRange(String versionRange, boolean npmCompatible) {
+        if (versionRange.equals("+")) {
+            if (npmCompatible) {
+                return "*";
+            }
+
+            return "+"; //Wildcard matches against anything recommending the + version.
+        }
+
         List<String> allRanges = new ArrayList<>();
         Matcher m = VERSION_RANGE_PATTERN.matcher(versionRange);
         while (m.find()) {
@@ -333,6 +448,7 @@ public abstract class CommonPlatformProject implements IPlatformProject {
         private final PlatformProject project;
         private final PlatformMinecraft minecraft;
         private final PlatformParchment parchment;
+        private final PlatformDefaults defaults;
 
         @Inject
         protected Platform(final Project project) {
@@ -340,6 +456,7 @@ public abstract class CommonPlatformProject implements IPlatformProject {
             this.project = project.getObjects().newInstance(PlatformProject.class, project);
             this.minecraft = project.getObjects().newInstance(PlatformMinecraft.class, project);
             this.parchment = project.getObjects().newInstance(PlatformParchment.class, project, minecraft);
+            this.defaults = project.getObjects().newInstance(PlatformDefaults.class, project);
         }
 
         public abstract static class PlatformJava {
@@ -356,7 +473,7 @@ public abstract class CommonPlatformProject implements IPlatformProject {
 
             @Inject
             public PlatformProject(final Project project) {
-                getType().convention(project.getProviders().gradleProperty("project.type").map(String::trim).map(ProjectType::valueOf).orElse(ProjectType.LIBRARY));
+                getType().convention(project.getProviders().gradleProperty("project.type").map(String::trim).map(ProjectType::valueOf).orElse(ProjectType.MOD));
                 getOwner().convention(project.getProviders().gradleProperty("project.owner").map(String::trim));
             }
 
@@ -396,6 +513,16 @@ public abstract class CommonPlatformProject implements IPlatformProject {
             abstract Property<String> getMinecraftVersion();
         }
 
+        public abstract static class PlatformDefaults {
+
+            @Inject
+            public PlatformDefaults(Project project) {
+                getJetbrainsAnnotationsVersion().convention(project.getProviders().gradleProperty("jetbrains.annotations.version").map(String::trim));
+            }
+
+            public abstract Property<String> getJetbrainsAnnotationsVersion();
+        }
+
         @Nested
         public PlatformJava getJava() {
             return java;
@@ -429,6 +556,14 @@ public abstract class CommonPlatformProject implements IPlatformProject {
 
         public void parchment(Action<? super PlatformParchment> action) {
             action.execute(getParchment());
+        }
+
+        public PlatformDefaults getDefaults() {
+            return defaults;
+        }
+
+        public void defaults(Action<? super PlatformDefaults> action) {
+            action.execute(getDefaults());
         }
     }
 

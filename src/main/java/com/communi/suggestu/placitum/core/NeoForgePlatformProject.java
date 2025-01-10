@@ -10,10 +10,7 @@ import net.neoforged.gradle.dsl.common.runs.ide.extensions.IdeaRunExtension;
 import net.neoforged.gradle.dsl.common.runs.idea.extensions.IdeaRunsExtension;
 import net.neoforged.gradle.dsl.common.runs.run.RunManager;
 import net.neoforged.gradle.userdev.UserDevPlugin;
-import org.gradle.api.Action;
-import org.gradle.api.GradleException;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
+import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.attributes.Usage;
@@ -21,6 +18,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.problems.Problems;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.*;
@@ -39,7 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class NeoForgePlatformProject extends CommonPlatformProject {
+public abstract class NeoForgePlatformProject extends CommonPlatformProject {
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
@@ -60,17 +58,14 @@ public final class NeoForgePlatformProject extends CommonPlatformProject {
         jarJar.enable();
 
         for (Project commonProject : commonProjects) {
-            final Provider<Dependency> coreProjectProvider = commonProject.provider(new ValueCallable<>(commonProject))
-                    .map(project.getDependencies()::create);
+            final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
+            excludeMinecraftDependencies(commonProjectDependency);
+            project.getDependencies().add(JavaPlugin.API_CONFIGURATION_NAME, commonProjectDependency);
 
-            project.getDependencies().addProvider(JavaPlugin.API_CONFIGURATION_NAME, coreProjectProvider, CommonPlatformProject::excludeMinecraftDependencies);
+            jarJar.ranged(commonProjectDependency, "[%s]".formatted(commonProject.getVersion()));
+            jarJar.pin(commonProjectDependency, commonProject.getVersion().toString());
 
-            project.getDependencies().addProvider(JarJar.EXTENSION_NAME, coreProjectProvider, dependency -> {
-                jarJar.ranged(dependency, "[%s]".formatted(commonProject.getVersion()));
-                jarJar.pin(dependency, commonProject.getVersion().toString());
-
-                excludeMinecraftDependencies(dependency);
-            });
+            project.getDependencies().add(JarJar.EXTENSION_NAME, commonProjectDependency);
         }
 
         final Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);
@@ -116,15 +111,24 @@ public final class NeoForgePlatformProject extends CommonPlatformProject {
         accessTransformers.getFiles().from(platform.getNeoForge().getAccessTransformers());
         
         project.getDependencies().addProvider("implementation", platform.getNeoForge().getVersion()
-                .map("net.neoforged:neoforge:%s"::formatted));
+                .map("net.neoforged:neoforge:%s"::formatted)
+                .map(project.getDependencies()::create)
+                .orElse(project.provider(() -> {
+                    throw getProblems().getReporter().throwing(spec -> {
+                        spec.id("placitum-missing-neoforge-version", "NeoForge version is not configured");
+                        spec.details("NeoForge version is not configured");
+                        spec.solution("Set the NeoForge version in the platform configuration: platform.neoforge.version");
+                        spec.withException(new InvalidUserDataException("NeoForge version is not configured"));
+                    });
+                })));
         
         project.getTasks().named("processResources", ProcessResources.class, processResources -> {
             processResources.from(platform.getNeoForge().getAccessTransformers(), spec -> spec.into("META-INF"));
         });
         
-        runs.create("client");
-        runs.create("server");
-        runs.create("data", run -> {
+        runs.register("client");
+        runs.register("server");
+        runs.register("data", run -> {
             run.getArguments().addAll(List.of(
                     "--mod", "${project.modId.toLowerCase()}",
                     "--output", coreProject.file("src/datagen/generated").getAbsolutePath()
@@ -185,6 +189,9 @@ public final class NeoForgePlatformProject extends CommonPlatformProject {
         };
     }
 
+    @Inject
+    protected abstract Problems getProblems();
+
     @Override
     protected Platform registerPlatformExtension(Project project) {
         return project.getExtensions().create(Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, Platform.class, project);
@@ -201,7 +208,24 @@ public final class NeoForgePlatformProject extends CommonPlatformProject {
 
     @Override
     protected Map<String, ?> getInterpolatedProperties(CommonPlatformProject.Platform platform) {
-        return Map.of();
+        if (platform instanceof Platform neoforgePlatform) {
+            return Map.of("dependenciesNeoforgeNpm", neoforgePlatform.getNeoForge().getVersion()
+                    .map(version -> createSupportedVersionRange(version, true)),
+                    "dependenciesNeoforgeMaven", neoforgePlatform.getNeoForge().getVersion()
+                            .map(version -> createSupportedVersionRange(version, false))
+            );
+
+        } else {
+            throw new GradleException("Platform is not an instance of PlatformNeoForge");
+        }
+    }
+
+    @Override
+    protected Set<Configuration> getDependencyInterpolationConfigurations(Project project) {
+        return Set.of(
+                project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME),
+                project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME)
+        );
     }
 
     public static class Platform extends CommonPlatformProject.Platform {

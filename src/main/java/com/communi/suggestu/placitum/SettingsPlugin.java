@@ -8,6 +8,7 @@ import org.gradle.api.Project;
 import org.gradle.api.initialization.Settings;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class SettingsPlugin implements Plugin<Settings> {
@@ -41,9 +42,9 @@ public class SettingsPlugin implements Plugin<Settings> {
         public void execute(@NotNull Project project) {
             final SettingsPlatformExtension projectManagementExtension = settings.getExtensions().getByType(SettingsPlatformExtension.class);
 
-            final Supplier<IPlatformProject> builder = projectManagementExtension.findProject(project.getPath());
+            final Function<Project, IPlatformProject> builder = projectManagementExtension.findProject(project.getPath());
             if (builder != null) {
-                final IPlatformProject platformProject = builder.get();
+                final IPlatformProject platformProject = builder.apply(project);
                 platformProject.configure(
                         project,
                         projectManagementExtension.getCoreProjectPath(),

@@ -12,7 +12,10 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.file.FileTree;
+import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.internal.file.archive.ZipFileTree;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -24,6 +27,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -42,15 +46,14 @@ public class FabricPlatformProject extends CommonPlatformProject {
         final Set<Project> commonProjects = commonProjectPaths.stream()
                 .map(project::project)
                 .collect(Collectors.toSet());
-        final Project coreProject = project.project(coreProjectPath);
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
 
         for (Project commonProject : commonProjects) {
-            final Provider<Dependency> coreProjectProvider = commonProject.provider(new ValueCallable<>(commonProject))
-                    .map(project.getDependencies()::create);
+            final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
+            excludeMinecraftDependencies(commonProjectDependency);
 
-            project.getDependencies().addProvider(JavaPlugin.API_CONFIGURATION_NAME, coreProjectProvider, CommonPlatformProject::excludeMinecraftDependencies);
+            project.getDependencies().add(JavaPlugin.API_CONFIGURATION_NAME, commonProjectDependency);
 
             Provider<File> metadataGenerationFile = project.getLayout().getBuildDirectory()
                     .dir("generated/fabric/metadata/placitum/projects/core/%s".formatted(commonProject.getName()))
@@ -85,16 +88,18 @@ public class FabricPlatformProject extends CommonPlatformProject {
                         return targetFile;
                     });
 
+            final TaskProvider<Jar> jarTask = commonProject.getTasks().named("jar", Jar.class);
+            final String commonProjectName = commonProject.getName();
             final TaskProvider<Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
-                task.from(project.getTasks().named("jar", Jar.class).flatMap(Jar::getArchiveFile).map(project::zipTree));
+                task.from(jarTask.flatMap(Jar::getArchiveFile).map(file -> task.getProject().zipTree(file)));
                 task.from(metadataGenerationFile);
-                task.getArchiveClassifier().set("%s-bundled".formatted(commonProject.getName()));
+                task.getArchiveClassifier().set("%s-bundled".formatted(commonProjectName));
             });
 
             final TaskProvider<RemapJarTask> remapBundledTask = project.getTasks().register("remapBundled%s".formatted(commonProject.getName()), RemapJarTask.class, task -> {
                 task.dependsOn(bundleFmjTask);
                 task.getInputFile().set(bundleFmjTask.flatMap(Jar::getArchiveFile));
-                task.getArchiveClassifier().set("%s-remapped".formatted(commonProject.getName()));
+                task.getArchiveClassifier().set("%s-remapped".formatted(commonProjectName));
             });
 
             project.getTasks().named("remapJar", RemapJarTask.class, task -> {
@@ -116,6 +121,7 @@ public class FabricPlatformProject extends CommonPlatformProject {
                 });
             });
 
+            commonProject.getConfigurations().maybeCreate("remappedRuntimeElements");
             commonProject.getArtifacts().add("remappedRuntimeElements", remapBundledTask.flatMap(RemapJarTask::getArchiveFile), artifact -> {
                 artifact.builtBy(remapBundledTask);
                 artifact.setType("jar");
@@ -138,17 +144,23 @@ public class FabricPlatformProject extends CommonPlatformProject {
                 ));
 
         final LoomGradleExtensionAPI loom = project.getExtensions().getByType(LoomGradleExtensionAPI.class);
-        project.getDependencies().add("mappings", loom.layered(layer -> {
-            layer.officialMojangMappings();
-            layer.parchment(
-                    platform.getParchment().getMinecraftVersion().zip(
-                            platform.getParchment().getVersion(),
-                            "org.parchmentmc.data:parchment-%s:%s@zip"::formatted
-                    )
-            );
-        }));
+        project.getDependencies().addProvider("mappings",
+                platform.getParchment().getMinecraftVersion().zip(
+                        platform.getParchment().getVersion(),
+                        "org.parchmentmc.data:parchment-%s:%s@zip"::formatted
+                ).map(parchment -> loom.layered(layer -> {
+                    layer.officialMojangMappings();
+                    layer.parchment(parchment);
+                })));
 
-        loom.getAccessWidenerPath().set(platform.getFabric().getAccessWideners());
+        loom.getAccessWidenerPath().set(platform.getFabric().getAccessWideners().map(
+                file -> {
+                    if (file.getAsFile().exists())
+                        return file;
+
+                    return null;
+                }
+        ));
         project.getTasks().named("processResources", ProcessResources.class, processResources -> {
             processResources.from(platform.getFabric().getAccessWideners());
         });
@@ -157,13 +169,13 @@ public class FabricPlatformProject extends CommonPlatformProject {
             task.getAddNestedDependencies().set(true);
         });
 
-        loom.getRuns().register("client", client -> {
+        loom.getRuns().named("client", client -> {
             client.client();
             client.setConfigName("Fabric Client");
             client.ideConfigGenerated(true);
             client.runDir("runs/client");
         });
-        loom.getRuns().register("server", server -> {
+        loom.getRuns().named("server", server -> {
             server.server();
             server.setConfigName("Fabric Server");
             server.ideConfigGenerated(true);
@@ -247,9 +259,9 @@ public class FabricPlatformProject extends CommonPlatformProject {
     protected Map<String, ?> getInterpolatedProperties(CommonPlatformProject.Platform platform) {
         if (platform instanceof Platform fabricPlatform) {
             return Map.of(
-                    "supportedFabricLoaderVersionNpmVersionRange", fabricPlatform.getFabric().getLoaderVersion()
+                    "dependenciesFabricLoaderNpm", fabricPlatform.getFabric().getLoaderVersion()
                             .map(version -> CommonPlatformProject.createSupportedVersionRange(version, true)),
-                    "supportedFabricApiNpmVersionRange", fabricPlatform.getFabric().getApiVersion()
+                    "dependenciesFabricApiNpm", fabricPlatform.getFabric().getApiVersion()
                             .map(version -> CommonPlatformProject.createSupportedVersionRange(version, true))
             );
         } else {
@@ -257,6 +269,14 @@ public class FabricPlatformProject extends CommonPlatformProject {
         }
     }
 
+    @Override
+    protected Set<Configuration> getDependencyInterpolationConfigurations(Project project) {
+        return Set.of(
+                project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME),
+                project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME),
+                project.getConfigurations().getByName("modImplementation")
+        );
+    }
 
     public static class Platform extends CommonPlatformProject.Platform {
 
@@ -274,6 +294,7 @@ public class FabricPlatformProject extends CommonPlatformProject {
             public PlatformFabric(Project project) {
                 getLoaderVersion().convention(project.getProviders().gradleProperty("fabric.loader.version").map(String::trim));
                 getApiVersion().convention(project.getProviders().gradleProperty("fabric.api.version").map(String::trim));
+                getAccessWideners().convention(project.getRootProject().getLayout().getProjectDirectory().dir("common").file("%s.accesswidener".formatted(project.getRootProject().getName().toLowerCase(Locale.ROOT))));
             }
 
             @Input
@@ -284,6 +305,7 @@ public class FabricPlatformProject extends CommonPlatformProject {
 
             @InputFile
             @PathSensitive(PathSensitivity.NONE)
+            @Optional
             public abstract RegularFileProperty getAccessWideners();
         }
 

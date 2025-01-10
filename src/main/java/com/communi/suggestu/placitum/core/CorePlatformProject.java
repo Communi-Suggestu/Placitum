@@ -3,17 +3,18 @@ package com.communi.suggestu.placitum.core;
 import com.communi.suggestu.placitum.platform.IPlatformProject;
 import com.communi.suggestu.placitum.util.ValueCallable;
 import net.neoforged.gradle.dsl.common.extensions.AccessTransformers;
-import net.neoforged.gradle.dsl.common.extensions.JarJar;
 import net.neoforged.gradle.dsl.common.extensions.Minecraft;
 import net.neoforged.gradle.dsl.common.extensions.subsystems.Subsystems;
 import net.neoforged.gradle.vanilla.VanillaPlugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.InputFiles;
 
+import javax.inject.Inject;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,23 +42,11 @@ public final class CorePlatformProject extends CommonPlatformProject implements 
             commonProjects.clear();
         }
 
-        final JarJar jarJar = project.getExtensions().getByType(JarJar.class);
-        if (!commonProjects.isEmpty()) {
-            jarJar.enable();
-        }
-
         for (Project commonProject : commonProjects) {
             final Provider<Dependency> coreProjectProvider = commonProject.provider(new ValueCallable<>(commonProject))
                     .map(project.getDependencies()::create);
 
             project.getDependencies().addProvider(JavaPlugin.API_CONFIGURATION_NAME, coreProjectProvider, CommonPlatformProject::excludeMinecraftDependencies);
-
-            project.getDependencies().addProvider(JarJar.EXTENSION_NAME, coreProjectProvider, dependency -> {
-                jarJar.ranged(dependency, "[%s]".formatted(commonProject.getVersion()));
-                jarJar.pin(dependency, commonProject.getVersion().toString());
-
-                excludeMinecraftDependencies(dependency);
-            });
         }
 
         project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getMinecraft().getVersion()
@@ -88,9 +77,15 @@ public final class CorePlatformProject extends CommonPlatformProject implements 
         return Map.of();
     }
 
+    @Override
+    protected Set<Configuration> getDependencyInterpolationConfigurations(Project project) {
+        return Set.of();
+    }
+
     public abstract static class Platform extends CommonPlatformProject.Platform {
 
-        protected Platform(Project project) {
+        @Inject
+        public Platform(Project project) {
             super(project);
         }
 

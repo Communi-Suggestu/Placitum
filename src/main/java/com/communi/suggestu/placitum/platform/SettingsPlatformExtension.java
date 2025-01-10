@@ -1,7 +1,9 @@
 package com.communi.suggestu.placitum.platform;
 
 import com.communi.suggestu.placitum.core.CorePlatformProject;
+import com.communi.suggestu.placitum.core.FabricPlatformProject;
 import com.communi.suggestu.placitum.core.NeoForgePlatformProject;
+import org.gradle.api.Project;
 import org.gradle.api.initialization.Settings;
 
 import javax.annotation.Nullable;
@@ -9,7 +11,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SettingsPlatformExtension {
@@ -25,7 +27,7 @@ public class SettingsPlatformExtension {
     }
 
     public void common(final String path) {
-        registerProject(path, ProjectDescriptor.common(NeoForgePlatformProject::new));
+        registerProject(path, ProjectDescriptor.common(p -> p.getObjects().newInstance(NeoForgePlatformProject.class)));
     }
 
     public void core(final String path) {
@@ -33,15 +35,15 @@ public class SettingsPlatformExtension {
             throw new IllegalStateException("Core project already registered");
         }
 
-        registerProject(path, ProjectDescriptor.core(CorePlatformProject::new));
+        registerProject(path, ProjectDescriptor.core(p -> new CorePlatformProject()));
     }
 
     public void fabric(final String path) {
-        registerProject(path, ProjectDescriptor.loaderSpecific(NeoForgePlatformProject::new));
+        registerProject(path, ProjectDescriptor.loaderSpecific(p -> new FabricPlatformProject()));
     }
 
     public void neoforge(final String path) {
-        registerProject(path, ProjectDescriptor.loaderSpecific(NeoForgePlatformProject::new));
+        registerProject(path, ProjectDescriptor.loaderSpecific(p -> p.getObjects().newInstance(NeoForgePlatformProject.class)));
     }
 
     private void registerProject(String path, ProjectDescriptor factory) {
@@ -50,7 +52,7 @@ public class SettingsPlatformExtension {
     }
 
     @Nullable
-    public Supplier<IPlatformProject> findProject(String path) {
+    public Function<Project, IPlatformProject> findProject(String path) {
         if (!knownDynamicDescriptors.containsKey(path)) {
             return null;
         }
@@ -75,16 +77,16 @@ public class SettingsPlatformExtension {
                 .orElseThrow(() -> new IllegalStateException("Core project not registered"));
     }
 
-    private record ProjectDescriptor(boolean isCore, boolean isCommon, Supplier<IPlatformProject> builder) {
-        public static ProjectDescriptor core(Supplier<IPlatformProject> builder) {
+    private record ProjectDescriptor(boolean isCore, boolean isCommon, Function<Project, IPlatformProject> builder) {
+        public static ProjectDescriptor core(Function<Project, IPlatformProject> builder) {
             return new ProjectDescriptor(true, false, builder);
         }
 
-        public static ProjectDescriptor common(Supplier<IPlatformProject> builder) {
+        public static ProjectDescriptor common(Function<Project, IPlatformProject> builder) {
             return new ProjectDescriptor(false, true, builder);
         }
 
-        public static ProjectDescriptor loaderSpecific(Supplier<IPlatformProject> builder) {
+        public static ProjectDescriptor loaderSpecific(Function<Project, IPlatformProject> builder) {
             return new ProjectDescriptor(false, false, builder);
         }
     }
