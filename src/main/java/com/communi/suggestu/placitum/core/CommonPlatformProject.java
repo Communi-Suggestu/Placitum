@@ -509,6 +509,10 @@ public abstract class CommonPlatformProject implements IPlatformProject {
                 return providers.gradleProperty("project.type").map(String::trim).map(ProjectType::valueOf).orElse(ProjectType.MOD);
             }
 
+            public void library() {
+                getType().set(ProjectType.LIBRARY);
+            }
+
             @Input
             abstract Property<ProjectType> getType();
 
