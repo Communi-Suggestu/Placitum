@@ -455,7 +455,6 @@ public abstract class CommonPlatformProject implements IPlatformProject {
         private final PlatformParchment parchment;
         private final PlatformDefaults defaults;
 
-        @Inject
         protected Platform(final ObjectFactory objects, final ProviderFactory providers) {
             this.java = objects.newInstance(PlatformJava.class, objects, providers);
             this.project = objects.newInstance(PlatformProject.class, objects, providers);

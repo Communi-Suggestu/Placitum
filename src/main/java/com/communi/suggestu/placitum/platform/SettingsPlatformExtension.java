@@ -8,6 +8,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.initialization.Settings;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ProviderFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -29,7 +30,7 @@ public abstract class SettingsPlatformExtension {
     @Inject
     public SettingsPlatformExtension(Settings settings) {
         this.settings = settings;
-        this.defaults = getObjectFactory().newInstance(CommonPlatformProject.Platform.class, getObjectFactory(), settings.getProviders());
+        this.defaults = getObjectFactory().newInstance(Platform.class, getObjectFactory(), settings.getProviders());
     }
 
     @Inject
@@ -105,6 +106,14 @@ public abstract class SettingsPlatformExtension {
 
         public static ProjectDescriptor loaderSpecific(Function<Project, IPlatformProject> builder) {
             return new ProjectDescriptor(false, false, builder);
+        }
+    }
+
+    public abstract static class Platform extends CommonPlatformProject.Platform {
+
+        @Inject
+        public Platform(ObjectFactory objects, ProviderFactory providers) {
+            super(objects, providers);
         }
     }
 }
