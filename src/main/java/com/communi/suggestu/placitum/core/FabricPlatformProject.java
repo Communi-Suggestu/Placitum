@@ -11,7 +11,11 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.file.ArchiveOperations;
+import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.file.FileTree;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.internal.file.FileOperations;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -29,7 +33,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class FabricPlatformProject extends CommonPlatformProject {
+public abstract class FabricPlatformProject extends CommonPlatformProject {
+
+    @Inject
+    public FabricPlatformProject() {
+        super();
+    }
+
+    @Inject
+    public abstract ArchiveOperations getArchiveOperations();
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
@@ -51,8 +63,13 @@ public class FabricPlatformProject extends CommonPlatformProject {
 
             project.getDependencies().add(JavaPlugin.API_CONFIGURATION_NAME, commonProjectDependency);
 
+            final String commonProjectName = commonProject.getName();
+            final String commonProjectGroup = commonProject.getGroup().toString();
+            final String rootProjectName = commonProject.getRootProject().getName();
+            final String commonProjectVersion = commonProject.getVersion().toString();
+
             Provider<File> metadataGenerationFile = project.getLayout().getBuildDirectory()
-                    .dir("generated/fabric/metadata/placitum/projects/core/%s".formatted(commonProject.getName()))
+                    .dir("generated/fabric/metadata/placitum/projects/core/%s".formatted(commonProjectName))
                     .map(dir -> dir.file("fabric.mod.json"))
                     .map(file -> {
                         final File targetFile = file.getAsFile();
@@ -73,9 +90,9 @@ public class FabricPlatformProject extends CommonPlatformProject {
                                       }
                                     }
                                     """.formatted(
-                                    "%s_%s".formatted(commonProject.getGroup().toString().replace(".", "_"), commonProject.getName()),
-                                    commonProject.getVersion(),
-                                    "%s - %s".formatted(commonProject.getRootProject().getName(), commonProject.getName())
+                                    "%s_%s".formatted(commonProjectGroup.replace(".", "_"), commonProjectName),
+                                    commonProjectVersion,
+                                    "%s - %s".formatted(rootProjectName, commonProjectName)
                             ));
                         } catch (IOException e) {
                             throw new GradleException("Failed to write metadata file: %s".formatted(targetFile), e);
@@ -85,9 +102,10 @@ public class FabricPlatformProject extends CommonPlatformProject {
                     });
 
             final TaskProvider<Jar> jarTask = commonProject.getTasks().named("jar", Jar.class);
-            final String commonProjectName = commonProject.getName();
+
+            final Provider<FileTree> compiledJarTree = jarTask.flatMap(Jar::getArchiveFile).map(getArchiveOperations()::zipTree);
             final TaskProvider<Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
-                task.from(jarTask.flatMap(Jar::getArchiveFile).map(file -> task.getProject().zipTree(file)));
+                task.from(compiledJarTree);
                 task.from(metadataGenerationFile);
                 task.getArchiveClassifier().set("%s-bundled".formatted(commonProjectName));
             });

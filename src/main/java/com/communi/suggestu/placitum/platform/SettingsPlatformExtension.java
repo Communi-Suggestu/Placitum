@@ -49,7 +49,7 @@ public abstract class SettingsPlatformExtension {
     }
 
     public void fabric(final String path) {
-        registerProject(path, ProjectDescriptor.loaderSpecific(p -> new FabricPlatformProject()));
+        registerProject(path, ProjectDescriptor.loaderSpecific(p -> p.getObjects().newInstance(FabricPlatformProject.class)));
     }
 
     public void neoforge(final String path) {
