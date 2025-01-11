@@ -1,5 +1,6 @@
 package com.communi.suggestu.placitum;
 
+import com.communi.suggestu.placitum.core.CommonPlatformProject;
 import com.communi.suggestu.placitum.platform.IPlatformProject;
 import com.communi.suggestu.placitum.platform.SettingsPlatformExtension;
 import org.gradle.api.Action;
@@ -14,11 +15,11 @@ import java.util.function.Supplier;
 public class SettingsPlugin implements Plugin<Settings> {
     @Override
     public void apply(@NotNull Settings target) {
-        target.getExtensions().create(SettingsPlatformExtension.EXTENSION_NAME, SettingsPlatformExtension.class, target);
+        final SettingsPlatformExtension extension = target.getExtensions().create(SettingsPlatformExtension.EXTENSION_NAME, SettingsPlatformExtension.class, target);
 
         target.getPlugins().apply("org.gradle.toolchains.foojay-resolver-convention");
 
-        target.getGradle().beforeProject(new DynamicProjectPluginAdapter(target));
+        target.getGradle().beforeProject(new DynamicProjectPluginAdapter(target, extension.getDefaults()));
 
         target.pluginManagement(spec -> {
             spec.repositories(repositories -> {
@@ -37,7 +38,7 @@ public class SettingsPlugin implements Plugin<Settings> {
         });
     }
 
-    private record DynamicProjectPluginAdapter(Settings settings) implements Action<Project> {
+    private record DynamicProjectPluginAdapter(Settings settings, CommonPlatformProject.Platform defaults) implements Action<Project> {
         @Override
         public void execute(@NotNull Project project) {
             final SettingsPlatformExtension projectManagementExtension = settings.getExtensions().getByType(SettingsPlatformExtension.class);
@@ -48,7 +49,8 @@ public class SettingsPlugin implements Plugin<Settings> {
                 platformProject.configure(
                         project,
                         projectManagementExtension.getCoreProjectPath(),
-                        projectManagementExtension.getCommonProjectPaths()
+                        projectManagementExtension.getCommonProjectPaths(),
+                        defaults
                 );
             }
         }

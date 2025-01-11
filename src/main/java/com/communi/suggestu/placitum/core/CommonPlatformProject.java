@@ -11,11 +11,13 @@ import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.*;
 import org.gradle.api.file.DuplicatesStrategy;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
@@ -61,7 +63,7 @@ public abstract class CommonPlatformProject implements IPlatformProject {
     }
 
     @Override
-    public void configure(Project project, String coreCodeProject, Set<String> commonProjects) {
+    public void configure(Project project, String coreCodeProject, Set<String> commonProjects, Platform defaults) {
         project.setGroup(project.getRootProject().getGroup());
         project.setVersion(project.getRootProject().getVersion());
 
@@ -83,7 +85,7 @@ public abstract class CommonPlatformProject implements IPlatformProject {
         final BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
         base.getArchivesName().set(archivesBaseName);
 
-        final Platform platform = registerPlatformExtension(project);
+        final Platform platform = registerPlatformExtension(project, defaults);
 
         final JavaPluginExtension java = project.getExtensions().getByType(JavaPluginExtension.class);
         java.getToolchain().getLanguageVersion().set(platform.getJava().getVersion().map(JavaLanguageVersion::of));
@@ -157,7 +159,8 @@ public abstract class CommonPlatformProject implements IPlatformProject {
         });
     }
 
-    record PropertyMapEntry(String key, Object value) {}
+    record PropertyMapEntry(String key, Object value) {
+    }
 
     @SuppressWarnings("unchecked")
     private static void processPropertiesMap(final Map<String, Object> result, final Map<String, ?> input) {
@@ -285,7 +288,7 @@ public abstract class CommonPlatformProject implements IPlatformProject {
         );
     }
 
-    protected abstract Platform registerPlatformExtension(Project project);
+    protected abstract Platform registerPlatformExtension(Project project, Platform defaults);
 
     protected abstract Provider<String> getLoaderVersion(Platform platform);
 
@@ -439,7 +442,9 @@ public abstract class CommonPlatformProject implements IPlatformProject {
                 .collect(Collectors.joining(" "));
     }
 
-
+    /**
+     * The core platform.
+     */
     public abstract static class Platform {
 
         public static final String EXTENSION_NAME = "platform";
@@ -451,30 +456,58 @@ public abstract class CommonPlatformProject implements IPlatformProject {
         private final PlatformDefaults defaults;
 
         @Inject
-        protected Platform(final Project project) {
-            this.java = project.getObjects().newInstance(PlatformJava.class, project);
-            this.project = project.getObjects().newInstance(PlatformProject.class, project);
-            this.minecraft = project.getObjects().newInstance(PlatformMinecraft.class, project);
-            this.parchment = project.getObjects().newInstance(PlatformParchment.class, project, minecraft);
-            this.defaults = project.getObjects().newInstance(PlatformDefaults.class, project);
+        protected Platform(final ObjectFactory objects, final ProviderFactory providers) {
+            this.java = objects.newInstance(PlatformJava.class, objects, providers);
+            this.project = objects.newInstance(PlatformProject.class, objects, providers);
+            this.minecraft = objects.newInstance(PlatformMinecraft.class, objects, providers);
+            this.parchment = objects.newInstance(PlatformParchment.class, objects, providers, minecraft);
+            this.defaults = objects.newInstance(PlatformDefaults.class, objects, providers);
+        }
+
+        protected Platform(final Project project, final Platform settings) {
+            this(project.getObjects(), project.getProviders());
+
+            this.java.from(project.getObjects(), project.getProviders(), settings.java);
+            this.project.from(project.getObjects(), project.getProviders(), settings.project);
+            this.minecraft.from(project.getObjects(), project.getProviders(), settings.minecraft);
+            this.parchment.from(project.getObjects(), project.getProviders(), settings.parchment, this.minecraft);
+            this.defaults.from(project.getObjects(), project.getProviders(), settings.defaults);
         }
 
         public abstract static class PlatformJava {
             @Inject
-            public PlatformJava(Project project) {
-                getVersion().convention(project.getProviders().gradleProperty("java.version").map(String::trim).map(Integer::parseInt));
+            public PlatformJava(final ObjectFactory objects, final ProviderFactory providers) {
+                getVersion().convention(getDefaultJavaVersion(providers));
+            }
+
+            private static @NotNull Provider<Integer> getDefaultJavaVersion(ProviderFactory providers) {
+                return providers.gradleProperty("java.version").map(String::trim).map(Integer::parseInt);
             }
 
             @Input
             abstract Property<Integer> getVersion();
+
+            private void from(ObjectFactory objects, ProviderFactory providers, PlatformJava java) {
+                getVersion().set(
+                        java.getVersion().orElse(getDefaultJavaVersion(providers))
+                );
+            }
         }
 
         public abstract static class PlatformProject {
 
             @Inject
-            public PlatformProject(final Project project) {
-                getType().convention(project.getProviders().gradleProperty("project.type").map(String::trim).map(ProjectType::valueOf).orElse(ProjectType.MOD));
-                getOwner().convention(project.getProviders().gradleProperty("project.owner").map(String::trim));
+            public PlatformProject(final ObjectFactory objects, final ProviderFactory providers) {
+                getType().convention(getDefaultProjectType(providers));
+                getOwner().convention(getDefaultProjectOwner(providers));
+            }
+
+            private static @NotNull Provider<String> getDefaultProjectOwner(ProviderFactory providers) {
+                return providers.gradleProperty("project.owner").map(String::trim);
+            }
+
+            private @NotNull Provider<ProjectType> getDefaultProjectType(ProviderFactory providers) {
+                return providers.gradleProperty("project.type").map(String::trim).map(ProjectType::valueOf).orElse(ProjectType.MOD);
             }
 
             @Input
@@ -482,14 +515,31 @@ public abstract class CommonPlatformProject implements IPlatformProject {
 
             @Input
             abstract Property<String> getOwner();
+
+            private void from(ObjectFactory objects, ProviderFactory providers, PlatformProject project) {
+                this.getOwner().set(
+                        project.getOwner().orElse(getDefaultProjectOwner(providers))
+                );
+                this.getType().set(
+                        project.getType().orElse(getDefaultProjectType(providers))
+                );
+            }
         }
 
         public abstract static class PlatformMinecraft {
 
             @Inject
-            public PlatformMinecraft(Project project) {
-                getVersion().convention(project.getProviders().gradleProperty("minecraft.version").map(String::trim));
-                getAdditionalVersions().convention(project.getProviders().gradleProperty("minecraft.additionalVersions").map(String::trim).map(s -> List.of(s.split(","))).orElse(List.of()));
+            public PlatformMinecraft(final ObjectFactory objects, final ProviderFactory providers) {
+                getVersion().convention(getDefaultVersion(providers));
+                getAdditionalVersions().convention(getDefaultAdditionalVersions(providers));
+            }
+
+            private static @NotNull Provider<List<String>> getDefaultAdditionalVersions(ProviderFactory providers) {
+                return providers.gradleProperty("minecraft.additionalVersions").map(String::trim).map(s -> List.of(s.split(","))).orElse(List.of());
+            }
+
+            private static @NotNull Provider<String> getDefaultVersion(ProviderFactory providers) {
+                return providers.gradleProperty("minecraft.version").map(String::trim);
             }
 
             @Input
@@ -497,13 +547,30 @@ public abstract class CommonPlatformProject implements IPlatformProject {
 
             @Input
             abstract ListProperty<String> getAdditionalVersions();
+
+            private void from(ObjectFactory objects, ProviderFactory providers, PlatformMinecraft minecraft) {
+                getVersion().set(
+                        minecraft.getVersion().orElse(getDefaultVersion(providers))
+                );
+                getAdditionalVersions().set(
+                        minecraft.getAdditionalVersions().orElse(getDefaultAdditionalVersions(providers))
+                );
+            }
         }
 
         public abstract static class PlatformParchment {
             @Inject
-            public PlatformParchment(Project project, PlatformMinecraft minecraft) {
-                getVersion().convention(project.getProviders().gradleProperty("parchment.version").map(String::trim));
-                getMinecraftVersion().convention(project.getProviders().gradleProperty("parchment.minecraftVersion").map(String::trim).orElse(minecraft.getVersion()));
+            public PlatformParchment(final ObjectFactory objects, final ProviderFactory providers, PlatformMinecraft minecraft) {
+                getVersion().convention(getDefaultVersion(providers));
+                getMinecraftVersion().convention(getDefaultMinecraftVersion(providers, minecraft));
+            }
+
+            private @NotNull Provider<String> getDefaultMinecraftVersion(ProviderFactory providers, PlatformMinecraft minecraft) {
+                return providers.gradleProperty("parchment.minecraftVersion").map(String::trim).orElse(minecraft.getVersion());
+            }
+
+            private static @NotNull Provider<String> getDefaultVersion(ProviderFactory providers) {
+                return providers.gradleProperty("parchment.version").map(String::trim);
             }
 
             @Input
@@ -511,16 +578,35 @@ public abstract class CommonPlatformProject implements IPlatformProject {
 
             @Input
             abstract Property<String> getMinecraftVersion();
+
+            private void from(ObjectFactory objects, ProviderFactory providers, PlatformParchment parchment, PlatformMinecraft minecraft) {
+                getVersion().set(
+                        parchment.getVersion().orElse(getDefaultVersion(providers))
+                );
+                getMinecraftVersion().set(
+                        parchment.getMinecraftVersion().orElse(getDefaultMinecraftVersion(providers, minecraft))
+                );
+            }
         }
 
         public abstract static class PlatformDefaults {
 
             @Inject
-            public PlatformDefaults(Project project) {
-                getJetbrainsAnnotationsVersion().convention(project.getProviders().gradleProperty("jetbrains.annotations.version").map(String::trim));
+            public PlatformDefaults(final ObjectFactory objects, final ProviderFactory providers) {
+                getJetbrainsAnnotationsVersion().convention(getDefaultAnnotationsVersion(providers));
+            }
+
+            private static @NotNull Provider<String> getDefaultAnnotationsVersion(ProviderFactory providers) {
+                return providers.gradleProperty("jetbrains.annotations.version").map(String::trim);
             }
 
             public abstract Property<String> getJetbrainsAnnotationsVersion();
+
+            private void from(ObjectFactory objects, ProviderFactory providers, PlatformDefaults defaults) {
+                getJetbrainsAnnotationsVersion().set(
+                        defaults.getJetbrainsAnnotationsVersion().orElse(getDefaultAnnotationsVersion(providers))
+                );
+            }
         }
 
         @Nested

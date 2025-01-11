@@ -26,8 +26,8 @@ public final class CorePlatformProject extends CommonPlatformProject implements 
     }
 
     @Override
-    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths) {
-        super.configure(project, coreProjectPath, commonProjectPaths);
+    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, CommonPlatformProject.Platform defaults) {
+        super.configure(project, coreProjectPath, commonProjectPaths, defaults);
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
 
@@ -63,8 +63,8 @@ public final class CorePlatformProject extends CommonPlatformProject implements 
     }
 
     @Override
-    protected Platform registerPlatformExtension(Project project) {
-        return project.getExtensions().create(CorePlatformProject.Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, CorePlatformProject.Platform.class, project);
+    protected Platform registerPlatformExtension(Project project, CommonPlatformProject.Platform defaults) {
+        return project.getExtensions().create(CorePlatformProject.Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, CorePlatformProject.Platform.class, project, defaults);
     }
 
     @Override
@@ -85,8 +85,8 @@ public final class CorePlatformProject extends CommonPlatformProject implements 
     public abstract static class Platform extends CommonPlatformProject.Platform {
 
         @Inject
-        public Platform(Project project) {
-            super(project);
+        public Platform(Project project, final CommonPlatformProject.Platform settings) {
+            super(project, settings);
         }
 
         @InputFiles

@@ -1,6 +1,5 @@
 package com.communi.suggestu.placitum.core;
 
-import com.communi.suggestu.placitum.util.ValueCallable;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
 import net.fabricmc.loom.bootstrap.LoomGradlePluginBootstrap;
 import net.fabricmc.loom.task.RemapJarTask;
@@ -12,10 +11,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.component.AdhocComponentWithVariants;
-import org.gradle.api.file.FileTree;
-import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.internal.file.archive.ZipFileTree;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -37,8 +33,8 @@ public class FabricPlatformProject extends CommonPlatformProject {
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
-    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths) {
-        super.configure(project, coreProjectPath, commonProjectPaths);
+    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, CommonPlatformProject.Platform defaults) {
+        super.configure(project, coreProjectPath, commonProjectPaths, defaults);
 
         project.getPlugins().apply(LoomGradlePluginBootstrap.class);
 
@@ -242,8 +238,8 @@ public class FabricPlatformProject extends CommonPlatformProject {
     }
 
     @Override
-    protected Platform registerPlatformExtension(Project project) {
-        return project.getExtensions().create(Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, Platform.class, project);
+    protected Platform registerPlatformExtension(Project project, CommonPlatformProject.Platform defaults) {
+        return project.getExtensions().create(Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, Platform.class, project, defaults);
     }
 
     @Override
@@ -278,12 +274,13 @@ public class FabricPlatformProject extends CommonPlatformProject {
         );
     }
 
-    public static class Platform extends CommonPlatformProject.Platform {
+    public abstract static class Platform extends CommonPlatformProject.Platform {
 
         private final PlatformFabric fabric;
 
-        public Platform(Project project) {
-            super(project);
+        @Inject
+        public Platform(Project project, CommonPlatformProject.Platform settings) {
+            super(project, settings);
 
             this.fabric = project.getExtensions().create("fabric", PlatformFabric.class);
         }

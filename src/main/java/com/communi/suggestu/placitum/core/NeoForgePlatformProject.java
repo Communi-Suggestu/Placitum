@@ -1,12 +1,9 @@
 package com.communi.suggestu.placitum.core;
 
-import com.communi.suggestu.placitum.util.ValueCallable;
-import net.neoforged.gradle.common.extensions.subsystems.ConventionsExtension;
 import net.neoforged.gradle.dsl.common.extensions.AccessTransformers;
 import net.neoforged.gradle.dsl.common.extensions.JarJar;
 import net.neoforged.gradle.dsl.common.extensions.Minecraft;
 import net.neoforged.gradle.dsl.common.extensions.subsystems.Subsystems;
-import net.neoforged.gradle.dsl.common.runs.ide.extensions.IdeaRunExtension;
 import net.neoforged.gradle.dsl.common.runs.idea.extensions.IdeaRunsExtension;
 import net.neoforged.gradle.dsl.common.runs.run.RunManager;
 import net.neoforged.gradle.userdev.UserDevPlugin;
@@ -27,10 +24,8 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.gradle.plugins.ide.idea.model.IdeaProject;
-import org.jetbrains.gradle.ext.IdeaExtPlugin;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,8 +36,8 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
-    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths) {
-        super.configure(project, coreProjectPath, commonProjectPaths);
+    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, CommonPlatformProject.Platform defaults) {
+        super.configure(project, coreProjectPath, commonProjectPaths, defaults);
 
         project.getPlugins().apply(UserDevPlugin.class);
 
@@ -193,8 +188,8 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
     protected abstract Problems getProblems();
 
     @Override
-    protected Platform registerPlatformExtension(Project project) {
-        return project.getExtensions().create(Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, Platform.class, project);
+    protected Platform registerPlatformExtension(Project project, CommonPlatformProject.Platform defaults) {
+        return project.getExtensions().create(Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, Platform.class, project, defaults);
     }
 
     @Override
@@ -228,12 +223,13 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
         );
     }
 
-    public static class Platform extends CommonPlatformProject.Platform {
+    public abstract static class Platform extends CommonPlatformProject.Platform {
 
         private final PlatformNeoForge neoForge;
 
-        public Platform(Project project) {
-            super(project);
+        @Inject
+        public Platform(Project project, CommonPlatformProject.Platform settings) {
+            super(project, settings);
 
             this.neoForge = project.getExtensions().create("neoforge", PlatformNeoForge.class);
         }

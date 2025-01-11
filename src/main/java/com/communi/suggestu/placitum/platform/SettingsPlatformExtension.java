@@ -1,10 +1,13 @@
 package com.communi.suggestu.placitum.platform;
 
+import com.communi.suggestu.placitum.core.CommonPlatformProject;
 import com.communi.suggestu.placitum.core.CorePlatformProject;
 import com.communi.suggestu.placitum.core.FabricPlatformProject;
 import com.communi.suggestu.placitum.core.NeoForgePlatformProject;
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.initialization.Settings;
+import org.gradle.api.model.ObjectFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -14,17 +17,23 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class SettingsPlatformExtension {
+public abstract class SettingsPlatformExtension {
 
     public static final String EXTENSION_NAME = "platforms";
 
     private final Settings settings;
     private final Map<String, ProjectDescriptor> knownDynamicDescriptors = new HashMap<>();
 
+    private final CommonPlatformProject.Platform defaults;
+
     @Inject
     public SettingsPlatformExtension(Settings settings) {
         this.settings = settings;
+        this.defaults = getObjectFactory().newInstance(CommonPlatformProject.Platform.class, getObjectFactory(), settings.getProviders());
     }
+
+    @Inject
+    public abstract ObjectFactory getObjectFactory();
 
     public void common(final String path) {
         registerProject(path, ProjectDescriptor.common(p -> p.getObjects().newInstance(NeoForgePlatformProject.class)));
@@ -44,6 +53,14 @@ public class SettingsPlatformExtension {
 
     public void neoforge(final String path) {
         registerProject(path, ProjectDescriptor.loaderSpecific(p -> p.getObjects().newInstance(NeoForgePlatformProject.class)));
+    }
+
+    public CommonPlatformProject.Platform getDefaults() {
+        return defaults;
+    }
+
+    public void defaults(Action<CommonPlatformProject.Platform> action) {
+        action.execute(defaults);
     }
 
     private void registerProject(String path, ProjectDescriptor factory) {
