@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.apache.tools.ant.filters.ReplaceTokens;
 import org.gradle.api.Action;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
@@ -117,34 +118,62 @@ public abstract class CommonPlatformProject implements IPlatformProject {
                     "name", project.getRootProject().getName(),
                     "package", "%s.%s".formatted(project.getRootProject().getGroup(), project.getName().toLowerCase(Locale.ROOT)),
                     "minecraft", new HashMap<>(Map.of(
-                            "version", platform.getMinecraft().getVersion()
+                            "version", platform.getMinecraft().getVersion(),
+                            "range", new HashMap<>(Map.of(
+                                    "neoforge",  getSupportedMinecraftVersionRange(project, false),
+                                    "fabric", getSupportedMinecraftVersionRange(project, true)
+                            ))
                     )),
                     "loader", new HashMap<>(Map.of(
                             "version", getLoaderVersion(platform)
+                    )),
+                    "java", new HashMap<>(Map.of(
+                            "version", platform.getJava().getVersion(),
+                            "range", new HashMap<>(Map.of(
+                                    "neoforge", platform.getJava().getVersion().map("[%s,)"::formatted),
+                                    "fabric", platform.getJava().getVersion().map("=%s"::formatted)
+                            ))
                     ))
             ));
 
             processPropertiesMap(interpolate, getInterpolatedProperties(platform));
-            processPropertiesMap(interpolate, project.getRootProject().getProperties());
-            processPropertiesMap(interpolate, project.getProperties());
 
+            final Map<String, Object> rootProjectInterpolation = new HashMap<>();
+            processPropertiesMap(rootProjectInterpolation, project.getRootProject().getProperties());
+
+            final Map<String, Object> projectInterpolation = new HashMap<>();
+            processPropertiesMap(projectInterpolation, project.getProperties());
+
+            final Map<String, Object> projectProperties = new HashMap<>();
+            projectProperties.put("project.root", rootProjectInterpolation);
+            projectProperties.put("project", projectInterpolation);
+            processPropertiesMap(interpolate, projectProperties);
+
+            final Multimap<String, ExternalDependency> dependenciesByName = HashMultimap.create();
             getDependencyInterpolationConfigurations(project).forEach(configuration -> {
-                final Multimap<String, ExternalDependency> dependenciesByName = configuration.getAllDependencies()
+                configuration.getAllDependencies()
                         .stream()
                         .filter(ExternalDependency.class::isInstance)
                         .map(ExternalDependency.class::cast)
-                        .collect(Multimaps.toMultimap(ExternalDependency::getName, d -> d, HashMultimap::create));
+                        .forEach(dependency -> dependenciesByName.put(dependency.getName(), dependency));
+            });
+            registerAdditionalDependencies(project, platform, dependenciesByName);
 
-                dependenciesByName.asMap().forEach((name, dependencies) -> {
-                    final Map<String, ?> dependencyInterpolations = convertToNotations(name, dependencies)
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    processPropertiesMap(interpolate, dependencyInterpolations);
-                });
+            dependenciesByName.asMap().forEach((name, dependencies) -> {
+                final Map<String, ?> dependencyInterpolations = convertToNotations(name, dependencies)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                processPropertiesMap(interpolate, dependencyInterpolations);
             });
 
             task.getInputs().properties(interpolate);
 
-            task.expand(interpolate);
+            task.filesMatching(List.of("**/*.properties", "**/*.json", "**/*.toml", "**/*.lang", "**/*.txt"), spec -> {
+                spec.expand(interpolate);
+            });
+
+            task.filesNotMatching(List.of("**/*.cfg", "**/*.accesswidener"), spec -> {
+                spec.expand(interpolate);
+            });
         });
 
         final SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
@@ -199,6 +228,24 @@ public abstract class CommonPlatformProject implements IPlatformProject {
                     result.put(rootKey, value);
                 } else if (value instanceof Provider<?> provider) {
                     result.put(rootKey, provider.map(Object::toString));
+                } else if (value instanceof Map<?,?> map) {
+                    try {
+                        final Map<String, Object> newResultMap = new HashMap<>();
+                        processPropertiesMap(newResultMap, (Map<String, ?>) map);
+                        if (newResultMap.isEmpty()) {
+                            return;
+                        }
+                        if (!result.containsKey(rootKey)) {
+                            result.put(rootKey, newResultMap);
+                        } else if (result.get(rootKey) instanceof Map) {
+                            MergeMaps((Map<String, Object>) result.get(rootKey), newResultMap);
+                        } else if (newResultMap.size() == 1 && newResultMap.containsKey("_")) {
+                            result.put(rootKey, newResultMap.get("_"));
+                        } else {
+                            throw new InvalidUserDataException("Cannot merge a map with a non-map value");
+                        }
+                    } catch (InvalidUserDataException | ClassCastException ignored) {
+                    }
                 }
             } else {
                 final Map<String, ?> newInputMap = values.stream()
@@ -209,6 +256,18 @@ public abstract class CommonPlatformProject implements IPlatformProject {
                 if (newResultMap.isEmpty()) {
                     return;
                 }
+
+                if (newResultMap.containsKey("_") && newResultMap.get("_") instanceof Map<?,?> map) {
+                    newResultMap.remove("_");
+                    if (result.containsKey(rootKey) && result.get(rootKey) instanceof Map) {
+                        MergeMaps((Map<String, Object>) result.get(rootKey), (Map<String, Object>) map);
+                    } else if (!result.containsKey(rootKey)) {
+                        result.put(rootKey, map);
+                    } else {
+                        throw new InvalidUserDataException("Cannot merge a map with a non-map value");
+                    }
+                }
+
                 if (!result.containsKey(rootKey)) {
                     result.put(rootKey, newResultMap);
                 } else if (result.get(rootKey) instanceof Map) {
@@ -249,10 +308,6 @@ public abstract class CommonPlatformProject implements IPlatformProject {
     }
 
     private static Stream<Map.Entry<String, String>> convertToNotations(String moduleName, Collection<ExternalDependency> dependencies) {
-        if (dependencies.size() == 1) {
-            return convertToNotations(adaptModuleName(moduleName), dependencies.iterator().next());
-        }
-
         return dependencies.stream()
                 .flatMap(dependency -> convertToNotations(getFullModuleName(dependency), dependency));
     }
@@ -272,7 +327,7 @@ public abstract class CommonPlatformProject implements IPlatformProject {
             }
         }
 
-        return group + StringUtils.capitalize(adaptModuleName(dependency.getName()));
+        return (group + StringUtils.capitalize(adaptModuleName(dependency.getName()))).replace("-", "_");
     }
 
     private static Stream<Map.Entry<String, String>> convertToNotations(String name, ExternalDependency dependency) {
@@ -294,6 +349,8 @@ public abstract class CommonPlatformProject implements IPlatformProject {
 
     protected abstract Map<String, ?> getInterpolatedProperties(Platform platform);
 
+    protected void registerAdditionalDependencies(Project project, Platform platform, Multimap<String, ExternalDependency> byNameDependencies) {};
+
     protected abstract Set<Configuration> getDependencyInterpolationConfigurations(Project project);
 
     protected final void disableCompiling(Project project) {
@@ -306,6 +363,7 @@ public abstract class CommonPlatformProject implements IPlatformProject {
 
         return platform.getMinecraft().getVersion().zip(platform.getMinecraft().getAdditionalVersions(), (main, additional) -> {
             final List<ComparableVersion> versions = Stream.concat(Stream.of(main), additional.stream())
+                    .filter(s -> !s.isBlank())
                     .map(ComparableVersion::new)
                     .toList();
 
@@ -438,8 +496,8 @@ public abstract class CommonPlatformProject implements IPlatformProject {
         //This format supports all available versions directly.
         return versions.stream()
                 .map(ComparableVersion::toString)
-                .map("=%s"::formatted)
-                .collect(Collectors.joining(" "));
+                .map("\"=%s\""::formatted)
+                .collect(Collectors.joining(", "));
     }
 
     /**

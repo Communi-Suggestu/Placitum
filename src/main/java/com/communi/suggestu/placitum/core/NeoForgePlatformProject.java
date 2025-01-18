@@ -1,15 +1,19 @@
 package com.communi.suggestu.placitum.core;
 
+import com.google.common.collect.Multimap;
 import net.neoforged.gradle.dsl.common.extensions.AccessTransformers;
 import net.neoforged.gradle.dsl.common.extensions.JarJar;
 import net.neoforged.gradle.dsl.common.extensions.Minecraft;
+import net.neoforged.gradle.dsl.common.extensions.sourceset.RunnableSourceSet;
 import net.neoforged.gradle.dsl.common.extensions.subsystems.Subsystems;
 import net.neoforged.gradle.dsl.common.runs.idea.extensions.IdeaRunsExtension;
 import net.neoforged.gradle.dsl.common.runs.run.RunManager;
+import net.neoforged.gradle.dsl.common.runs.run.RunSourceSets;
 import net.neoforged.gradle.userdev.UserDevPlugin;
 import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.artifacts.ExternalDependency;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.plugins.BasePlugin;
@@ -55,7 +59,9 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
         for (Project commonProject : commonProjects) {
             final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
             excludeMinecraftDependencies(commonProjectDependency);
-            project.getDependencies().add(JavaPlugin.API_CONFIGURATION_NAME, commonProjectDependency);
+
+            final Configuration apiConfiguration = project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME);
+            apiConfiguration.getDependencies().add(commonProjectDependency);
 
             jarJar.ranged(commonProjectDependency, "[%s]".formatted(commonProject.getVersion()));
             jarJar.pin(commonProjectDependency, commonProject.getVersion().toString());
@@ -87,6 +93,11 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
         project.getConfigurations().getByName("jarJar").extendsFrom(includedLibraries);
 
         final SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+        sourceSets.configureEach(sourceSet -> {
+            final RunnableSourceSet runSourceSet = sourceSet.getExtensions().getByType(RunnableSourceSet.class);
+            runSourceSet.getModIdentifier().set(project.getRootProject().getName().toLowerCase());
+        });
+
         final RunManager runs = project.getExtensions().getByType(RunManager.class);
         sourceSets.configureEach(sourceSet -> {
             final String configName = sourceSet.getTaskName(null, "ForgeLibrary");
@@ -138,11 +149,16 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
 
         runs.configureEach(run -> {
             run.modSource(sourceSets.getByName("main"));
-            run.modSources(
-                    commonProjects.stream().map(p -> p.getExtensions().getByType(SourceSetContainer.class))
-                            .map(ss -> ss.getByName("main"))
-                            .toList()
-            );
+
+            // When we are running with IDEA, we need to add the common projects to the run configuration
+            // When running with gradle or eclipse, they are automatically present.
+            if (isRunningWithIdea(project)) {
+                run.modSources(
+                        commonProjects.stream().map(p -> p.getExtensions().getByType(SourceSetContainer.class))
+                                .map(ss -> ss.getByName("main"))
+                                .toList()
+                );
+            }
         });
 
         final TaskProvider<net.neoforged.gradle.common.tasks.JarJar> jarJarTask = project.getTasks().named(JarJar.EXTENSION_NAME, net.neoforged.gradle.common.tasks.JarJar.class);
@@ -219,8 +235,21 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
     protected Set<Configuration> getDependencyInterpolationConfigurations(Project project) {
         return Set.of(
                 project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME),
-                project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME)
+                project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME),
+                project.getConfigurations().getByName("includedLibraries")
         );
+    }
+
+    @Override
+    protected void registerAdditionalDependencies(Project project, CommonPlatformProject.Platform platform, Multimap<String, ExternalDependency> byNameDependencies) {
+        super.registerAdditionalDependencies(project, platform, byNameDependencies);
+
+        if (platform instanceof Platform neoforgePlatform) {
+            final Dependency neoforgeDependency = project.getDependencies().create("net.neoforged:neoforge:%s".formatted(neoforgePlatform.getNeoForge().getVersion().get()));
+            if (neoforgeDependency instanceof ExternalDependency externalDependency) {
+                byNameDependencies.put("neoforge", externalDependency);
+            }
+        }
     }
 
     public abstract static class Platform extends CommonPlatformProject.Platform {

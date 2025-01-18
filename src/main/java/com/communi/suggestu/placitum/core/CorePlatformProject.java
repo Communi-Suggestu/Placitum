@@ -4,6 +4,7 @@ import com.communi.suggestu.placitum.platform.IPlatformProject;
 import com.communi.suggestu.placitum.util.ValueCallable;
 import net.neoforged.gradle.dsl.common.extensions.AccessTransformers;
 import net.neoforged.gradle.dsl.common.extensions.Minecraft;
+import net.neoforged.gradle.dsl.common.extensions.sourceset.RunnableSourceSet;
 import net.neoforged.gradle.dsl.common.extensions.subsystems.Subsystems;
 import net.neoforged.gradle.vanilla.VanillaPlugin;
 import org.gradle.api.Project;
@@ -13,6 +14,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.SourceSetContainer;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -60,6 +62,12 @@ public final class CorePlatformProject extends CommonPlatformProject implements 
 
         final AccessTransformers accessTransformers = project.getExtensions().getByType(Minecraft.class).getAccessTransformers();
         accessTransformers.getFiles().from(platform.getAccessTransformers());
+
+        final SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+        sourceSets.configureEach(sourceSet -> {
+            final RunnableSourceSet runSourceSet = sourceSet.getExtensions().getByType(RunnableSourceSet.class);
+            runSourceSet.getModIdentifier().set(project.getRootProject().getName().toLowerCase());
+        });
     }
 
     @Override

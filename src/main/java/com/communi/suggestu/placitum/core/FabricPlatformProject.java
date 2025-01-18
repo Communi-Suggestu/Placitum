@@ -61,7 +61,8 @@ public abstract class FabricPlatformProject extends CommonPlatformProject {
             final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
             excludeMinecraftDependencies(commonProjectDependency);
 
-            project.getDependencies().add(JavaPlugin.API_CONFIGURATION_NAME, commonProjectDependency);
+            final Configuration apiConfiguration = project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME);
+            apiConfiguration.getDependencies().add(commonProjectDependency);
 
             final String commonProjectName = commonProject.getName();
             final String commonProjectGroup = commonProject.getGroup().toString();
@@ -209,12 +210,11 @@ public abstract class FabricPlatformProject extends CommonPlatformProject {
             //We are in a special mode that requires us to redirect the process resources tasks to the idea out directory.
             //We only care for our own output for now, dependency projects will need to be handled separately.
             var copyIdeaResources = project.getTasks().register("copyIdeaResources", Copy.class, copy -> {
-                copy.from(project.getTasks().named("processResources", ProcessResources.class).map(ProcessResources::getDestinationDir), spec -> {
-                    spec.into(project.file("out/production/resources"));
-                });
+                copy.from(project.getTasks().named("processResources", ProcessResources.class).map(ProcessResources::getDestinationDir));
+                copy.into(project.file("out/production/resources"));
             });
 
-            project.getTasks().named("processResources", ProcessResources.class, processResources -> processResources.dependsOn(copyIdeaResources));
+            project.getTasks().named("processResources", ProcessResources.class, processResources -> processResources.finalizedBy(copyIdeaResources));
         }
 
         final String relativeProjectDirectory = project.getRootDir().toPath().relativize(project.getProjectDir().toPath()).toString();
