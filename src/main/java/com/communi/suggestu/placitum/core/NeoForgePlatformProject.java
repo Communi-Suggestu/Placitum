@@ -75,7 +75,9 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
             parchment.getMappingsVersion().set(platform.getParchment().getVersion());
         });
 
-        project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getNeoForge().getVersion().map("net.neoforged:neoforge:%s"::formatted));
+        project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getNeoForge().getVersion()
+                .zip(platform.getNeoForge().getGroup(),
+                        (version, group) -> project.getDependencies().create("%s:%s:%s".formatted(group, "neoforge", version))));
 
         project.getTasks().named(JarJar.EXTENSION_NAME, setArchiveClassifier(""));
         project.getTasks().named(JavaPlugin.JAR_TASK_NAME, setArchiveClassifier("slim"));
@@ -89,7 +91,7 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
             config.setTransitive(false);
             config.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME));
         });
-        project.getConfigurations().getByName("implementation").extendsFrom(includedLibraries);
+        project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME).extendsFrom(includedLibraries);
         project.getConfigurations().getByName("jarJar").extendsFrom(includedLibraries);
 
         final SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
@@ -112,12 +114,13 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
                 run.getDependencies().getRuntime().add(library);
             });
         });
-        
+
         final AccessTransformers accessTransformers = project.getExtensions().getByType(Minecraft.class).getAccessTransformers();
         accessTransformers.getFiles().from(platform.getNeoForge().getAccessTransformers());
-        
-        project.getDependencies().addProvider("implementation", platform.getNeoForge().getVersion()
-                .map("net.neoforged:neoforge:%s"::formatted)
+
+        project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getNeoForge().getVersion()
+                .zip(platform.getNeoForge().getGroup(),
+                        (version, group) -> project.getDependencies().create("%s:%s:%s".formatted(group, "neoforge", version)))
                 .map(project.getDependencies()::create)
                 .orElse(project.provider(() -> {
                     throw getProblems().getReporter().throwing(spec -> {
@@ -127,11 +130,11 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
                         spec.withException(new InvalidUserDataException("NeoForge version is not configured"));
                     });
                 })));
-        
+
         project.getTasks().named("processResources", ProcessResources.class, processResources -> {
             processResources.from(platform.getNeoForge().getAccessTransformers(), spec -> spec.into("META-INF"));
         });
-        
+
         runs.register("client");
         runs.register("server");
         runs.register("data", run -> {
@@ -221,7 +224,7 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
     protected Map<String, ?> getInterpolatedProperties(CommonPlatformProject.Platform platform) {
         if (platform instanceof Platform neoforgePlatform) {
             return Map.of("dependenciesNeoforgeNpm", neoforgePlatform.getNeoForge().getVersion()
-                    .map(version -> createSupportedVersionRange(version, true)),
+                            .map(version -> createSupportedVersionRange(version, true)),
                     "dependenciesNeoforgeMaven", neoforgePlatform.getNeoForge().getVersion()
                             .map(version -> createSupportedVersionRange(version, false))
             );
@@ -245,7 +248,7 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
         super.registerAdditionalDependencies(project, platform, byNameDependencies);
 
         if (platform instanceof Platform neoforgePlatform) {
-            final Dependency neoforgeDependency = project.getDependencies().create("net.neoforged:neoforge:%s".formatted(neoforgePlatform.getNeoForge().getVersion().get()));
+            final Dependency neoforgeDependency = project.getDependencies().create("%S:neoforge:%s".formatted(neoforgePlatform.getNeoForge().getGroup().get(), neoforgePlatform.getNeoForge().getVersion().get()));
             if (neoforgeDependency instanceof ExternalDependency externalDependency) {
                 byNameDependencies.put("neoforge", externalDependency);
             }
@@ -268,14 +271,23 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
             @Inject
             public PlatformNeoForge(Project project) {
                 getVersion().convention(project.getProviders().gradleProperty("neoforge.version").map(String::trim));
+                getGroup().convention("net.neoforged");
             }
 
             @Input
             public abstract Property<String> getVersion();
 
+            @Input
+            public abstract Property<String> getGroup();
+
             @InputFiles
             @PathSensitive(PathSensitivity.NONE)
             public abstract ConfigurableFileCollection getAccessTransformers();
+
+            public void pullRequest(final Integer prNumber, final String version) {
+                getVersion().set(version);
+                getGroup().set("pr%s.net.neoforged".formatted(prNumber));
+            }
         }
 
         public PlatformNeoForge getNeoForge() {
