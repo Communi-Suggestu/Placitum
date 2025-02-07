@@ -309,7 +309,8 @@ public abstract class CommonPlatformProject implements IPlatformProject {
 
     private static Stream<Map.Entry<String, String>> convertToNotations(String moduleName, Collection<ExternalDependency> dependencies) {
         return dependencies.stream()
-                .flatMap(dependency -> convertToNotations(getFullModuleName(dependency), dependency));
+                .flatMap(dependency -> convertToNotations(getFullModuleName(dependency), dependency))
+                .distinct();
     }
 
     private static String adaptModuleName(String name) {
