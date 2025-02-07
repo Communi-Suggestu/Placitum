@@ -159,6 +159,7 @@ public abstract class FabricPlatformProject extends CommonPlatformProject {
                 ));
 
         final LoomGradleExtensionAPI loom = project.getExtensions().getByType(LoomGradleExtensionAPI.class);
+
         project.getDependencies().addProvider("mappings",
                 platform.getParchment().getMinecraftVersion().zip(
                         platform.getParchment().getVersion(),
