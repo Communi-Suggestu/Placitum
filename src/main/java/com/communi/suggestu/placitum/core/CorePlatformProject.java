@@ -21,14 +21,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class CorePlatformProject extends CommonPlatformProject implements IPlatformProject {
+public final class CorePlatformProject extends AbstractPlatformProject implements IPlatformProject {
 
     public CorePlatformProject() {
         super();
     }
 
     @Override
-    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, CommonPlatformProject.Platform defaults) {
+    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
         super.configure(project, coreProjectPath, commonProjectPaths, defaults);
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
@@ -45,10 +45,11 @@ public final class CorePlatformProject extends CommonPlatformProject implements 
         }
 
         for (Project commonProject : commonProjects) {
-            final Provider<Dependency> coreProjectProvider = commonProject.provider(new ValueCallable<>(commonProject))
-                    .map(project.getDependencies()::create);
+            final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
+            excludeMinecraftDependencies(commonProjectDependency);
 
-            project.getDependencies().addProvider(JavaPlugin.API_CONFIGURATION_NAME, coreProjectProvider, CommonPlatformProject::excludeMinecraftDependencies);
+            final Configuration apiConfiguration = project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME);
+            apiConfiguration.getDependencies().add(commonProjectDependency);
         }
 
         project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getMinecraft().getVersion()
@@ -71,17 +72,17 @@ public final class CorePlatformProject extends CommonPlatformProject implements 
     }
 
     @Override
-    protected Platform registerPlatformExtension(Project project, CommonPlatformProject.Platform defaults) {
-        return project.getExtensions().create(CorePlatformProject.Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, CorePlatformProject.Platform.class, project, defaults);
+    protected Platform registerPlatformExtension(Project project, AbstractPlatformProject.Platform defaults) {
+        return project.getExtensions().create(CorePlatformProject.Platform.class, AbstractPlatformProject.Platform.EXTENSION_NAME, CorePlatformProject.Platform.class, project, defaults);
     }
 
     @Override
-    protected Provider<String> getLoaderVersion(CommonPlatformProject.Platform platform) {
+    protected Provider<String> getLoaderVersion(AbstractPlatformProject.Platform platform) {
         return platform.getMinecraft().getVersion();
     }
 
     @Override
-    protected Map<String, ?> getInterpolatedProperties(CommonPlatformProject.Platform platform) {
+    protected Map<String, ?> getInterpolatedProperties(AbstractPlatformProject.Platform platform) {
         return Map.of();
     }
 
@@ -90,10 +91,10 @@ public final class CorePlatformProject extends CommonPlatformProject implements 
         return Set.of();
     }
 
-    public abstract static class Platform extends CommonPlatformProject.Platform {
+    public abstract static class Platform extends AbstractPlatformProject.Platform {
 
         @Inject
-        public Platform(Project project, final CommonPlatformProject.Platform settings) {
+        public Platform(Project project, final AbstractPlatformProject.Platform settings) {
             super(project, settings);
         }
 

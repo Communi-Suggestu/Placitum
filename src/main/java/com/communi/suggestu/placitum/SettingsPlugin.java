@@ -1,6 +1,6 @@
 package com.communi.suggestu.placitum;
 
-import com.communi.suggestu.placitum.core.CommonPlatformProject;
+import com.communi.suggestu.placitum.core.AbstractPlatformProject;
 import com.communi.suggestu.placitum.platform.IPlatformProject;
 import com.communi.suggestu.placitum.platform.SettingsPlatformExtension;
 import org.gradle.api.Action;
@@ -10,7 +10,6 @@ import org.gradle.api.initialization.Settings;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class SettingsPlugin implements Plugin<Settings> {
     @Override
@@ -38,7 +37,7 @@ public class SettingsPlugin implements Plugin<Settings> {
         });
     }
 
-    private record DynamicProjectPluginAdapter(Settings settings, CommonPlatformProject.Platform defaults) implements Action<Project> {
+    private record DynamicProjectPluginAdapter(Settings settings, AbstractPlatformProject.Platform defaults) implements Action<Project> {
         @Override
         public void execute(@NotNull Project project) {
             final SettingsPlatformExtension projectManagementExtension = settings.getExtensions().getByType(SettingsPlatformExtension.class);

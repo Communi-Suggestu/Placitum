@@ -12,10 +12,8 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.file.ArchiveOperations;
-import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.internal.file.FileOperations;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -33,7 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class FabricPlatformProject extends CommonPlatformProject {
+public abstract class FabricPlatformProject extends AbstractPlatformProject {
 
     @Inject
     public FabricPlatformProject() {
@@ -45,7 +43,7 @@ public abstract class FabricPlatformProject extends CommonPlatformProject {
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
-    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, CommonPlatformProject.Platform defaults) {
+    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
         super.configure(project, coreProjectPath, commonProjectPaths, defaults);
 
         project.getPlugins().apply(LoomGradlePluginBootstrap.class);
@@ -257,12 +255,12 @@ public abstract class FabricPlatformProject extends CommonPlatformProject {
     }
 
     @Override
-    protected Platform registerPlatformExtension(Project project, CommonPlatformProject.Platform defaults) {
-        return project.getExtensions().create(Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, Platform.class, project, defaults);
+    protected Platform registerPlatformExtension(Project project, AbstractPlatformProject.Platform defaults) {
+        return project.getExtensions().create(Platform.class, AbstractPlatformProject.Platform.EXTENSION_NAME, Platform.class, project, defaults);
     }
 
     @Override
-    protected Provider<String> getLoaderVersion(CommonPlatformProject.Platform platform) {
+    protected Provider<String> getLoaderVersion(AbstractPlatformProject.Platform platform) {
         if (platform instanceof Platform fabricPlatform) {
             return fabricPlatform.getFabric().getLoaderVersion();
         } else {
@@ -271,13 +269,13 @@ public abstract class FabricPlatformProject extends CommonPlatformProject {
     }
 
     @Override
-    protected Map<String, ?> getInterpolatedProperties(CommonPlatformProject.Platform platform) {
+    protected Map<String, ?> getInterpolatedProperties(AbstractPlatformProject.Platform platform) {
         if (platform instanceof Platform fabricPlatform) {
             return Map.of(
                     "dependenciesFabricLoaderNpm", fabricPlatform.getFabric().getLoaderVersion()
-                            .map(version -> CommonPlatformProject.createSupportedVersionRange(version, true)),
+                            .map(version -> AbstractPlatformProject.createSupportedVersionRange(version, true)),
                     "dependenciesFabricApiNpm", fabricPlatform.getFabric().getApiVersion()
-                            .map(version -> CommonPlatformProject.createSupportedVersionRange(version, true))
+                            .map(version -> AbstractPlatformProject.createSupportedVersionRange(version, true))
             );
         } else {
             throw new GradleException("Platform is not an instance of PlatformFabric");
@@ -293,12 +291,12 @@ public abstract class FabricPlatformProject extends CommonPlatformProject {
         );
     }
 
-    public abstract static class Platform extends CommonPlatformProject.Platform {
+    public abstract static class Platform extends AbstractPlatformProject.Platform {
 
         private final PlatformFabric fabric;
 
         @Inject
-        public Platform(Project project, CommonPlatformProject.Platform settings) {
+        public Platform(Project project, AbstractPlatformProject.Platform settings) {
             super(project, settings);
 
             this.fabric = project.getExtensions().create("fabric", PlatformFabric.class);

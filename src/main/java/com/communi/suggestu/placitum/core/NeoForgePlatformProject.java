@@ -8,7 +8,6 @@ import net.neoforged.gradle.dsl.common.extensions.sourceset.RunnableSourceSet;
 import net.neoforged.gradle.dsl.common.extensions.subsystems.Subsystems;
 import net.neoforged.gradle.dsl.common.runs.idea.extensions.IdeaRunsExtension;
 import net.neoforged.gradle.dsl.common.runs.run.RunManager;
-import net.neoforged.gradle.dsl.common.runs.run.RunSourceSets;
 import net.neoforged.gradle.userdev.UserDevPlugin;
 import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
@@ -36,11 +35,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class NeoForgePlatformProject extends CommonPlatformProject {
+public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
-    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, CommonPlatformProject.Platform defaults) {
+    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
         super.configure(project, coreProjectPath, commonProjectPaths, defaults);
 
         project.getPlugins().apply(UserDevPlugin.class);
@@ -207,12 +206,12 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
     protected abstract Problems getProblems();
 
     @Override
-    protected Platform registerPlatformExtension(Project project, CommonPlatformProject.Platform defaults) {
-        return project.getExtensions().create(Platform.class, CommonPlatformProject.Platform.EXTENSION_NAME, Platform.class, project, defaults);
+    protected Platform registerPlatformExtension(Project project, AbstractPlatformProject.Platform defaults) {
+        return project.getExtensions().create(Platform.class, AbstractPlatformProject.Platform.EXTENSION_NAME, Platform.class, project, defaults);
     }
 
     @Override
-    protected Provider<String> getLoaderVersion(CommonPlatformProject.Platform platform) {
+    protected Provider<String> getLoaderVersion(AbstractPlatformProject.Platform platform) {
         if (platform instanceof Platform neoforgePlatform) {
             return neoforgePlatform.getNeoForge().getVersion();
         }
@@ -221,7 +220,7 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
     }
 
     @Override
-    protected Map<String, ?> getInterpolatedProperties(CommonPlatformProject.Platform platform) {
+    protected Map<String, ?> getInterpolatedProperties(AbstractPlatformProject.Platform platform) {
         if (platform instanceof Platform neoforgePlatform) {
             return Map.of("dependenciesNeoforgeNpm", neoforgePlatform.getNeoForge().getVersion()
                             .map(version -> createSupportedVersionRange(version, true)),
@@ -244,7 +243,7 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
     }
 
     @Override
-    protected void registerAdditionalDependencies(Project project, CommonPlatformProject.Platform platform, Multimap<String, ExternalDependency> byNameDependencies) {
+    protected void registerAdditionalDependencies(Project project, AbstractPlatformProject.Platform platform, Multimap<String, ExternalDependency> byNameDependencies) {
         super.registerAdditionalDependencies(project, platform, byNameDependencies);
 
         if (platform instanceof Platform neoforgePlatform) {
@@ -255,12 +254,12 @@ public abstract class NeoForgePlatformProject extends CommonPlatformProject {
         }
     }
 
-    public abstract static class Platform extends CommonPlatformProject.Platform {
+    public abstract static class Platform extends AbstractPlatformProject.Platform {
 
         private final PlatformNeoForge neoForge;
 
         @Inject
-        public Platform(Project project, CommonPlatformProject.Platform settings) {
+        public Platform(Project project, AbstractPlatformProject.Platform settings) {
             super(project, settings);
 
             this.neoForge = project.getExtensions().create("neoforge", PlatformNeoForge.class);

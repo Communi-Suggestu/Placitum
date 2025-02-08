@@ -1,5 +1,6 @@
 package com.communi.suggestu.placitum.platform;
 
+import com.communi.suggestu.placitum.core.AbstractPlatformProject;
 import com.communi.suggestu.placitum.core.CommonPlatformProject;
 import com.communi.suggestu.placitum.core.CorePlatformProject;
 import com.communi.suggestu.placitum.core.FabricPlatformProject;
@@ -25,7 +26,7 @@ public abstract class SettingsPlatformExtension {
     private final Settings settings;
     private final Map<String, ProjectDescriptor> knownDynamicDescriptors = new HashMap<>();
 
-    private final CommonPlatformProject.Platform defaults;
+    private final AbstractPlatformProject.Platform defaults;
 
     @Inject
     public SettingsPlatformExtension(Settings settings) {
@@ -37,7 +38,7 @@ public abstract class SettingsPlatformExtension {
     public abstract ObjectFactory getObjectFactory();
 
     public void common(final String path) {
-        registerProject(path, ProjectDescriptor.common(p -> p.getObjects().newInstance(NeoForgePlatformProject.class)));
+        registerProject(path, ProjectDescriptor.common(p -> new CommonPlatformProject()));
     }
 
     public void core(final String path) {
@@ -56,11 +57,11 @@ public abstract class SettingsPlatformExtension {
         registerProject(path, ProjectDescriptor.loaderSpecific(p -> p.getObjects().newInstance(NeoForgePlatformProject.class)));
     }
 
-    public CommonPlatformProject.Platform getDefaults() {
+    public AbstractPlatformProject.Platform getDefaults() {
         return defaults;
     }
 
-    public void defaults(Action<CommonPlatformProject.Platform> action) {
+    public void defaults(Action<AbstractPlatformProject.Platform> action) {
         action.execute(defaults);
     }
 
@@ -109,7 +110,7 @@ public abstract class SettingsPlatformExtension {
         }
     }
 
-    public abstract static class Platform extends CommonPlatformProject.Platform {
+    public abstract static class Platform extends AbstractPlatformProject.Platform {
 
         @Inject
         public Platform(ObjectFactory objects, ProviderFactory providers) {

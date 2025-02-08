@@ -1,6 +1,6 @@
 package com.communi.suggestu.placitum.platform;
 
-import com.communi.suggestu.placitum.core.CommonPlatformProject;
+import com.communi.suggestu.placitum.core.AbstractPlatformProject;
 import org.gradle.api.Project;
 
 import java.util.Set;
@@ -17,5 +17,5 @@ public interface IPlatformProject {
      * @param commonProjects  The set of core projects.
      * @param defaults
      */
-    void configure(Project project, String coreCodeProject, Set<String> commonProjects, CommonPlatformProject.Platform defaults);
+    void configure(Project project, String coreCodeProject, Set<String> commonProjects, AbstractPlatformProject.Platform defaults);
 }
