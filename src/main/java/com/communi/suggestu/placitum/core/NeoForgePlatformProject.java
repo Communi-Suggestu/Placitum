@@ -29,6 +29,7 @@ import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.gradle.plugins.ide.idea.model.IdeaProject;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -137,16 +138,17 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         runs.register("client");
         runs.register("server");
         runs.register("data", run -> {
-            run.getArguments().addAll(List.of(
+            final List<String> modOutputArguments = new ArrayList<>(List.of(
                     "--mod", "${project.modId.toLowerCase()}",
                     "--output", coreProject.file("src/datagen/generated").getAbsolutePath()
             ));
-            run.getArguments().addAll(
-                    commonProjects.stream()
-                            .map(p -> p.file("src/main/resources").getAbsolutePath())
-                            .flatMap(f -> Stream.of("--existing", f))
-                            .toList()
-            );
+            modOutputArguments.addAll(commonProjects.stream()
+                    .map(p -> p.file("src/main/resources").getAbsolutePath())
+                    .flatMap(f -> Stream.of("--existing", f))
+                    .toList());
+
+
+            run.getArguments().addAll(modOutputArguments);
         });
 
         runs.configureEach(run -> {

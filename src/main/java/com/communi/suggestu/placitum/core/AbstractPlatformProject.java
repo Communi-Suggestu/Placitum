@@ -5,6 +5,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.codehaus.groovy.tools.StringHelper;
 import org.gradle.api.Action;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
@@ -165,11 +166,8 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
 
             task.getInputs().properties(interpolate);
 
-            task.filesMatching(List.of("**/*.properties", "**/*.json", "**/*.toml", "**/*.lang", "**/*.txt"), spec -> {
-                spec.expand(interpolate);
-            });
-
-            task.filesNotMatching(List.of("**/*.cfg", "**/*.accesswidener"), spec -> {
+            final List<String> notMatchingFiles = new ArrayList<>(List.of("**/*.cfg", "**/*.accesswidener"));
+            task.filesNotMatching(notMatchingFiles, spec -> {
                 spec.expand(interpolate);
             });
         });
@@ -351,11 +349,6 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
     protected void registerAdditionalDependencies(Project project, Platform platform, Multimap<String, ExternalDependency> byNameDependencies) {};
 
     protected abstract Set<Configuration> getDependencyInterpolationConfigurations(Project project);
-
-    protected final void disableCompiling(Project project) {
-        var disabledTasks = List.of("build", "jar", "assemble", "compileJava", "compileTestJava", "test", "check");
-        disabledTasks.forEach(taskName -> project.getTasks().named(taskName, task -> task.setEnabled(false)));
-    }
 
     protected final Provider<String> getSupportedMinecraftVersionRange(Project project, boolean npmCompatible) {
         final Platform platform = project.getExtensions().getByType(Platform.class);
