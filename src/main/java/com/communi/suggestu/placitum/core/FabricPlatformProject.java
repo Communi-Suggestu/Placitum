@@ -1,7 +1,7 @@
 package com.communi.suggestu.placitum.core;
 
+import net.fabricmc.loom.LoomGradlePlugin;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
-import net.fabricmc.loom.bootstrap.LoomGradlePluginBootstrap;
 import net.fabricmc.loom.task.RemapJarTask;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -46,7 +46,7 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
     public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
         super.configure(project, coreProjectPath, commonProjectPaths, defaults);
 
-        project.getPlugins().apply(LoomGradlePluginBootstrap.class);
+        project.getPlugins().apply(LoomGradlePlugin.class);
 
         commonProjectPaths.add(coreProjectPath);
         final Set<Project> commonProjects = commonProjectPaths.stream()
