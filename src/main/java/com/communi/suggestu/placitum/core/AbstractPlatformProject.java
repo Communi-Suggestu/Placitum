@@ -172,6 +172,10 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             notMatchingFiles.add("**/*.jar");
             notMatchingFiles.add("**/*.png");
             notMatchingFiles.add("**/*.jpg");
+            notMatchingFiles.add("**/*.gif");
+            notMatchingFiles.add("**/*.ico");
+            notMatchingFiles.add("**/*.svg");
+            notMatchingFiles.add("**/lang/**");
             task.filesNotMatching(notMatchingFiles, spec -> {
                 spec.expand(interpolate);
             });
