@@ -166,7 +166,12 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
 
             task.getInputs().properties(interpolate);
 
-            final List<String> notMatchingFiles = new ArrayList<>(List.of("**/*.cfg", "**/*.accesswidener"));
+            final List<String> notMatchingFiles = new ArrayList<>();
+            notMatchingFiles.add("**/*.cfg");
+            notMatchingFiles.add("**/*.accesswidener");
+            notMatchingFiles.add("**/*.jar");
+            notMatchingFiles.add("**/*.png");
+            notMatchingFiles.add("**/*.jpg");
             task.filesNotMatching(notMatchingFiles, spec -> {
                 spec.expand(interpolate);
             });
