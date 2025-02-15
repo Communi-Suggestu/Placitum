@@ -595,7 +595,12 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             }
 
             private static @NotNull Provider<List<String>> getDefaultAdditionalVersions(ProviderFactory providers) {
-                return providers.gradleProperty("minecraft.additionalVersions").map(String::trim).map(s -> List.of(s.split(","))).orElse(List.of());
+                return providers.gradleProperty("minecraft.additionalVersions").map(String::trim).map(s -> {
+                    final String[]  split = s.split(",");
+                    final List<String> result = new ArrayList<>();
+                    Collections.addAll(result, split);
+                    return result;
+                }).orElse(new ArrayList<>());
             }
 
             private static @NotNull Provider<String> getDefaultVersion(ProviderFactory providers) {
