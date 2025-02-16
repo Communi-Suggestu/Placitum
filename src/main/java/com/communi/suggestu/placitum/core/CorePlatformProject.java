@@ -72,7 +72,7 @@ public final class CorePlatformProject extends AbstractPlatformProject implement
         });
 
         final SourceSet main = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-        main.getResources().srcDir(project.file("src/datagen/generated").getAbsolutePath());
+        main.getResources().srcDir(project.file("src/main/generated").getAbsolutePath());
     }
 
     @Override

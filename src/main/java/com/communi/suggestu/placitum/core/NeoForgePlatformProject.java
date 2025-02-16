@@ -140,7 +140,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         runs.register("data", run -> {
             final List<String> modOutputArguments = new ArrayList<>(List.of(
                     "--mod", "${project.modId.toLowerCase()}",
-                    "--output", coreProject.file("src/datagen/generated").getAbsolutePath()
+                    "--output", coreProject.file("src/main/generated").getAbsolutePath()
             ));
             modOutputArguments.addAll(commonProjects.stream()
                     .map(p -> p.file("src/main/resources").getAbsolutePath())
