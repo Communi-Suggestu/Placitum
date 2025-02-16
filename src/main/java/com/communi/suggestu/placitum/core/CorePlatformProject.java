@@ -14,6 +14,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 
 import javax.inject.Inject;
@@ -69,6 +70,9 @@ public final class CorePlatformProject extends AbstractPlatformProject implement
             final RunnableSourceSet runSourceSet = sourceSet.getExtensions().getByType(RunnableSourceSet.class);
             runSourceSet.getModIdentifier().set(project.getRootProject().getName().toLowerCase());
         });
+
+        final SourceSet main = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+        main.getResources().srcDir(project.file("src/datagen/generated").getAbsolutePath());
     }
 
     @Override
