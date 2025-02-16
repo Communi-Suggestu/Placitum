@@ -115,7 +115,9 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             final Map<String, Object> interpolate = new HashMap<>(Map.of(
                     "version", project.getVersion().toString(),
                     "name", project.getRootProject().getName(),
-                    "package", "%s.%s".formatted(project.getRootProject().getGroup(), project.getName().toLowerCase(Locale.ROOT)),
+                    "project", new HashMap<>(Map.of(
+                            "package", "%s.%s".formatted(project.getRootProject().getGroup(), project.getName().toLowerCase(Locale.ROOT))
+                    )),
                     "minecraft", new HashMap<>(Map.of(
                             "version", platform.getMinecraft().getVersion(),
                             "range", new HashMap<>(Map.of(
