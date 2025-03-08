@@ -14,6 +14,7 @@ import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.problems.ProblemGroup;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -39,6 +40,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractPlatformProject implements IPlatformProject {
+
+    @SuppressWarnings("UnstableApiUsage")
+    protected static ProblemGroup PLACITUM_GROUP = ProblemGroup.create("placitum", "Placitum");
 
     public AbstractPlatformProject() {
     }

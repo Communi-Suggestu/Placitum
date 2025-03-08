@@ -18,6 +18,8 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.problems.ProblemGroup;
+import org.gradle.api.problems.ProblemId;
 import org.gradle.api.problems.Problems;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -37,6 +39,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
+
+    @SuppressWarnings("UnstableApiUsage")
+    protected static ProblemGroup NEOFORGE_GROUP = ProblemGroup.create("placitum-neoforge", "Neoforge", PLACITUM_GROUP);
+    protected static ProblemId MISSING_NEOFORGE_ID = ProblemId.create("placitum-neoforge-missing-neoforge", "Missing neoforge version", NEOFORGE_GROUP);
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
@@ -123,12 +129,12 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
                         (version, group) -> project.getDependencies().create("%s:%s:%s".formatted(group, "neoforge", version)))
                 .map(project.getDependencies()::create)
                 .orElse(project.provider(() -> {
-                    throw getProblems().getReporter().throwing(spec -> {
-                        spec.id("placitum-missing-neoforge-version", "NeoForge version is not configured");
-                        spec.details("NeoForge version is not configured");
-                        spec.solution("Set the NeoForge version in the platform configuration: platform.neoforge.version");
-                        spec.withException(new InvalidUserDataException("NeoForge version is not configured"));
-                    });
+                    throw getProblems().getReporter().throwing(new InvalidUserDataException("NeoForge version is not configured"),
+                            MISSING_NEOFORGE_ID,
+                            spec -> {
+                                spec.details("NeoForge version is not configured");
+                                spec.solution("Set the NeoForge version in the platform configuration: platform.neoforge.version");
+                            });
                 })));
 
         project.getTasks().named("processResources", ProcessResources.class, processResources -> {
