@@ -246,7 +246,8 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         return Set.of(
                 project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME),
                 project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME),
-                project.getConfigurations().getByName("includedLibraries")
+                project.getConfigurations().getByName("includedLibraries"),
+                project.getConfigurations().getByName(JavaPlugin.RUNTIME_ONLY_CONFIGURATION_NAME)
         );
     }
 
