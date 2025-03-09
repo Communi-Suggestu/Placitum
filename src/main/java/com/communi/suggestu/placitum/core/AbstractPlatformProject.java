@@ -572,7 +572,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             }
 
             private static @NotNull Provider<String> getDefaultProjectModId(ProviderFactory providers) {
-                return providers.gradleProperty("project.mod.id").map(String::trim);
+                return providers.gradleProperty("modId").map(String::trim);
             }
 
             private static @NotNull Provider<ProjectType> getDefaultProjectType(ProviderFactory providers) {
