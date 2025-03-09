@@ -564,13 +564,18 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             public PlatformProject(final ObjectFactory objects, final ProviderFactory providers) {
                 getType().convention(getDefaultProjectType(providers));
                 getOwner().convention(getDefaultProjectOwner(providers));
+                getModId().convention(getDefaultProjectModId(providers));
             }
 
             private static @NotNull Provider<String> getDefaultProjectOwner(ProviderFactory providers) {
                 return providers.gradleProperty("project.owner").map(String::trim);
             }
 
-            private @NotNull Provider<ProjectType> getDefaultProjectType(ProviderFactory providers) {
+            private static @NotNull Provider<String> getDefaultProjectModId(ProviderFactory providers) {
+                return providers.gradleProperty("project.mod.id").map(String::trim);
+            }
+
+            private static @NotNull Provider<ProjectType> getDefaultProjectType(ProviderFactory providers) {
                 return providers.gradleProperty("project.type").map(String::trim).map(ProjectType::valueOf).orElse(ProjectType.MOD);
             }
 
@@ -584,12 +589,18 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             @Input
             abstract Property<String> getOwner();
 
+            @Input
+            abstract Property<String> getModId();
+
             private void from(ObjectFactory objects, ProviderFactory providers, PlatformProject project) {
                 this.getOwner().set(
                         project.getOwner().orElse(getDefaultProjectOwner(providers))
                 );
                 this.getType().set(
                         project.getType().orElse(getDefaultProjectType(providers))
+                );
+                this.getModId().set(
+                        project.getModId().orElse(getDefaultProjectModId(providers))
                 );
             }
         }
