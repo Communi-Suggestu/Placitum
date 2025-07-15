@@ -1,5 +1,6 @@
 package com.communi.suggestu.placitum.core;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import net.neoforged.gradle.dsl.common.extensions.AccessTransformers;
 import net.neoforged.gradle.dsl.common.extensions.JarJar;
@@ -21,6 +22,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.problems.ProblemGroup;
 import org.gradle.api.problems.ProblemId;
 import org.gradle.api.problems.Problems;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.*;
@@ -31,10 +33,7 @@ import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.gradle.plugins.ide.idea.model.IdeaProject;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -143,21 +142,24 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
 
         runs.register("client");
         runs.register("server");
-        runs.register("data", run -> {
-            final List<String> modOutputArguments = new ArrayList<>(List.of(
+
+        for (final String dataRun : platform.getNeoForge().getDataRuns().get())
+        {
+            runs.register(dataRun, run -> {
+                final List<String> modOutputArguments = new ArrayList<>(List.of(
                     "--output", coreProject.file("src/main/generated").getAbsolutePath()
-            ));
-            modOutputArguments.addAll(commonProjects.stream()
+                ));
+                modOutputArguments.addAll(commonProjects.stream()
                     .map(p -> p.file("src/main/resources").getAbsolutePath())
                     .flatMap(f -> Stream.of("--existing", f))
                     .toList());
 
-
-            run.getArguments().addAll(modOutputArguments);
-            run.getArguments().addAll(
+                run.getArguments().addAll(modOutputArguments);
+                run.getArguments().addAll(
                     platform.getProject().getModId().map(modId -> new ArrayList<>(List.of("--mod", modId)))
-            );
-        });
+                );
+            });
+        }
 
         runs.configureEach(run -> {
             run.modSource(sourceSets.getByName("main"));
@@ -282,6 +284,9 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
             public PlatformNeoForge(Project project) {
                 getVersion().convention(project.getProviders().gradleProperty("neoforge.version").map(String::trim));
                 getGroup().convention("net.neoforged");
+                getDataRuns().convention(project.getProviders().gradleProperty("neoforge.data.runs").map(String::trim).map(s -> Arrays.stream(s.split(",")).collect(Collectors.toList())).orElse(
+                    Lists.newArrayList("data")
+                ));
             }
 
             @Input
@@ -289,6 +294,9 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
 
             @Input
             public abstract Property<String> getGroup();
+
+            @Input
+            public abstract ListProperty<String> getDataRuns();
 
             @InputFiles
             @PathSensitive(PathSensitivity.NONE)
