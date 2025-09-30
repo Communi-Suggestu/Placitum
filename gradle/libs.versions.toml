@@ -1,6 +1,6 @@
 [versions]
-neogradle = "7.0.189"
-loom = "1.10.4"
+neogradle = "7.0.192"
+loom = "1.11.7"
 maven-artifact = "3.8.1"
 
 [libraries]
