@@ -66,14 +66,18 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
         ));
     }
 
-    protected String createVersionRange(String version) {
+    protected String createVersionRange(String version, Project project) {
         final int[] parts = Arrays.stream(version.split("\\.")).mapToInt(Integer::parseInt)
             .toArray();
 
         if (parts.length == 3)
-            parts[2] += 1;
+            parts[2] = parts[2] + 1;
 
-        return "[" + version + ", " + String.join(".", Arrays.stream(parts).mapToObj(String::valueOf).toArray(String[]::new)) + ")";
+        final var result =  "[" + version + ", " + String.join(".", Arrays.stream(parts).mapToObj(String::valueOf).toArray(String[]::new)) + ")";
+
+        project.getLogger().error("Splitting for version: {} resulted in: {}", version, result);
+
+        return result;
     }
 
     @Override
