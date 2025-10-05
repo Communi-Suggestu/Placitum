@@ -1,12 +1,11 @@
 package com.communi.suggestu.placitum.core;
 
 import com.communi.suggestu.placitum.platform.IPlatformProject;
-import com.communi.suggestu.placitum.util.ValueCallable;
 import net.neoforged.gradle.dsl.common.extensions.AccessTransformers;
 import net.neoforged.gradle.dsl.common.extensions.Minecraft;
 import net.neoforged.gradle.dsl.common.extensions.sourceset.RunnableSourceSet;
 import net.neoforged.gradle.dsl.common.extensions.subsystems.Subsystems;
-import net.neoforged.gradle.vanilla.VanillaPlugin;
+import net.neoforged.gradle.neoform.NeoFormPlugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
@@ -33,7 +32,7 @@ public final class CommonPlatformProject extends AbstractPlatformProject impleme
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
 
-        project.getPlugins().apply(VanillaPlugin.class);
+        project.getPlugins().apply(NeoFormPlugin.class);
 
         final Set<Project> commonProjects =
                 commonProjectPaths.stream()
