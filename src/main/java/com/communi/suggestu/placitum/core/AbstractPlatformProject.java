@@ -66,6 +66,16 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
         ));
     }
 
+    protected String createVersionRange(String version) {
+        final int[] parts = Arrays.stream(version.split("\\.")).mapToInt(Integer::parseInt)
+            .toArray();
+
+        if (parts.length == 3)
+            parts[2] += 1;
+
+        return "[" + version + ", " + String.join(".", Arrays.stream(parts).mapToObj(String::valueOf).toArray(String[]::new)) + ")";
+    }
+
     @Override
     public void configure(Project project, String coreCodeProject, Set<String> commonProjects, Platform defaults) {
         project.setGroup(project.getRootProject().getGroup());

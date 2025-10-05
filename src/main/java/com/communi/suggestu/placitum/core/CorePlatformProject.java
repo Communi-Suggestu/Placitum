@@ -52,7 +52,9 @@ public final class CorePlatformProject extends AbstractPlatformProject implement
             apiConfiguration.getDependencies().add(commonProjectDependency);
         }
 
-        project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getMinecraft().getVersion()
+        var neoformVersionRange = platform.getMinecraft().getVersion().map(this::createVersionRange);
+
+        project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, neoformVersionRange
                         .map("net.minecraft:neoform_client:%s"::formatted));
 
         final Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);

@@ -51,6 +51,11 @@ public final class CommonPlatformProject extends AbstractPlatformProject impleme
             apiConfiguration.getDependencies().add(commonProjectDependency);
         }
 
+        var neoformVersionRange = platform.getMinecraft().getVersion().map(this::createVersionRange);
+
+        project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, neoformVersionRange
+            .map("net.minecraft:neoform_client:%s"::formatted));
+
         project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getMinecraft().getVersion()
                         .map("net.minecraft:neoform_client:%s"::formatted));
 
