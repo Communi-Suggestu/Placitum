@@ -5,7 +5,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
-import org.codehaus.groovy.tools.StringHelper;
 import org.gradle.api.Action;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
@@ -66,18 +65,14 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
         ));
     }
 
-    protected String createVersionRange(String version, Project project) {
+    protected String createVersionRange(String version) {
         final int[] parts = Arrays.stream(version.split("\\.")).mapToInt(Integer::parseInt)
             .toArray();
 
         if (parts.length == 3)
             parts[2] = parts[2] + 1;
 
-        final var result =  "[" + version + ", " + String.join(".", Arrays.stream(parts).mapToObj(String::valueOf).toArray(String[]::new)) + ")";
-
-        project.getLogger().error("Splitting for version: {} resulted in: {}", version, result);
-
-        return result;
+        return "[" + version + ", " + String.join(".", Arrays.stream(parts).mapToObj(String::valueOf).toArray(String[]::new)) + ")";
     }
 
     @Override
