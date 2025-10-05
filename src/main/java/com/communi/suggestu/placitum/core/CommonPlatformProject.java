@@ -53,7 +53,7 @@ public final class CommonPlatformProject extends AbstractPlatformProject impleme
         }
 
         project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getMinecraft().getVersion()
-                        .map("net.minecraft:client:%s"::formatted));
+                        .map("net.minecraft:neoform_client:%s"::formatted));
 
         final Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);
         subsystems.parchment(parchment -> {
