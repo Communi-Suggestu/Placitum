@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Actually register the neoform ng module.">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Fix an issue where we did not register the range.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +42,12 @@
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="build" type="c8890929:TasksNode$1" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="placitum" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="publishing" type="c8890929:TasksNode$1" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -76,6 +80,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.Placitum [assemble].executor": "Run",
+    "Gradle.Placitum [publishToMavenLocal].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -93,7 +98,7 @@
       <recent name="com.communi.suggestu.placitum.core.AbstractPlatformProject" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Gradle.Placitum [publishToMavenLocal]">
     <configuration name="Placitum [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -116,8 +121,31 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="Placitum [publishToMavenLocal]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="publishToMavenLocal" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.Placitum [publishToMavenLocal]" />
         <item itemvalue="Gradle.Placitum [assemble]" />
       </list>
     </recent_temporary>
@@ -142,7 +170,7 @@
       <workItem from="1753024031273" duration="739000" />
       <workItem from="1759258276765" duration="1867000" />
       <workItem from="1759498112430" duration="1333000" />
-      <workItem from="1759688471654" duration="1405000" />
+      <workItem from="1759688471654" duration="4763000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -176,7 +204,31 @@
       <option name="project" value="LOCAL" />
       <updated>1759689089939</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Use a version range for neoform to be able to resolve it directly from the mc version.">
+      <option name="closed" value="true" />
+      <created>1759689909764</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1759689909764</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Use a version range for neoform to be able to resolve it directly from the mc version.">
+      <option name="closed" value="true" />
+      <created>1759690584344</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1759690584344</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Fix an issue where we did not register the range.">
+      <option name="closed" value="true" />
+      <created>1759691680582</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1759691680582</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -187,6 +239,8 @@
     <MESSAGE value="Update Gradle and library versions" />
     <MESSAGE value="Use NeoForm modules for core and common instead of Vanilla." />
     <MESSAGE value="Actually register the neoform ng module." />
-    <option name="LAST_COMMIT_MESSAGE" value="Actually register the neoform ng module." />
+    <MESSAGE value="Use a version range for neoform to be able to resolve it directly from the mc version." />
+    <MESSAGE value="Fix an issue where we did not register the range." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix an issue where we did not register the range." />
   </component>
 </project>
