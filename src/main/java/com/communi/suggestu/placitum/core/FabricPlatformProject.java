@@ -20,6 +20,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.*;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.language.jvm.tasks.ProcessResources;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -67,7 +68,7 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
             final String rootProjectName = commonProject.getRootProject().getName();
             final String commonProjectVersion = commonProject.getVersion().toString();
 
-            Provider<File> metadataGenerationFile = project.getLayout().getBuildDirectory()
+            Provider<@NotNull File> metadataGenerationFile = project.getLayout().getBuildDirectory()
                     .dir("generated/fabric/metadata/placitum/projects/core/%s".formatted(commonProjectName))
                     .map(dir -> dir.file("fabric.mod.json"))
                     .map(file -> {
@@ -100,16 +101,16 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
                         return targetFile;
                     });
 
-            final TaskProvider<Jar> jarTask = commonProject.getTasks().named("jar", Jar.class);
+            final TaskProvider<@NotNull Jar> jarTask = commonProject.getTasks().named("jar", Jar.class);
 
-            final Provider<FileTree> compiledJarTree = jarTask.flatMap(Jar::getArchiveFile).map(getArchiveOperations()::zipTree);
-            final TaskProvider<Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
+            final Provider<@NotNull FileTree> compiledJarTree = jarTask.flatMap(Jar::getArchiveFile).map(getArchiveOperations()::zipTree);
+            final TaskProvider<@NotNull Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
                 task.from(compiledJarTree);
                 task.from(metadataGenerationFile);
                 task.getArchiveClassifier().set("%s-bundled".formatted(commonProjectName));
             });
 
-            final TaskProvider<RemapJarTask> remapBundledTask = project.getTasks().register("remapBundled%s".formatted(commonProject.getName()), RemapJarTask.class, task -> {
+            final TaskProvider<@NotNull RemapJarTask> remapBundledTask = project.getTasks().register("remapBundled%s".formatted(commonProject.getName()), RemapJarTask.class, task -> {
                 task.dependsOn(bundleFmjTask);
                 task.getInputFile().set(bundleFmjTask.flatMap(Jar::getArchiveFile));
                 task.getArchiveClassifier().set("%s-remapped".formatted(commonProjectName));
@@ -122,9 +123,14 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
 
             final Configuration outgoingRemappedElements = project.getConfigurations().maybeCreate("remappedRuntimeElements");
             outgoingRemappedElements.setCanBeResolved(false);
-            outgoingRemappedElements.extendsFrom(commonProject.getConfigurations().maybeCreate("runtimeElements"));
+            outgoingRemappedElements.getDependencies().add(
+                project.getDependencies().project(Map.of(
+                    "path", commonProject.getPath(),
+                    "configuration", "runtimeElements"
+                ))
+            );
 
-            final Attribute<Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
+            final Attribute<@NotNull Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
             outgoingRemappedElements.getAttributes().attribute(remappedAttribute, true);
 
             commonProject.getComponents().named("java", AdhocComponentWithVariants.class, component -> {
@@ -141,7 +147,7 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
             });
         }
 
-        final Attribute<Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
+        final Attribute<@NotNull Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
         project.getConfigurations().matching(config -> config.getName().startsWith("mod")).configureEach(config -> {
             config.getAttributes().attribute(remappedAttribute, true);
         });
@@ -217,7 +223,7 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
         }
 
         final String relativeProjectDirectory = project.getRootDir().toPath().relativize(project.getProjectDir().toPath()).toString();
-        final TaskProvider<Task> ideaSyncRegistrar = project.getTasks().register("ideaSyncRunModifier", task -> {
+        final TaskProvider<@NotNull Task> ideaSyncRegistrar = project.getTasks().register("ideaSyncRunModifier", task -> {
             task.doLast(t -> {
                 final File runConfigurationsDir = new File(project.getRootDir(), ".idea/runConfigurations");
                 for (File file : Objects.requireNonNull(runConfigurationsDir.listFiles())) {
@@ -260,7 +266,7 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
     }
 
     @Override
-    protected Provider<String> getLoaderVersion(AbstractPlatformProject.Platform platform) {
+    protected Provider<@NotNull String> getLoaderVersion(AbstractPlatformProject.Platform platform) {
         if (platform instanceof Platform fabricPlatform) {
             return fabricPlatform.getFabric().getLoaderVersion();
         } else {
@@ -312,10 +318,10 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
             }
 
             @Input
-            public abstract Property<String> getLoaderVersion();
+            public abstract Property<@NotNull String> getLoaderVersion();
 
             @Input
-            public abstract Property<String> getApiVersion();
+            public abstract Property<@NotNull String> getApiVersion();
 
             @InputFile
             @PathSensitive(PathSensitivity.NONE)

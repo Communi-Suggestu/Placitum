@@ -68,3 +68,9 @@ gradlePlugin {
         }
     }
 }
+
+tasks.register('info', it -> {
+    it.doLast {
+        project.getLogger().lifecycle("Version: $project.version")
+    }
+})

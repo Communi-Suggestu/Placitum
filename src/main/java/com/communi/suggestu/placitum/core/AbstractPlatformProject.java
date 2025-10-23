@@ -206,6 +206,9 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
                             .map(project.getDependencies()::create)
             );
         });
+
+        //Expose runtimeElements as a variant:
+
     }
 
     record PropertyMapEntry(String key, Object value) {

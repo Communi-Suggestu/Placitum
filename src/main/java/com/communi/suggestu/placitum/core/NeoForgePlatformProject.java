@@ -31,19 +31,21 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.gradle.plugins.ide.idea.model.IdeaProject;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@SuppressWarnings("UnstableApiUsage")
 public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
 
     @SuppressWarnings("UnstableApiUsage")
     protected static ProblemGroup NEOFORGE_GROUP = ProblemGroup.create("placitum-neoforge", "Neoforge", PLACITUM_GROUP);
     protected static ProblemId MISSING_NEOFORGE_ID = ProblemId.create("placitum-neoforge-missing-neoforge", "Missing neoforge version", NEOFORGE_GROUP);
 
-    @SuppressWarnings("UnstableApiUsage")
+    @SuppressWarnings({"UnstableApiUsage", "deprecation"})
     @Override
     public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
         super.configure(project, coreProjectPath, commonProjectPaths, defaults);
@@ -175,12 +177,12 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
             }
         });
 
-        final TaskProvider<net.neoforged.gradle.common.tasks.JarJar> jarJarTask = project.getTasks().named(JarJar.EXTENSION_NAME, net.neoforged.gradle.common.tasks.JarJar.class);
+        final TaskProvider<net.neoforged.gradle.common.tasks.@NotNull JarJar> jarJarTask = project.getTasks().named(JarJar.EXTENSION_NAME, net.neoforged.gradle.common.tasks.JarJar.class);
         jarJarTask.configure(task -> {
             task.getArchiveClassifier().set("");
         });
 
-        final TaskProvider<Jar> jarTask = project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class);
+        final TaskProvider<@NotNull Jar> jarTask = project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class);
         jarTask.configure(task -> {
             task.getArchiveClassifier().set("slim");
         });
@@ -198,7 +200,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         }
     }
 
-    private Action<Task> setArchiveClassifier(String classifier) {
+    private Action<@NotNull Task> setArchiveClassifier(String classifier) {
         return task -> {
             if (task instanceof AbstractArchiveTask archiveTask) {
                 archiveTask.getArchiveClassifier().set(classifier);
@@ -206,7 +208,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         };
     }
 
-    private Action<Task> addDependsOn(TaskProvider<?>... task) {
+    private Action<@NotNull Task> addDependsOn(TaskProvider<?>... task) {
         return t -> {
             for (TaskProvider<?> taskProvider : task) {
                 t.dependsOn(taskProvider);
@@ -223,7 +225,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
     }
 
     @Override
-    protected Provider<String> getLoaderVersion(AbstractPlatformProject.Platform platform) {
+    protected Provider<@NotNull String> getLoaderVersion(AbstractPlatformProject.Platform platform) {
         if (platform instanceof Platform neoforgePlatform) {
             return neoforgePlatform.getNeoForge().getVersion();
         }
@@ -290,13 +292,13 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
             }
 
             @Input
-            public abstract Property<String> getVersion();
+            public abstract Property<@NotNull String> getVersion();
 
             @Input
-            public abstract Property<String> getGroup();
+            public abstract Property<@NotNull String> getGroup();
 
             @Input
-            public abstract ListProperty<String> getDataRuns();
+            public abstract ListProperty<@NotNull String> getDataRuns();
 
             @InputFiles
             @PathSensitive(PathSensitivity.NONE)
