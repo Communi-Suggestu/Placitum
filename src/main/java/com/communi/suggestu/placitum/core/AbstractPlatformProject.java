@@ -185,15 +185,21 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
         }
 
         interpolate.forEach((key, value) -> {
-            if (value instanceof Map<?,?> subMap)
-            {
-                emitInterpolationMap(logger, subMap, depth + 1);
-            } else if (value instanceof Project project) {
-                logger.lifecycle("%s%s -> %s".formatted(prefix, key, "[Project] " + project.getPath()));
-            } else {
-                logger.lifecycle("%s%s -> %s".formatted(prefix, key, value));
-            }
+            emitInterpolationValue(logger, depth, key, value, prefix);
         });
+    }
+
+    private static void emitInterpolationValue(final org.gradle.api.logging.Logger logger, final int depth, final Object key, final Object value, final String prefix)
+    {
+        if (value instanceof Map<?,?> subMap) {
+            emitInterpolationMap(logger, subMap, depth + 1);
+        } else if (value instanceof Provider<?> provider) {
+            emitInterpolationValue(logger, depth, key, provider.getOrNull(), prefix);
+        } else if (value instanceof Project project) {
+            logger.lifecycle("%s%s -> %s".formatted(prefix, key, "[Project] " + project.getPath()));
+        } else {
+            logger.lifecycle("%s%s -> %s".formatted(prefix, key, value));
+        }
     }
 
     private @NotNull Map<String, Object> createInterpolationMap(final Project project, final Task task, final Platform platform)
