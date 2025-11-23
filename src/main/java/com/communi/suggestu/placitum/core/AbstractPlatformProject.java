@@ -146,7 +146,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             });
         });
 
-        project.getTasks().named("interpolationKeys", Task.class, task -> {
+        project.getTasks().register("interpolationKeys", Task.class, task -> {
             final Map<String, Object> interpolate = createInterpolationMap(project, task, platform);
 
             task.setDescription("Emits all interpolation keys Placitum makes available in the current project");
