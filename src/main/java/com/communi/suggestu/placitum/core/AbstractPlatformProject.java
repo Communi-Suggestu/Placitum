@@ -192,6 +192,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
     private static void emitInterpolationValue(final org.gradle.api.logging.Logger logger, final int depth, final Object key, final Object value, final String prefix)
     {
         if (value instanceof Map<?,?> subMap) {
+            logger.lifecycle("%s%s:".formatted(prefix, key));
             emitInterpolationMap(logger, subMap, depth + 1);
         } else if (value instanceof Provider<?> provider) {
             emitInterpolationValue(logger, depth, key, provider.getOrNull(), prefix);
