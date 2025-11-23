@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Enhance Gradle configuration by exposing runtimeElements as a variant and adding an info task to log project version">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Update neogradle version to a specific range and enhance workspace.xml configuration">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -208,8 +208,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.28238.7" />
+        <option value="bundled-js-predefined-d6986cc7102b-a71380e98a7c-JavaScript-IU-252.28238.7" />
       </set>
     </attachedChunks>
   </component>
@@ -231,7 +231,8 @@
       <workItem from="1761156188542" duration="634000" />
       <workItem from="1761236837390" duration="2664000" />
       <workItem from="1762285792764" duration="68000" />
-      <workItem from="1762285871198" duration="890000" />
+      <workItem from="1762285871198" duration="1182000" />
+      <workItem from="1763914079081" duration="769000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -313,7 +314,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761240165517</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Update neogradle version to a specific range and enhance workspace.xml configuration">
+      <option name="closed" value="true" />
+      <created>1762287514010</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1762287514010</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -328,6 +337,15 @@
     <MESSAGE value="Fix an issue where we did not register the range." />
     <MESSAGE value="Update neogradle version to 7.1.+ and fix registration issues in workspace.xml" />
     <MESSAGE value="Enhance Gradle configuration by exposing runtimeElements as a variant and adding an info task to log project version" />
-    <option name="LAST_COMMIT_MESSAGE" value="Enhance Gradle configuration by exposing runtimeElements as a variant and adding an info task to log project version" />
+    <MESSAGE value="Update neogradle version to a specific range and enhance workspace.xml configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update neogradle version to a specific range and enhance workspace.xml configuration" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

@@ -8,6 +8,7 @@ import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.gradle.api.Action;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.*;
 import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.model.ObjectFactory;
@@ -27,6 +28,8 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -40,8 +43,9 @@ import java.util.stream.Stream;
 
 public abstract class AbstractPlatformProject implements IPlatformProject {
 
+    private static final Logger       log            = LoggerFactory.getLogger(AbstractPlatformProject.class);
     @SuppressWarnings("UnstableApiUsage")
-    protected static ProblemGroup PLACITUM_GROUP = ProblemGroup.create("placitum", "Placitum");
+    protected static     ProblemGroup PLACITUM_GROUP = ProblemGroup.create("placitum", "Placitum");
 
     public AbstractPlatformProject() {
     }
@@ -125,61 +129,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
         });
 
         project.getTasks().named("processResources", ProcessResources.class, task -> {
-            final Map<String, Object> interpolate = new HashMap<>(Map.of(
-                    "version", project.getVersion().toString(),
-                    "name", project.getRootProject().getName(),
-                    "project", new HashMap<>(Map.of(
-                            "package", "%s.%s".formatted(project.getRootProject().getGroup(), project.getName().toLowerCase(Locale.ROOT))
-                    )),
-                    "minecraft", new HashMap<>(Map.of(
-                            "version", platform.getMinecraft().getVersion(),
-                            "range", new HashMap<>(Map.of(
-                                    "neoforge",  getSupportedMinecraftVersionRange(project, false),
-                                    "fabric", getSupportedMinecraftVersionRange(project, true)
-                            ))
-                    )),
-                    "loader", new HashMap<>(Map.of(
-                            "version", getLoaderVersion(platform)
-                    )),
-                    "java", new HashMap<>(Map.of(
-                            "version", platform.getJava().getVersion(),
-                            "range", new HashMap<>(Map.of(
-                                    "neoforge", platform.getJava().getVersion().map("[%s,)"::formatted),
-                                    "fabric", platform.getJava().getVersion().map("=%s"::formatted)
-                            ))
-                    ))
-            ));
-
-            processPropertiesMap(interpolate, getInterpolatedProperties(platform));
-
-            final Map<String, Object> rootProjectInterpolation = new HashMap<>();
-            processPropertiesMap(rootProjectInterpolation, project.getRootProject().getProperties());
-
-            final Map<String, Object> projectInterpolation = new HashMap<>();
-            processPropertiesMap(projectInterpolation, project.getProperties());
-
-            final Map<String, Object> projectProperties = new HashMap<>();
-            projectProperties.put("project.root", rootProjectInterpolation);
-            projectProperties.put("project", projectInterpolation);
-            processPropertiesMap(interpolate, projectProperties);
-
-            final Multimap<String, ExternalDependency> dependenciesByName = HashMultimap.create();
-            getDependencyInterpolationConfigurations(project).forEach(configuration -> {
-                configuration.getAllDependencies()
-                        .stream()
-                        .filter(ExternalDependency.class::isInstance)
-                        .map(ExternalDependency.class::cast)
-                        .forEach(dependency -> dependenciesByName.put(dependency.getName(), dependency));
-            });
-            registerAdditionalDependencies(project, platform, dependenciesByName);
-
-            dependenciesByName.asMap().forEach((name, dependencies) -> {
-                final Map<String, ?> dependencyInterpolations = convertToNotations(name, dependencies)
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                processPropertiesMap(interpolate, dependencyInterpolations);
-            });
-
-            task.getInputs().properties(interpolate);
+            final Map<String, Object> interpolate = createInterpolationMap(project, task, platform);
 
             final List<String> notMatchingFiles = new ArrayList<>();
             notMatchingFiles.add("**/*.cfg");
@@ -196,6 +146,23 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             });
         });
 
+        project.getTasks().named("interpolationKeys", Task.class, task -> {
+            final Map<String, Object> interpolate = createInterpolationMap(project, task, platform);
+
+            task.setDescription("Emits all interpolation keys Placitum makes available in the current project");
+            task.setGroup("placitum");
+
+            task.doLast(task1 -> {
+                final org.gradle.api.logging.Logger logger = task1.getLogger();
+
+                logger.lifecycle("=======================");
+                logger.lifecycle("Interpolatable values: ");
+
+                emitInterpolationMap(logger, interpolate, 0);
+                logger.lifecycle("=======================");
+            });
+        });
+
         final SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
 
         sourceSets.configureEach(sourceSet -> {
@@ -206,9 +173,87 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
                             .map(project.getDependencies()::create)
             );
         });
+    }
 
-        //Expose runtimeElements as a variant:
+    private static void emitInterpolationMap(final org.gradle.api.logging.Logger logger, final Map<?, ?> interpolate, final int depth)
+    {
+        final String prefix;
+        if (depth == 0) {
+            prefix = "- ";
+        } else {
+            prefix = String.join("", Collections.nCopies(depth, "  ")) + "∟> ";
+        }
 
+        interpolate.forEach((key, value) -> {
+            if (value instanceof Map<?,?> subMap)
+            {
+                emitInterpolationMap(logger, subMap, depth + 1);
+            } else if (value instanceof Project project) {
+                logger.lifecycle("%s%s -> %s".formatted(prefix, key, "[Project] " + project.getPath()));
+            } else {
+                logger.lifecycle("%s%s -> %s".formatted(prefix, key, value));
+            }
+        });
+    }
+
+    private @NotNull Map<String, Object> createInterpolationMap(final Project project, final Task task, final Platform platform)
+    {
+        final Map<String, Object> interpolate = new HashMap<>(Map.of(
+                "version", project.getVersion().toString(),
+                "name", project.getRootProject().getName(),
+                "project", new HashMap<>(Map.of(
+                        "package", "%s.%s".formatted(project.getRootProject().getGroup(), project.getName().toLowerCase(Locale.ROOT))
+                )),
+                "minecraft", new HashMap<>(Map.of(
+                        "version", platform.getMinecraft().getVersion(),
+                        "range", new HashMap<>(Map.of(
+                                "neoforge",  getSupportedMinecraftVersionRange(project, false),
+                                "fabric", getSupportedMinecraftVersionRange(project, true)
+                        ))
+                )),
+                "loader", new HashMap<>(Map.of(
+                        "version", getLoaderVersion(platform)
+                )),
+                "java", new HashMap<>(Map.of(
+                        "version", platform.getJava().getVersion(),
+                        "range", new HashMap<>(Map.of(
+                                "neoforge", platform.getJava().getVersion().map("[%s,)"::formatted),
+                                "fabric", platform.getJava().getVersion().map("=%s"::formatted)
+                        ))
+                ))
+        ));
+
+        processPropertiesMap(interpolate, getInterpolatedProperties(platform));
+
+        final Map<String, Object> rootProjectInterpolation = new HashMap<>();
+        processPropertiesMap(rootProjectInterpolation, project.getRootProject().getProperties());
+
+        final Map<String, Object> projectInterpolation = new HashMap<>();
+        processPropertiesMap(projectInterpolation, project.getProperties());
+
+        final Map<String, Object> projectProperties = new HashMap<>();
+        projectProperties.put("project.root", rootProjectInterpolation);
+        projectProperties.put("project", projectInterpolation);
+        processPropertiesMap(interpolate, projectProperties);
+
+        final Multimap<String, ExternalDependency> dependenciesByName = HashMultimap.create();
+        getDependencyInterpolationConfigurations(project).forEach(configuration -> {
+            configuration.getAllDependencies()
+                    .stream()
+                    .filter(ExternalDependency.class::isInstance)
+                    .map(ExternalDependency.class::cast)
+                    .forEach(dependency -> dependenciesByName.put(dependency.getName(), dependency));
+        });
+        registerAdditionalDependencies(project, platform, dependenciesByName);
+
+        dependenciesByName.asMap().forEach((name, dependencies) -> {
+            final Map<String, ?> dependencyInterpolations = convertToNotations(name, dependencies)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            processPropertiesMap(interpolate, dependencyInterpolations);
+        });
+
+        task.getInputs().properties(interpolate);
+        return interpolate;
     }
 
     record PropertyMapEntry(String key, Object value) {
