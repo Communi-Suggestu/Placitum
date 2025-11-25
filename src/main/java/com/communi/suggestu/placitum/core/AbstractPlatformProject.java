@@ -70,13 +70,16 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
     }
 
     protected String createVersionRange(String version) {
+        if (version.contains("-"))
+            return "[%s]".formatted(version);
+
         final int[] parts = Arrays.stream(version.split("\\.")).mapToInt(Integer::parseInt)
             .toArray();
 
         if (parts.length == 3)
             parts[2] = parts[2] + 1;
 
-        return "[" + version + ", " + String.join(".", Arrays.stream(parts).mapToObj(String::valueOf).toArray(String[]::new)) + ")";
+        return "[%s, %s)".formatted(version, String.join(".", Arrays.stream(parts).mapToObj(String::valueOf).toArray(String[]::new)));
     }
 
     @Override
