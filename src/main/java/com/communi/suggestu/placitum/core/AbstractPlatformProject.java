@@ -3,6 +3,7 @@ package com.communi.suggestu.placitum.core;
 import com.communi.suggestu.placitum.platform.IPlatformProject;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.fabricmc.loom.LoomCompanionGradlePlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.gradle.api.Action;
@@ -91,6 +92,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
         project.getPlugins().apply("idea");
         project.getPlugins().apply("java-library");
         project.getPlugins().apply("maven-publish");
+        project.getPlugins().apply(LoomCompanionGradlePlugin.class);
 
         project.getRepositories().maven(mavenConfig -> {
             mavenConfig.setUrl("https://ldtteam.jfrog.io/ldtteam/modding");

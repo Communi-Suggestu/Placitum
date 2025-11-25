@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Fix Fabric extension initialization by passing project and settings">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
-    </list>
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Force 1.13.6 loom" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -233,7 +230,7 @@
       <workItem from="1762285792764" duration="68000" />
       <workItem from="1762285871198" duration="1182000" />
       <workItem from="1763914079081" duration="2215000" />
-      <workItem from="1764096925718" duration="3042000" />
+      <workItem from="1764096925718" duration="3669000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -379,7 +376,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764102726930</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Force 1.13.6 loom">
+      <option name="closed" value="true" />
+      <created>1764103152640</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1764103152640</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -402,7 +407,8 @@
     <MESSAGE value="When the version range for NeoForm contains a dash then limit the supported MC version to that exact version." />
     <MESSAGE value="Add support for distinct minecraft version on the fabric API" />
     <MESSAGE value="Fix Fabric extension initialization by passing project and settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix Fabric extension initialization by passing project and settings" />
+    <MESSAGE value="Force 1.13.6 loom" />
+    <option name="LAST_COMMIT_MESSAGE" value="Force 1.13.6 loom" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
