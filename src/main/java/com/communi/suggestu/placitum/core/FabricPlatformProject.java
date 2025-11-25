@@ -305,7 +305,7 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
         public Platform(Project project, AbstractPlatformProject.Platform settings) {
             super(project, settings);
 
-            this.fabric = project.getExtensions().create("fabric", PlatformFabric.class);
+            this.fabric = project.getExtensions().create("fabric", PlatformFabric.class, project, this);
         }
 
         public static abstract class PlatformFabric {
