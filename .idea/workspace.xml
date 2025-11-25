@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="When the version range for NeoForm contains a dash then limit the supported MC version to that exact version.">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Fix Fabric extension initialization by passing project and settings">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/FabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/FabricPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,7 +233,7 @@
       <workItem from="1762285792764" duration="68000" />
       <workItem from="1762285871198" duration="1182000" />
       <workItem from="1763914079081" duration="2215000" />
-      <workItem from="1764096925718" duration="2151000" />
+      <workItem from="1764096925718" duration="3042000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -363,7 +363,23 @@
       <option name="project" value="LOCAL" />
       <updated>1764098295417</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Add support for distinct minecraft version on the fabric API">
+      <option name="closed" value="true" />
+      <created>1764102277868</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1764102277868</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Fix Fabric extension initialization by passing project and settings">
+      <option name="closed" value="true" />
+      <created>1764102726930</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1764102726930</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -384,7 +400,9 @@
     <MESSAGE value="Add support for providers." />
     <MESSAGE value="Emit intermediary keys" />
     <MESSAGE value="When the version range for NeoForm contains a dash then limit the supported MC version to that exact version." />
-    <option name="LAST_COMMIT_MESSAGE" value="When the version range for NeoForm contains a dash then limit the supported MC version to that exact version." />
+    <MESSAGE value="Add support for distinct minecraft version on the fabric API" />
+    <MESSAGE value="Fix Fabric extension initialization by passing project and settings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix Fabric extension initialization by passing project and settings" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
