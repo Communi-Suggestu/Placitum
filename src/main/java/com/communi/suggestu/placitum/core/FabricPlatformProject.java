@@ -158,7 +158,7 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
                 .map("net.fabricmc:fabric-loader:%s"::formatted));
         project.getDependencies().addProvider("modImplementation",
                 platform.getFabric().getApiVersion().zip(
-                        platform.getMinecraft().getVersion(),
+                        platform.getFabric().getFabricApiMinecraftVersion(),
                         "net.fabricmc.fabric-api:fabric-api:%s+%s"::formatted
                 ));
 
@@ -311,9 +311,10 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
         public static abstract class PlatformFabric {
 
             @Inject
-            public PlatformFabric(Project project) {
+            public PlatformFabric(Project project, Platform platform) {
                 getLoaderVersion().convention(project.getProviders().gradleProperty("fabric.loader.version").map(String::trim));
                 getApiVersion().convention(project.getProviders().gradleProperty("fabric.api.version").map(String::trim));
+                getFabricApiMinecraftVersion().convention(project.getProviders().gradleProperty("fabric.api.minecraft.version").map(String::trim).orElse(platform.getMinecraft().getVersion()));
                 getAccessWideners().convention(project.getRootProject().getLayout().getProjectDirectory().dir("common").file("%s.accesswidener".formatted(project.getRootProject().getName().toLowerCase(Locale.ROOT))));
             }
 
@@ -322,6 +323,9 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
 
             @Input
             public abstract Property<@NotNull String> getApiVersion();
+
+            @Input
+            public abstract Property<@NotNull String> getFabricApiMinecraftVersion();
 
             @InputFile
             @PathSensitive(PathSensitivity.NONE)
