@@ -10,10 +10,15 @@ import net.neoforged.gradle.dsl.common.extensions.subsystems.Subsystems;
 import net.neoforged.gradle.dsl.common.runs.idea.extensions.IdeaRunsExtension;
 import net.neoforged.gradle.dsl.common.runs.run.RunManager;
 import net.neoforged.gradle.userdev.UserDevPlugin;
-import org.gradle.api.*;
+import org.gradle.api.Action;
+import org.gradle.api.GradleException;
+import org.gradle.api.InvalidUserDataException;
+import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ExternalDependency;
+import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.plugins.BasePlugin;
@@ -25,7 +30,12 @@ import org.gradle.api.problems.Problems;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.*;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.language.jvm.tasks.ProcessResources;
@@ -34,33 +44,38 @@ import org.gradle.plugins.ide.idea.model.IdeaProject;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
+public abstract class NeoForgePlatformProject extends AbstractPlatformProject
+{
 
     @SuppressWarnings("UnstableApiUsage")
-    protected static ProblemGroup NEOFORGE_GROUP = ProblemGroup.create("placitum-neoforge", "Neoforge", PLACITUM_GROUP);
-    protected static ProblemId MISSING_NEOFORGE_ID = ProblemId.create("placitum-neoforge-missing-neoforge", "Missing neoforge version", NEOFORGE_GROUP);
+    protected static ProblemGroup NEOFORGE_GROUP      = ProblemGroup.create("placitum-neoforge", "Neoforge", PLACITUM_GROUP);
+    protected static ProblemId    MISSING_NEOFORGE_ID = ProblemId.create("placitum-neoforge-missing-neoforge", "Missing neoforge version", NEOFORGE_GROUP);
 
     @SuppressWarnings({"UnstableApiUsage", "deprecation"})
     @Override
-    public void configure(Project project, String coreProjectPath, final Set<String> pluginProjectPaths, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
+    public void configure(Project project, String coreProjectPath, final Set<String> pluginProjectPaths, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults)
+    {
         super.configure(project, coreProjectPath, pluginProjectPaths, commonProjectPaths, defaults);
 
         project.getPlugins().apply(UserDevPlugin.class);
 
         commonProjectPaths.add(coreProjectPath);
         final Set<Project> commonProjects = commonProjectPaths.stream()
-                .map(project::project)
-                .collect(Collectors.toSet());
-        commonProjects.addAll(
-            pluginProjectPaths.stream()
-                .map(project::project)
-                .collect(Collectors.toSet())
-        );
+            .map(project::project)
+            .collect(Collectors.toSet());
+        final Set<Project> pluginProjects = commonProjectPaths.stream()
+            .map(project::project)
+            .collect(Collectors.toSet());
+
         final Project coreProject = project.project(coreProjectPath);
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
@@ -68,7 +83,8 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         final JarJar jarJar = project.getExtensions().getByType(JarJar.class);
         jarJar.enable();
 
-        for (Project commonProject : commonProjects) {
+        for (Project commonProject : commonProjects)
+        {
             final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
             excludeMinecraftDependencies(commonProjectDependency);
 
@@ -81,6 +97,23 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
             project.getDependencies().add(JarJar.EXTENSION_NAME, commonProjectDependency);
         }
 
+        for (Project pluginProject : pluginProjects)
+        {
+            final Dependency pluginProjectDependency = project.getDependencies().create(pluginProject);
+            excludeMinecraftDependencies(pluginProjectDependency);
+            if (pluginProjectDependency instanceof ModuleDependency moduleDependency) {
+                moduleDependency.setTransitive(false);
+            }
+
+            final Configuration apiConfiguration = project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME);
+            apiConfiguration.getDependencies().add(pluginProjectDependency);
+
+            jarJar.ranged(pluginProjectDependency, "[%s]".formatted(pluginProject.getVersion()));
+            jarJar.pin(pluginProjectDependency, pluginProject.getVersion().toString());
+
+            project.getDependencies().add(JarJar.EXTENSION_NAME, pluginProjectDependency);
+        }
+
         final Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);
         subsystems.parchment(parchment -> {
             parchment.getMinecraftVersion().set(platform.getParchment().getMinecraftVersion());
@@ -88,8 +121,8 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         });
 
         project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getNeoForge().getVersion()
-                .zip(platform.getNeoForge().getGroup(),
-                        (version, group) -> project.getDependencies().create("%s:%s:%s".formatted(group, "neoforge", version))));
+            .zip(platform.getNeoForge().getGroup(),
+                (version, group) -> project.getDependencies().create("%s:%s:%s".formatted(group, "neoforge", version))));
 
         project.getTasks().named(JarJar.EXTENSION_NAME, setArchiveClassifier(""));
         project.getTasks().named(JavaPlugin.JAR_TASK_NAME, setArchiveClassifier("slim"));
@@ -131,17 +164,17 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         accessTransformers.getFiles().from(platform.getNeoForge().getAccessTransformers());
 
         project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, platform.getNeoForge().getVersion()
-                .zip(platform.getNeoForge().getGroup(),
-                        (version, group) -> project.getDependencies().create("%s:%s:%s".formatted(group, "neoforge", version)))
-                .map(project.getDependencies()::create)
-                .orElse(project.provider(() -> {
-                    throw getProblems().getReporter().throwing(new InvalidUserDataException("NeoForge version is not configured"),
-                            MISSING_NEOFORGE_ID,
-                            spec -> {
-                                spec.details("NeoForge version is not configured");
-                                spec.solution("Set the NeoForge version in the platform configuration: platform.neoforge.version");
-                            });
-                })));
+            .zip(platform.getNeoForge().getGroup(),
+                (version, group) -> project.getDependencies().create("%s:%s:%s".formatted(group, "neoforge", version)))
+            .map(project.getDependencies()::create)
+            .orElse(project.provider(() -> {
+                throw getProblems().getReporter().throwing(new InvalidUserDataException("NeoForge version is not configured"),
+                    MISSING_NEOFORGE_ID,
+                    spec -> {
+                        spec.details("NeoForge version is not configured");
+                        spec.solution("Set the NeoForge version in the platform configuration: platform.neoforge.version");
+                    });
+            })));
 
         project.getTasks().named("processResources", ProcessResources.class, processResources -> {
             processResources.from(platform.getNeoForge().getAccessTransformers(), spec -> spec.into("META-INF"));
@@ -160,6 +193,10 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
                     .map(p -> p.file("src/main/resources").getAbsolutePath())
                     .flatMap(f -> Stream.of("--existing", f))
                     .toList());
+                modOutputArguments.addAll(pluginProjects.stream()
+                    .map(p -> p.file("src/main/resources").getAbsolutePath())
+                    .flatMap(f -> Stream.of("--existing", f))
+                    .toList());
 
                 run.getArguments().addAll(modOutputArguments);
                 run.getArguments().addAll(
@@ -173,16 +210,24 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
 
             // When we are running with IDEA, we need to add the common projects to the run configuration
             // When running with gradle or eclipse, they are automatically present.
-            if (isRunningWithIdea(project)) {
+            if (isRunningWithIdea(project))
+            {
                 run.modSources(
-                        commonProjects.stream().map(p -> p.getExtensions().getByType(SourceSetContainer.class))
-                                .map(ss -> ss.getByName("main"))
-                                .toList()
+                    commonProjects.stream().map(p -> p.getExtensions().getByType(SourceSetContainer.class))
+                        .map(ss -> ss.getByName("main"))
+                        .toList()
+                );
+
+                run.modSources(
+                    pluginProjects.stream().map(p -> p.getExtensions().getByType(SourceSetContainer.class))
+                        .map(ss -> ss.getByName("main"))
+                        .toList()
                 );
             }
         });
 
-        final TaskProvider<net.neoforged.gradle.common.tasks.@NotNull JarJar> jarJarTask = project.getTasks().named(JarJar.EXTENSION_NAME, net.neoforged.gradle.common.tasks.JarJar.class);
+        final TaskProvider<net.neoforged.gradle.common.tasks.@NotNull JarJar> jarJarTask =
+            project.getTasks().named(JarJar.EXTENSION_NAME, net.neoforged.gradle.common.tasks.JarJar.class);
         jarJarTask.configure(task -> {
             task.getArchiveClassifier().set("");
         });
@@ -196,7 +241,8 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
             task.dependsOn(jarJarTask);
         });
 
-        if (isRunningWithIdea(project)) {
+        if (isRunningWithIdea(project))
+        {
             final Project rootProject = project.getRootProject();
             final IdeaModel ideaModel = rootProject.getExtensions().getByType(IdeaModel.class);
             final IdeaProject ideaProject = ideaModel.getProject();
@@ -205,17 +251,21 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         }
     }
 
-    private Action<@NotNull Task> setArchiveClassifier(String classifier) {
+    private Action<@NotNull Task> setArchiveClassifier(String classifier)
+    {
         return task -> {
-            if (task instanceof AbstractArchiveTask archiveTask) {
+            if (task instanceof AbstractArchiveTask archiveTask)
+            {
                 archiveTask.getArchiveClassifier().set(classifier);
             }
         };
     }
 
-    private Action<@NotNull Task> addDependsOn(TaskProvider<?>... task) {
+    private Action<@NotNull Task> addDependsOn(TaskProvider<?>... task)
+    {
         return t -> {
-            for (TaskProvider<?> taskProvider : task) {
+            for (TaskProvider<?> taskProvider : task)
+            {
                 t.dependsOn(taskProvider);
             }
         };
@@ -225,13 +275,16 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
     protected abstract Problems getProblems();
 
     @Override
-    protected Platform registerPlatformExtension(Project project, AbstractPlatformProject.Platform defaults) {
+    protected Platform registerPlatformExtension(Project project, AbstractPlatformProject.Platform defaults)
+    {
         return project.getExtensions().create(Platform.class, AbstractPlatformProject.Platform.EXTENSION_NAME, Platform.class, project, defaults);
     }
 
     @Override
-    protected Provider<@NotNull String> getLoaderVersion(AbstractPlatformProject.Platform platform) {
-        if (platform instanceof Platform neoforgePlatform) {
+    protected Provider<@NotNull String> getLoaderVersion(AbstractPlatformProject.Platform platform)
+    {
+        if (platform instanceof Platform neoforgePlatform)
+        {
             return neoforgePlatform.getNeoForge().getVersion();
         }
 
@@ -239,61 +292,77 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
     }
 
     @Override
-    protected Map<String, ?> getInterpolatedProperties(AbstractPlatformProject.Platform platform) {
-        if (platform instanceof Platform neoforgePlatform) {
+    protected Map<String, ?> getInterpolatedProperties(AbstractPlatformProject.Platform platform)
+    {
+        if (platform instanceof Platform neoforgePlatform)
+        {
             return Map.of("dependenciesNeoforgeNpm", neoforgePlatform.getNeoForge().getVersion()
-                            .map(version -> createSupportedVersionRange(version, true)),
-                    "dependenciesNeoforgeMaven", neoforgePlatform.getNeoForge().getVersion()
-                            .map(version -> createSupportedVersionRange(version, false))
+                    .map(version -> createSupportedVersionRange(version, true)),
+                "dependenciesNeoforgeMaven", neoforgePlatform.getNeoForge().getVersion()
+                    .map(version -> createSupportedVersionRange(version, false))
             );
-
-        } else {
+        }
+        else
+        {
             throw new GradleException("Platform is not an instance of PlatformNeoForge");
         }
     }
 
     @Override
-    protected Set<Configuration> getDependencyInterpolationConfigurations(Project project) {
+    protected Set<Configuration> getDependencyInterpolationConfigurations(Project project)
+    {
         return Set.of(
-                project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME),
-                project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME),
-                project.getConfigurations().getByName("includedLibraries"),
-                project.getConfigurations().getByName(JavaPlugin.RUNTIME_ONLY_CONFIGURATION_NAME)
+            project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME),
+            project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME),
+            project.getConfigurations().getByName("includedLibraries"),
+            project.getConfigurations().getByName(JavaPlugin.RUNTIME_ONLY_CONFIGURATION_NAME)
         );
     }
 
     @Override
-    protected void registerAdditionalDependencies(Project project, AbstractPlatformProject.Platform platform, Multimap<String, ExternalDependency> byNameDependencies) {
+    protected void registerAdditionalDependencies(Project project, AbstractPlatformProject.Platform platform, Multimap<String, ExternalDependency> byNameDependencies)
+    {
         super.registerAdditionalDependencies(project, platform, byNameDependencies);
 
-        if (platform instanceof Platform neoforgePlatform) {
-            final Dependency neoforgeDependency = project.getDependencies().create("%S:neoforge:%s".formatted(neoforgePlatform.getNeoForge().getGroup().get(), neoforgePlatform.getNeoForge().getVersion().get()));
-            if (neoforgeDependency instanceof ExternalDependency externalDependency) {
+        if (platform instanceof Platform neoforgePlatform)
+        {
+            final Dependency neoforgeDependency =
+                project.getDependencies().create("%S:neoforge:%s".formatted(neoforgePlatform.getNeoForge().getGroup().get(), neoforgePlatform.getNeoForge().getVersion().get()));
+            if (neoforgeDependency instanceof ExternalDependency externalDependency)
+            {
                 byNameDependencies.put("neoforge", externalDependency);
             }
         }
     }
 
-    public abstract static class Platform extends AbstractPlatformProject.Platform {
+    public abstract static class Platform extends AbstractPlatformProject.Platform
+    {
 
         private final PlatformNeoForge neoForge;
 
         @Inject
-        public Platform(Project project, AbstractPlatformProject.Platform settings) {
+        public Platform(Project project, AbstractPlatformProject.Platform settings)
+        {
             super(project, settings);
 
             this.neoForge = project.getExtensions().create("neoforge", PlatformNeoForge.class);
         }
 
-        public static abstract class PlatformNeoForge {
+        public static abstract class PlatformNeoForge
+        {
 
             @Inject
-            public PlatformNeoForge(Project project) {
+            public PlatformNeoForge(Project project)
+            {
                 getVersion().convention(project.getProviders().gradleProperty("neoforge.version").map(String::trim));
                 getGroup().convention("net.neoforged");
-                getDataRuns().convention(project.getProviders().gradleProperty("neoforge.data.runs").map(String::trim).map(s -> Arrays.stream(s.split(",")).collect(Collectors.toList())).orElse(
-                    Lists.newArrayList("data")
-                ));
+                getDataRuns().convention(project.getProviders()
+                    .gradleProperty("neoforge.data.runs")
+                    .map(String::trim)
+                    .map(s -> Arrays.stream(s.split(",")).collect(Collectors.toList()))
+                    .orElse(
+                        Lists.newArrayList("data")
+                    ));
             }
 
             @Input
@@ -309,17 +378,20 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
             @PathSensitive(PathSensitivity.NONE)
             public abstract ConfigurableFileCollection getAccessTransformers();
 
-            public void pullRequest(final Integer prNumber, final String version) {
+            public void pullRequest(final Integer prNumber, final String version)
+            {
                 getVersion().set(version);
                 getGroup().set("pr%s.net.neoforged".formatted(prNumber));
             }
         }
 
-        public PlatformNeoForge getNeoForge() {
+        public PlatformNeoForge getNeoForge()
+        {
             return neoForge;
         }
 
-        public void neoforge(Action<? super PlatformNeoForge> action) {
+        public void neoforge(Action<? super PlatformNeoForge> action)
+        {
             action.execute(getNeoForge());
         }
     }

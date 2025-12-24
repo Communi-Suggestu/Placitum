@@ -9,6 +9,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.file.ArchiveOperations;
@@ -53,103 +54,19 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
         final Set<Project> commonProjects = commonProjectPaths.stream()
                 .map(project::project)
                 .collect(Collectors.toSet());
-        commonProjects.addAll(
+        final Set<Project> pluginProjects =
             pluginProjectPaths.stream()
                 .map(project::project)
-                .collect(Collectors.toSet())
-        );
+                .collect(Collectors.toSet());
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
 
         for (Project commonProject : commonProjects) {
-            final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
-            excludeMinecraftDependencies(commonProjectDependency);
+            processCommonLikeProject(project, commonProject, true);
+        }
 
-            final Configuration apiConfiguration = project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME);
-            apiConfiguration.getDependencies().add(commonProjectDependency);
-
-            final String commonProjectName = commonProject.getName();
-            final String commonProjectGroup = commonProject.getGroup().toString();
-            final String rootProjectName = commonProject.getRootProject().getName();
-            final String commonProjectVersion = commonProject.getVersion().toString();
-
-            Provider<@NotNull File> metadataGenerationFile = project.getLayout().getBuildDirectory()
-                    .dir("generated/fabric/metadata/placitum/projects/core/%s".formatted(commonProjectName))
-                    .map(dir -> dir.file("fabric.mod.json"))
-                    .map(file -> {
-                        final File targetFile = file.getAsFile();
-                        final File directory = targetFile.getParentFile();
-                        if (!directory.exists() && !directory.mkdirs()) {
-                            throw new GradleException("Failed to create directory: %s".formatted(directory));
-                        }
-
-                        try {
-                            Files.writeString(targetFile.toPath(), """
-                                    {
-                                      "schemaVersion": 1,
-                                      "id": "%s",
-                                      "version": "%s",
-                                      "name": "%s",
-                                      "custom": {
-                                        "fabric-loom:generated": true
-                                      }
-                                    }
-                                    """.formatted(
-                                    "%s_%s".formatted(commonProjectGroup.replace(".", "_"), commonProjectName),
-                                    commonProjectVersion,
-                                    "%s - %s".formatted(rootProjectName, commonProjectName)
-                            ));
-                        } catch (IOException e) {
-                            throw new GradleException("Failed to write metadata file: %s".formatted(targetFile), e);
-                        }
-
-                        return targetFile;
-                    });
-
-            final TaskProvider<@NotNull Jar> jarTask = commonProject.getTasks().named("jar", Jar.class);
-
-            final Provider<@NotNull FileTree> compiledJarTree = jarTask.flatMap(Jar::getArchiveFile).map(getArchiveOperations()::zipTree);
-            final TaskProvider<@NotNull Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
-                task.from(compiledJarTree);
-                task.from(metadataGenerationFile);
-                task.getArchiveClassifier().set("%s-bundled".formatted(commonProjectName));
-            });
-
-            final TaskProvider<@NotNull RemapJarTask> remapBundledTask = project.getTasks().register("remapBundled%s".formatted(commonProject.getName()), RemapJarTask.class, task -> {
-                task.dependsOn(bundleFmjTask);
-                task.getInputFile().set(bundleFmjTask.flatMap(Jar::getArchiveFile));
-                task.getArchiveClassifier().set("%s-remapped".formatted(commonProjectName));
-            });
-
-            project.getTasks().named("remapJar", RemapJarTask.class, task -> {
-                task.getNestedJars().from(remapBundledTask.flatMap(RemapJarTask::getArchiveFile));
-                task.dependsOn(remapBundledTask);
-            });
-
-            final Configuration outgoingRemappedElements = project.getConfigurations().maybeCreate("remappedRuntimeElements");
-            outgoingRemappedElements.setCanBeResolved(false);
-            outgoingRemappedElements.getDependencies().add(
-                project.getDependencies().project(Map.of(
-                    "path", commonProject.getPath(),
-                    "configuration", "runtimeElements"
-                ))
-            );
-
-            final Attribute<@NotNull Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
-            outgoingRemappedElements.getAttributes().attribute(remappedAttribute, true);
-
-            commonProject.getComponents().named("java", AdhocComponentWithVariants.class, component -> {
-                component.addVariantsFromConfiguration(outgoingRemappedElements, variant -> {
-                    variant.mapToMavenScope("runtime");
-                    variant.mapToOptional();
-                });
-            });
-
-            commonProject.getConfigurations().maybeCreate("remappedRuntimeElements");
-            commonProject.getArtifacts().add("remappedRuntimeElements", remapBundledTask.flatMap(RemapJarTask::getArchiveFile), artifact -> {
-                artifact.builtBy(remapBundledTask);
-                artifact.setType("jar");
-            });
+        for (Project pluginProject : pluginProjects) {
+            processCommonLikeProject(project, pluginProject, false);
         }
 
         final Attribute<@NotNull Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
@@ -213,6 +130,10 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
                 final SourceSetContainer projectSourceSets = p.getExtensions().getByType(SourceSetContainer.class);
                 mod.sourceSet(projectSourceSets.getByName("main"), p);
             });
+            pluginProjects.forEach(p -> {
+                final SourceSetContainer projectSourceSets = p.getExtensions().getByType(SourceSetContainer.class);
+                mod.sourceSet(projectSourceSets.getByName("main"), p);
+            });
             mod.sourceSet(sourceSets.getByName("main"), project);
         });
 
@@ -262,6 +183,101 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
 
         project.getTasks().named("ideaSyncTask", idea -> {
             idea.finalizedBy(ideaSyncRegistrar);
+        });
+    }
+
+    private void processCommonLikeProject(final Project project, final Project commonProject, final boolean allowTransitive)
+    {
+        final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
+        excludeMinecraftDependencies(commonProjectDependency);
+        if (!allowTransitive && commonProjectDependency instanceof ModuleDependency moduleDependency) {
+            moduleDependency.setTransitive(false);
+        }
+
+        final Configuration apiConfiguration = project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME);
+        apiConfiguration.getDependencies().add(commonProjectDependency);
+
+        final String commonProjectName = commonProject.getName();
+        final String commonProjectGroup = commonProject.getGroup().toString();
+        final String rootProjectName = commonProject.getRootProject().getName();
+        final String commonProjectVersion = commonProject.getVersion().toString();
+
+        Provider<@NotNull File> metadataGenerationFile = project.getLayout().getBuildDirectory()
+                .dir("generated/fabric/metadata/placitum/projects/core/%s".formatted(commonProjectName))
+                .map(dir -> dir.file("fabric.mod.json"))
+                .map(file -> {
+                    final File targetFile = file.getAsFile();
+                    final File directory = targetFile.getParentFile();
+                    if (!directory.exists() && !directory.mkdirs()) {
+                        throw new GradleException("Failed to create directory: %s".formatted(directory));
+                    }
+
+                    try {
+                        Files.writeString(targetFile.toPath(), """
+                                {
+                                  "schemaVersion": 1,
+                                  "id": "%s",
+                                  "version": "%s",
+                                  "name": "%s",
+                                  "custom": {
+                                    "fabric-loom:generated": true
+                                  }
+                                }
+                                """.formatted(
+                                "%s_%s".formatted(commonProjectGroup.replace(".", "_"), commonProjectName),
+                                commonProjectVersion,
+                                "%s - %s".formatted(rootProjectName, commonProjectName)
+                        ));
+                    } catch (IOException e) {
+                        throw new GradleException("Failed to write metadata file: %s".formatted(targetFile), e);
+                    }
+
+                    return targetFile;
+                });
+
+        final TaskProvider<@NotNull Jar> jarTask = commonProject.getTasks().named("jar", Jar.class);
+
+        final Provider<@NotNull FileTree> compiledJarTree = jarTask.flatMap(Jar::getArchiveFile).map(getArchiveOperations()::zipTree);
+        final TaskProvider<@NotNull Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
+            task.from(compiledJarTree);
+            task.from(metadataGenerationFile);
+            task.getArchiveClassifier().set("%s-bundled".formatted(commonProjectName));
+        });
+
+        final TaskProvider<@NotNull RemapJarTask> remapBundledTask = project.getTasks().register("remapBundled%s".formatted(commonProject.getName()), RemapJarTask.class, task -> {
+            task.dependsOn(bundleFmjTask);
+            task.getInputFile().set(bundleFmjTask.flatMap(Jar::getArchiveFile));
+            task.getArchiveClassifier().set("%s-remapped".formatted(commonProjectName));
+        });
+
+        project.getTasks().named("remapJar", RemapJarTask.class, task -> {
+            task.getNestedJars().from(remapBundledTask.flatMap(RemapJarTask::getArchiveFile));
+            task.dependsOn(remapBundledTask);
+        });
+
+        final Configuration outgoingRemappedElements = project.getConfigurations().maybeCreate("remappedRuntimeElements");
+        outgoingRemappedElements.setCanBeResolved(false);
+        outgoingRemappedElements.getDependencies().add(
+            project.getDependencies().project(Map.of(
+                "path", commonProject.getPath(),
+                "configuration", "runtimeElements"
+            ))
+        );
+
+        final Attribute<@NotNull Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
+        outgoingRemappedElements.getAttributes().attribute(remappedAttribute, true);
+
+        commonProject.getComponents().named("java", AdhocComponentWithVariants.class, component -> {
+            component.addVariantsFromConfiguration(outgoingRemappedElements, variant -> {
+                variant.mapToMavenScope("runtime");
+                variant.mapToOptional();
+            });
+        });
+
+        commonProject.getConfigurations().maybeCreate("remappedRuntimeElements");
+        commonProject.getArtifacts().add("remappedRuntimeElements", remapBundledTask.flatMap(RemapJarTask::getArchiveFile), artifact -> {
+            artifact.builtBy(remapBundledTask);
+            artifact.setType("jar");
         });
     }
 
