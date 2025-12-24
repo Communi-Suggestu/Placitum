@@ -14,6 +14,7 @@ import org.gradle.api.provider.ProviderFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,8 @@ public abstract class SettingsPlatformExtension {
 
     public void plugin(final String path) {
         registerProject(path, ProjectDescriptor.plugin(p -> new PluginPlatformProject()));
+        settings.project(path)
+            .setProjectDir(new File("plugins" + path.replace(":", "/")));
     }
 
     public void fabric(final String path) {
