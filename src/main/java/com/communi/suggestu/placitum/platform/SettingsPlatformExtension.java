@@ -118,11 +118,11 @@ public abstract class SettingsPlatformExtension {
         }
 
         public static ProjectDescriptor common(Function<Project, IPlatformProject> builder) {
-            return new ProjectDescriptor(false, false, true, builder);
+            return new ProjectDescriptor(false, true, false, builder);
         }
 
         public static ProjectDescriptor plugin(Function<Project, IPlatformProject> builder) {
-            return new ProjectDescriptor(false, true, true, builder);
+            return new ProjectDescriptor(false, false, true, builder);
         }
 
         public static ProjectDescriptor loaderSpecific(Function<Project, IPlatformProject> builder) {

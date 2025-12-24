@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Add support for plugins.">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Wire plugins into the plugins directory.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +94,7 @@
       <command value="gradle wrapper --gradle-version=9.1.0" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.Placitum [publishToMavenLocal]">
+  <component name="RunManager" selected="Remote JVM Debug.Unnamed">
     <configuration name="Placitum [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -150,7 +150,7 @@
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
+        <option name="scriptParameters" value="" />
         <option name="taskDescriptions">
           <list />
         </option>
@@ -207,6 +207,27 @@
       <option name="filePath" />
       <method v="2" />
     </configuration>
+    <configuration name="Unnamed" type="Remote" nameIsGenerated="true">
+      <module name="placitum.main" />
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <option name="AUTO_RESTART" value="false" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="5005" />
+        <option name="LOCAL" value="false" />
+      </RunnerSettings>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Gradle.Placitum [assemble]" />
+      <item itemvalue="Gradle.Placitum [info]" />
+      <item itemvalue="Gradle.Placitum [publishToMavenLocal]" />
+      <item itemvalue="Gradle.Placitum [wrapper --gradle-version=9.1.0]" />
+      <item itemvalue="Remote JVM Debug.Unnamed" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.Placitum [publishToMavenLocal]" />
@@ -245,7 +266,7 @@
       <workItem from="1762285871198" duration="1182000" />
       <workItem from="1763914079081" duration="2215000" />
       <workItem from="1764096925718" duration="4543000" />
-      <workItem from="1766577440695" duration="1800000" />
+      <workItem from="1766577440695" duration="2690000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -415,7 +436,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766577938213</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Wire plugins into the plugins directory.">
+      <option name="closed" value="true" />
+      <created>1766583867824</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1766583867824</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -441,7 +470,8 @@
     <MESSAGE value="Force 1.13.6 loom" />
     <MESSAGE value="Register loom companion gradle plugin to all projects." />
     <MESSAGE value="Add support for plugins." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add support for plugins." />
+    <MESSAGE value="Wire plugins into the plugins directory." />
+    <option name="LAST_COMMIT_MESSAGE" value="Wire plugins into the plugins directory." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
