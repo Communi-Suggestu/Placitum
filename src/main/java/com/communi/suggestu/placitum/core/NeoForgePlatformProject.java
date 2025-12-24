@@ -72,7 +72,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
         final Set<Project> commonProjects = commonProjectPaths.stream()
             .map(project::project)
             .collect(Collectors.toSet());
-        final Set<Project> pluginProjects = commonProjectPaths.stream()
+        final Set<Project> pluginProjects = pluginProjectPaths.stream()
             .map(project::project)
             .collect(Collectors.toSet());
 

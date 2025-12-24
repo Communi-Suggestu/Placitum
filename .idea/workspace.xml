@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Fix issue where plugins and common projects where swapped">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Disable transitive processing on plugins.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/FabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/FabricPlatformProject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -268,7 +267,7 @@
       <workItem from="1762285871198" duration="1182000" />
       <workItem from="1763914079081" duration="2215000" />
       <workItem from="1764096925718" duration="4543000" />
-      <workItem from="1766577440695" duration="3435000" />
+      <workItem from="1766577440695" duration="4748000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -454,7 +453,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766586895471</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Disable transitive processing on plugins.">
+      <option name="closed" value="true" />
+      <created>1766587596813</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1766587596813</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -482,15 +489,26 @@
     <MESSAGE value="Add support for plugins." />
     <MESSAGE value="Wire plugins into the plugins directory." />
     <MESSAGE value="Fix issue where plugins and common projects where swapped" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix issue where plugins and common projects where swapped" />
+    <MESSAGE value="Disable transitive processing on plugins." />
+    <option name="LAST_COMMIT_MESSAGE" value="Disable transitive processing on plugins." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java</url>
+          <line>220</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java</url>
+          <line>207</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java</url>
           <line>30</line>
-          <option name="timeStamp" value="1" />
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
