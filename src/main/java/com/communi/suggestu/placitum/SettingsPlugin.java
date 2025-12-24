@@ -11,9 +11,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
-public class SettingsPlugin implements Plugin<Settings> {
+public class SettingsPlugin implements Plugin<Settings>
+{
     @Override
-    public void apply(@NotNull Settings target) {
+    public void apply(@NotNull Settings target)
+    {
         final SettingsPlatformExtension extension = target.getExtensions().create(SettingsPlatformExtension.EXTENSION_NAME, SettingsPlatformExtension.class, target);
 
         target.getPlugins().apply("org.gradle.toolchains.foojay-resolver-convention");
@@ -37,19 +39,25 @@ public class SettingsPlugin implements Plugin<Settings> {
         });
     }
 
-    private record DynamicProjectPluginAdapter(Settings settings, AbstractPlatformProject.Platform defaults) implements Action<Project> {
+    private record DynamicProjectPluginAdapter(
+        Settings settings,
+        AbstractPlatformProject.Platform defaults) implements Action<Project>
+    {
         @Override
-        public void execute(@NotNull Project project) {
+        public void execute(@NotNull Project project)
+        {
             final SettingsPlatformExtension projectManagementExtension = settings.getExtensions().getByType(SettingsPlatformExtension.class);
 
             final Function<Project, IPlatformProject> builder = projectManagementExtension.findProject(project.getPath());
-            if (builder != null) {
+            if (builder != null)
+            {
                 final IPlatformProject platformProject = builder.apply(project);
                 platformProject.configure(
-                        project,
-                        projectManagementExtension.getCoreProjectPath(),
-                        projectManagementExtension.getCommonProjectPaths(),
-                        defaults
+                    project,
+                    projectManagementExtension.getCoreProjectPath(),
+                    projectManagementExtension.getPluginProjectPaths(),
+                    projectManagementExtension.getCommonProjectPaths(),
+                    defaults
                 );
             }
         }

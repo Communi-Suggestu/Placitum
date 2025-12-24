@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class CorePlatformProject extends AbstractPlatformProject implements IPlatformProject {
+public final class PluginPlatformProject extends AbstractPlatformProject implements IPlatformProject {
 
-    public CorePlatformProject() {
+    public PluginPlatformProject() {
         super();
     }
 
@@ -39,6 +39,8 @@ public final class CorePlatformProject extends AbstractPlatformProject implement
                 commonProjectPaths.stream()
                 .map(project::project)
                 .collect(Collectors.toSet());
+        final Project coreProject = project.project(coreProjectPath);
+        commonProjects.add(coreProject);
 
         if (commonProjects.contains(project)) {
             commonProjects.clear();
@@ -78,7 +80,7 @@ public final class CorePlatformProject extends AbstractPlatformProject implement
 
     @Override
     protected Platform registerPlatformExtension(Project project, AbstractPlatformProject.Platform defaults) {
-        return project.getExtensions().create(CorePlatformProject.Platform.class, AbstractPlatformProject.Platform.EXTENSION_NAME, CorePlatformProject.Platform.class, project, defaults);
+        return project.getExtensions().create(PluginPlatformProject.Platform.class, AbstractPlatformProject.Platform.EXTENSION_NAME, PluginPlatformProject.Platform.class, project, defaults);
     }
 
     @Override

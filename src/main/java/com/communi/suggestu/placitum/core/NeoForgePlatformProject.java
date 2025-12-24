@@ -47,8 +47,8 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
 
     @SuppressWarnings({"UnstableApiUsage", "deprecation"})
     @Override
-    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
-        super.configure(project, coreProjectPath, commonProjectPaths, defaults);
+    public void configure(Project project, String coreProjectPath, final Set<String> pluginProjectPaths, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
+        super.configure(project, coreProjectPath, pluginProjectPaths, commonProjectPaths, defaults);
 
         project.getPlugins().apply(UserDevPlugin.class);
 
@@ -56,6 +56,11 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject {
         final Set<Project> commonProjects = commonProjectPaths.stream()
                 .map(project::project)
                 .collect(Collectors.toSet());
+        commonProjects.addAll(
+            pluginProjectPaths.stream()
+                .map(project::project)
+                .collect(Collectors.toSet())
+        );
         final Project coreProject = project.project(coreProjectPath);
 
         final Platform platform = project.getExtensions().getByType(Platform.class);

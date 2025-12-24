@@ -4,7 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Force 1.13.6 loom" />
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Register loom companion gradle plugin to all projects.">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/SettingsPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/SettingsPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/FabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/FabricPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/IPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/IPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,11 +39,6 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="placitum" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="placitum" type="f1a62948:ProjectNode" />
-                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
               </path>
             </expand>
             <select />
@@ -62,29 +69,33 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Placitum [assemble].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Placitum [info].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Placitum [publishToMavenLocal].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Placitum [wrapper --gradle-version=9.1.0].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.Placitum [assemble].executor": "Run",
+    "Gradle.Placitum [info].executor": "Run",
+    "Gradle.Placitum [publishToMavenLocal].executor": "Run",
+    "Gradle.Placitum [wrapper --gradle-version=9.1.0].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveMembersDialog.RECENTS_KEY">
       <recent name="com.communi.suggestu.placitum.core.AbstractPlatformProject" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.communi.suggestu.placitum.core" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -111,8 +122,11 @@
       </ExternalSystemSettings>
       <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
       <DebugAllEnabled>false</DebugAllEnabled>
       <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
       <method v="2" />
     </configuration>
     <configuration name="Placitum [info]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
@@ -133,8 +147,11 @@
       </ExternalSystemSettings>
       <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
       <DebugAllEnabled>false</DebugAllEnabled>
       <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
       <method v="2" />
     </configuration>
     <configuration name="Placitum [publishToMavenLocal]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
@@ -155,8 +172,11 @@
       </ExternalSystemSettings>
       <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
       <DebugAllEnabled>false</DebugAllEnabled>
       <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
       <method v="2" />
     </configuration>
     <configuration name="Placitum [wrapper --gradle-version=9.1.0]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
@@ -178,8 +198,11 @@
       </ExternalSystemSettings>
       <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
       <DebugAllEnabled>false</DebugAllEnabled>
       <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
       <method v="2" />
     </configuration>
     <configuration default="true" type="JetRunConfigurationType">
@@ -205,8 +228,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.28238.7" />
-        <option value="bundled-js-predefined-d6986cc7102b-a71380e98a7c-JavaScript-IU-252.28238.7" />
+        <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.138" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.29346.138" />
       </set>
     </attachedChunks>
   </component>
@@ -230,7 +253,8 @@
       <workItem from="1762285792764" duration="68000" />
       <workItem from="1762285871198" duration="1182000" />
       <workItem from="1763914079081" duration="2215000" />
-      <workItem from="1764096925718" duration="3669000" />
+      <workItem from="1764096925718" duration="4543000" />
+      <workItem from="1766577440695" duration="485000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -384,7 +408,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764103152640</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Register loom companion gradle plugin to all projects.">
+      <option name="closed" value="true" />
+      <created>1764103895270</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1764103895270</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -408,7 +440,8 @@
     <MESSAGE value="Add support for distinct minecraft version on the fabric API" />
     <MESSAGE value="Fix Fabric extension initialization by passing project and settings" />
     <MESSAGE value="Force 1.13.6 loom" />
-    <option name="LAST_COMMIT_MESSAGE" value="Force 1.13.6 loom" />
+    <MESSAGE value="Register loom companion gradle plugin to all projects." />
+    <option name="LAST_COMMIT_MESSAGE" value="Register loom companion gradle plugin to all projects." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

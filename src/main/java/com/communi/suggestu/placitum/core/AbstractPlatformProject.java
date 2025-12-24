@@ -84,7 +84,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
     }
 
     @Override
-    public void configure(Project project, String coreCodeProject, Set<String> commonProjects, Platform defaults) {
+    public void configure(Project project, String coreCodeProject, final Set<String> commonProjects, Set<String> pluginProjects, Platform defaults) {
         project.setGroup(project.getRootProject().getGroup());
         project.setVersion(project.getRootProject().getVersion());
 

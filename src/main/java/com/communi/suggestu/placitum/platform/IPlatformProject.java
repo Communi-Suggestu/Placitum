@@ -15,7 +15,8 @@ public interface IPlatformProject {
      * @param project         The project to configure.
      * @param coreCodeProject
      * @param commonProjects  The set of core projects.
+     * @param pluginProjects  The set of core projects.
      * @param defaults
      */
-    void configure(Project project, String coreCodeProject, Set<String> commonProjects, AbstractPlatformProject.Platform defaults);
+    void configure(Project project, String coreCodeProject, final Set<String> commonProjects, Set<String> pluginProjects, AbstractPlatformProject.Platform defaults);
 }

@@ -44,8 +44,8 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
-    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
-        super.configure(project, coreProjectPath, commonProjectPaths, defaults);
+    public void configure(Project project, String coreProjectPath, final Set<String> pluginProjectPaths, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
+        super.configure(project, coreProjectPath, pluginProjectPaths, commonProjectPaths, defaults);
 
         project.getPlugins().apply(LoomGradlePlugin.class);
 
@@ -53,6 +53,11 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
         final Set<Project> commonProjects = commonProjectPaths.stream()
                 .map(project::project)
                 .collect(Collectors.toSet());
+        commonProjects.addAll(
+            pluginProjectPaths.stream()
+                .map(project::project)
+                .collect(Collectors.toSet())
+        );
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
 

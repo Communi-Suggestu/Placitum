@@ -5,6 +5,7 @@ import com.communi.suggestu.placitum.core.CommonPlatformProject;
 import com.communi.suggestu.placitum.core.CorePlatformProject;
 import com.communi.suggestu.placitum.core.FabricPlatformProject;
 import com.communi.suggestu.placitum.core.NeoForgePlatformProject;
+import com.communi.suggestu.placitum.core.PluginPlatformProject;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.initialization.Settings;
@@ -47,6 +48,10 @@ public abstract class SettingsPlatformExtension {
         }
 
         registerProject(path, ProjectDescriptor.core(p -> new CorePlatformProject()));
+    }
+
+    public void plugin(final String path) {
+        registerProject(path, ProjectDescriptor.plugin(p -> new PluginPlatformProject()));
     }
 
     public void fabric(final String path) {
@@ -96,17 +101,29 @@ public abstract class SettingsPlatformExtension {
                 .orElseThrow(() -> new IllegalStateException("Core project not registered"));
     }
 
-    private record ProjectDescriptor(boolean isCore, boolean isCommon, Function<Project, IPlatformProject> builder) {
+    public Set<String> getPluginProjectPaths() {
+        return knownDynamicDescriptors.entrySet()
+            .stream()
+            .filter(entry -> entry.getValue().isPlugin())
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
+    }
+
+    private record ProjectDescriptor(boolean isCore, boolean isCommon, boolean isPlugin, Function<Project, IPlatformProject> builder) {
         public static ProjectDescriptor core(Function<Project, IPlatformProject> builder) {
-            return new ProjectDescriptor(true, false, builder);
+            return new ProjectDescriptor(true, false, false, builder);
         }
 
         public static ProjectDescriptor common(Function<Project, IPlatformProject> builder) {
-            return new ProjectDescriptor(false, true, builder);
+            return new ProjectDescriptor(false, false, true, builder);
+        }
+
+        public static ProjectDescriptor plugin(Function<Project, IPlatformProject> builder) {
+            return new ProjectDescriptor(false, true, true, builder);
         }
 
         public static ProjectDescriptor loaderSpecific(Function<Project, IPlatformProject> builder) {
-            return new ProjectDescriptor(false, false, builder);
+            return new ProjectDescriptor(false, false, false, builder);
         }
     }
 

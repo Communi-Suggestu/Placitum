@@ -27,8 +27,8 @@ public final class CommonPlatformProject extends AbstractPlatformProject impleme
     }
 
     @Override
-    public void configure(Project project, String coreProjectPath, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
-        super.configure(project, coreProjectPath, commonProjectPaths, defaults);
+    public void configure(Project project, String coreProjectPath, final Set<String> pluginProjectPaths, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
+        super.configure(project, coreProjectPath, pluginProjectPaths, commonProjectPaths, defaults);
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
 
