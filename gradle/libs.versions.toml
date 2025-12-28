@@ -1,5 +1,5 @@
 [versions]
-neogradle = "[7.1.4,)"
+neogradle = "7.1.14"
 loom = "1.13.6"
 maven-artifact = "3.8.1"
 
