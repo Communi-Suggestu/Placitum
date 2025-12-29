@@ -51,7 +51,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
     public AbstractPlatformProject() {
     }
 
-    static void excludeMinecraftDependencies(Dependency dependency) {
+    protected static void excludeMinecraftDependencies(Dependency dependency) {
         if (!(dependency instanceof ModuleDependency module)) {
             return;
         }
@@ -696,7 +696,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             }
 
             @Input
-            abstract Property<String> getVersion();
+            public abstract Property<String> getVersion();
 
             @Input
             abstract ListProperty<String> getAdditionalVersions();
@@ -727,10 +727,10 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
             }
 
             @Input
-            abstract Property<String> getVersion();
+            public abstract Property<String> getVersion();
 
             @Input
-            abstract Property<String> getMinecraftVersion();
+            public abstract Property<String> getMinecraftVersion();
 
             private void from(ObjectFactory objects, ProviderFactory providers, PlatformParchment parchment, PlatformMinecraft minecraft) {
                 getVersion().set(

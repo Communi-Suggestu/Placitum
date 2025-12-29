@@ -3,7 +3,8 @@ package com.communi.suggestu.placitum.platform;
 import com.communi.suggestu.placitum.core.AbstractPlatformProject;
 import com.communi.suggestu.placitum.core.CommonPlatformProject;
 import com.communi.suggestu.placitum.core.CorePlatformProject;
-import com.communi.suggestu.placitum.core.FabricPlatformProject;
+import com.communi.suggestu.placitum.core.fabric.NoneRemappingFabricPlatformProject;
+import com.communi.suggestu.placitum.core.fabric.RemappingFabricPlatformProject;
 import com.communi.suggestu.placitum.core.NeoForgePlatformProject;
 import com.communi.suggestu.placitum.core.PluginPlatformProject;
 import org.gradle.api.Action;
@@ -58,7 +59,20 @@ public abstract class SettingsPlatformExtension {
     }
 
     public void fabric(final String path) {
-        registerProject(path, ProjectDescriptor.loaderSpecific(p -> p.getObjects().newInstance(FabricPlatformProject.class)));
+        fabric(path, true);
+    }
+
+    public void modernFabric(final String path) {
+        fabric(path, false);
+    }
+
+    public void fabric(final String path, boolean obfuscated) {
+        registerProject(path, ProjectDescriptor.loaderSpecific(p -> {
+            if (obfuscated)
+                return p.getObjects().newInstance(RemappingFabricPlatformProject.class);
+
+            return p.getObjects().newInstance(NoneRemappingFabricPlatformProject.class);
+        }));
     }
 
     public void neoforge(final String path) {

@@ -1,24 +1,29 @@
-package com.communi.suggestu.placitum.core;
+package com.communi.suggestu.placitum.core.fabric;
 
-import net.fabricmc.loom.LoomGradlePlugin;
+import com.communi.suggestu.placitum.core.AbstractPlatformProject;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
-import net.fabricmc.loom.task.RemapJarTask;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
+import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ModuleDependency;
-import org.gradle.api.attributes.Attribute;
-import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.file.ArchiveOperations;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.*;
+import org.gradle.api.tasks.Copy;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.jetbrains.annotations.NotNull;
@@ -33,22 +38,22 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class FabricPlatformProject extends AbstractPlatformProject {
+public abstract class AbstractFabricPlatformProject extends AbstractPlatformProject
+{
 
     @Inject
-    public FabricPlatformProject() {
+    public AbstractFabricPlatformProject() {
         super();
     }
 
     @Inject
     public abstract ArchiveOperations getArchiveOperations();
 
-    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void configure(Project project, String coreProjectPath, final Set<String> pluginProjectPaths, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
         super.configure(project, coreProjectPath, pluginProjectPaths, commonProjectPaths, defaults);
 
-        project.getPlugins().apply(LoomGradlePlugin.class);
+        applyLoomPlugin(project);
 
         commonProjectPaths.add(coreProjectPath);
         final Set<Project> commonProjects = commonProjectPaths.stream()
@@ -69,31 +74,11 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
             processCommonLikeProject(project, pluginProject, false);
         }
 
-        final Attribute<@NotNull Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
-        project.getConfigurations().matching(config -> config.getName().startsWith("mod")).configureEach(config -> {
-            config.getAttributes().attribute(remappedAttribute, true);
-        });
-
-        project.getDependencies().addProvider("minecraft", platform.getMinecraft().getVersion()
-                .map("com.mojang:minecraft:%s"::formatted));
-        project.getDependencies().addProvider("modImplementation", platform.getFabric().getLoaderVersion()
-                .map("net.fabricmc:fabric-loader:%s"::formatted));
-        project.getDependencies().addProvider("modImplementation",
-                platform.getFabric().getApiVersion().zip(
-                        platform.getFabric().getFabricApiMinecraftVersion(),
-                        "net.fabricmc.fabric-api:fabric-api:%s+%s"::formatted
-                ));
+        setupMinecraftAndFabricDependencies(project, platform);
 
         final LoomGradleExtensionAPI loom = project.getExtensions().getByType(LoomGradleExtensionAPI.class);
 
-        project.getDependencies().addProvider("mappings",
-                platform.getParchment().getMinecraftVersion().zip(
-                        platform.getParchment().getVersion(),
-                        "org.parchmentmc.data:parchment-%s:%s@zip"::formatted
-                ).map(parchment -> loom.layered(layer -> {
-                    layer.officialMojangMappings();
-                    layer.parchment(parchment);
-                })));
+        setupMappings(project, platform, loom);
 
         loom.getAccessWidenerPath().set(platform.getFabric().getAccessWideners().map(
                 file -> {
@@ -107,9 +92,7 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
             processResources.from(platform.getFabric().getAccessWideners());
         });
 
-        project.getTasks().named("remapJar", RemapJarTask.class, task -> {
-            task.getAddNestedDependencies().set(true);
-        });
+        enableProjectDependenciesNesting(project);
 
         loom.getRuns().named("client", client -> {
             client.client();
@@ -184,9 +167,44 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
         project.getTasks().named("ideaSyncTask", idea -> {
             idea.finalizedBy(ideaSyncRegistrar);
         });
+
+        project.afterEvaluate(new Action<Project>() {
+            @Override
+            public void execute(final Project project)
+            {
+                final Platform platform = project.getExtensions().getByType(Platform.class);
+                final String minecraftVersion = platform.getMinecraft().getVersion().getOrElse("");
+                if (isObfuscated(minecraftVersion) != isObfuscated()) {
+                    throw new InvalidUserDataException("The Minecraft version specified uses a different obfuscation logic then specified for the fabric project. Please adapt!");
+                }
+            }
+        });
     }
 
-    private void processCommonLikeProject(final Project project, final Project commonProject, final boolean allowTransitive)
+    private static boolean isObfuscated(final String minecraftVersion) {
+        if (minecraftVersion.charAt(2) != '.')
+            return true;
+
+        final var yearNumberCandidate = minecraftVersion.split("\\.")[0];
+        try {
+            final var yearNumber = Integer.parseInt(yearNumberCandidate);
+            return yearNumber < 16;
+        } catch (NumberFormatException ignored) {
+            return true;
+        }
+    }
+
+    protected abstract boolean isObfuscated();
+
+    protected abstract void applyLoomPlugin(final Project project);
+
+    protected abstract void enableProjectDependenciesNesting(final Project project);
+
+    protected abstract void setupMappings(final Project project, final Platform platform, final LoomGradleExtensionAPI loom);
+
+    protected abstract void setupMinecraftAndFabricDependencies(final Project project, final Platform platform);
+
+    protected final void processCommonLikeProject(final Project project, final Project commonProject, final boolean allowTransitive)
     {
         final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
         excludeMinecraftDependencies(commonProjectDependency);
@@ -244,42 +262,10 @@ public abstract class FabricPlatformProject extends AbstractPlatformProject {
             task.getArchiveClassifier().set("%s-bundled".formatted(commonProjectName));
         });
 
-        final TaskProvider<@NotNull RemapJarTask> remapBundledTask = project.getTasks().register("remapBundled%s".formatted(commonProject.getName()), RemapJarTask.class, task -> {
-            task.dependsOn(bundleFmjTask);
-            task.getInputFile().set(bundleFmjTask.flatMap(Jar::getArchiveFile));
-            task.getArchiveClassifier().set("%s-remapped".formatted(commonProjectName));
-        });
-
-        project.getTasks().named("remapJar", RemapJarTask.class, task -> {
-            task.getNestedJars().from(remapBundledTask.flatMap(RemapJarTask::getArchiveFile));
-            task.dependsOn(remapBundledTask);
-        });
-
-        final Configuration outgoingRemappedElements = project.getConfigurations().maybeCreate("remappedRuntimeElements");
-        outgoingRemappedElements.setCanBeResolved(false);
-        outgoingRemappedElements.getDependencies().add(
-            project.getDependencies().project(Map.of(
-                "path", commonProject.getPath(),
-                "configuration", "runtimeElements"
-            ))
-        );
-
-        final Attribute<@NotNull Boolean> remappedAttribute = Attribute.of("net.fabric.loom.remapped", Boolean.class);
-        outgoingRemappedElements.getAttributes().attribute(remappedAttribute, true);
-
-        commonProject.getComponents().named("java", AdhocComponentWithVariants.class, component -> {
-            component.addVariantsFromConfiguration(outgoingRemappedElements, variant -> {
-                variant.mapToMavenScope("runtime");
-                variant.mapToOptional();
-            });
-        });
-
-        commonProject.getConfigurations().maybeCreate("remappedRuntimeElements");
-        commonProject.getArtifacts().add("remappedRuntimeElements", remapBundledTask.flatMap(RemapJarTask::getArchiveFile), artifact -> {
-            artifact.builtBy(remapBundledTask);
-            artifact.setType("jar");
-        });
+        includeAndExposeCommonProject(project, commonProject, bundleFmjTask, commonProjectName);
     }
+
+    protected abstract void includeAndExposeCommonProject(final Project project, final Project commonProject, final TaskProvider<Jar> bundleFmjTask, final String commonProjectName);
 
     @Override
     protected Platform registerPlatformExtension(Project project, AbstractPlatformProject.Platform defaults) {

@@ -4,10 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Fix an issue with plugin projects not properly being detected by NF">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Bump to the latest NG">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/AbstractFabricPlatformProject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/NoneRemappingFabricPlatformProject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/FabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/RemappingFabricPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/util/ValueCallable.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +54,13 @@
         </projects_view>
       </state>
     </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -99,6 +111,7 @@
       <recent name="com.communi.suggestu.placitum.core.AbstractPlatformProject" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.communi.suggestu.placitum.core.fabric" />
       <recent name="com.communi.suggestu.placitum.core" />
     </key>
   </component>
@@ -281,6 +294,8 @@
       <workItem from="1764096925718" duration="4543000" />
       <workItem from="1766577440695" duration="6471000" />
       <workItem from="1766924861714" duration="205000" />
+      <workItem from="1766926286678" duration="238000" />
+      <workItem from="1767031492346" duration="6040000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -482,7 +497,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766591209153</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="Bump to the latest NG">
+      <option name="closed" value="true" />
+      <created>1766926310864</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1766926310865</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -512,7 +535,8 @@
     <MESSAGE value="Fix issue where plugins and common projects where swapped" />
     <MESSAGE value="Disable transitive processing on plugins." />
     <MESSAGE value="Fix an issue with plugin projects not properly being detected by NF" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix an issue with plugin projects not properly being detected by NF" />
+    <MESSAGE value="Bump to the latest NG" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bump to the latest NG" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
