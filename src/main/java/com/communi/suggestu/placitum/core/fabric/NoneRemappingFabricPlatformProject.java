@@ -8,12 +8,14 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class NoneRemappingFabricPlatformProject extends AbstractFabricPlatformProject
 {
@@ -78,6 +80,15 @@ public abstract class NoneRemappingFabricPlatformProject extends AbstractFabricP
             });
         });
     }
+
+    @Override
+    protected Set<Configuration> getDependencyInterpolationConfigurations(Project project) {
+        return Set.of(
+            project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME),
+            project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME)
+        );
+    }
+
 
     @Override
     protected boolean isObfuscated()
