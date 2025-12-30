@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Add an overrideable NeoForm version property.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Support setting the common NeoForm version in Core modules as well.">
       <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -290,7 +289,7 @@
       <workItem from="1766924861714" duration="205000" />
       <workItem from="1766926286678" duration="238000" />
       <workItem from="1767031492346" duration="6341000" />
-      <workItem from="1767097368837" duration="1956000" />
+      <workItem from="1767097368837" duration="2213000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -516,14 +515,21 @@
       <option name="project" value="LOCAL" />
       <updated>1767102479282</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Support setting the common NeoForm version in Core modules as well.">
+      <option name="closed" value="true" />
+      <created>1767103637359</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1767103637359</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Update Gradle and library versions" />
     <MESSAGE value="Use NeoForm modules for core and common instead of Vanilla." />
     <MESSAGE value="Actually register the neoform ng module." />
     <MESSAGE value="Use a version range for neoform to be able to resolve it directly from the mc version." />
@@ -548,7 +554,8 @@
     <MESSAGE value="Bump to the latest NG" />
     <MESSAGE value="Update to the new NG and add support for not mapped fabric." />
     <MESSAGE value="Add an overrideable NeoForm version property." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add an overrideable NeoForm version property." />
+    <MESSAGE value="Support setting the common NeoForm version in Core modules as well." />
+    <option name="LAST_COMMIT_MESSAGE" value="Support setting the common NeoForm version in Core modules as well." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
