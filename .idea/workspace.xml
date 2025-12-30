@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Update to the new NG and add support for not mapped fabric.">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Add an overrideable NeoForm version property.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -290,7 +290,7 @@
       <workItem from="1766924861714" duration="205000" />
       <workItem from="1766926286678" duration="238000" />
       <workItem from="1767031492346" duration="6341000" />
-      <workItem from="1767097368837" duration="786000" />
+      <workItem from="1767097368837" duration="1956000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -508,14 +508,21 @@
       <option name="project" value="LOCAL" />
       <updated>1767041836993</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Add an overrideable NeoForm version property.">
+      <option name="closed" value="true" />
+      <created>1767102479282</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1767102479282</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Introduce" />
     <MESSAGE value="Update Gradle and library versions" />
     <MESSAGE value="Use NeoForm modules for core and common instead of Vanilla." />
     <MESSAGE value="Actually register the neoform ng module." />
@@ -540,7 +547,8 @@
     <MESSAGE value="Fix an issue with plugin projects not properly being detected by NF" />
     <MESSAGE value="Bump to the latest NG" />
     <MESSAGE value="Update to the new NG and add support for not mapped fabric." />
-    <option name="LAST_COMMIT_MESSAGE" value="Update to the new NG and add support for not mapped fabric." />
+    <MESSAGE value="Add an overrideable NeoForm version property." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add an overrideable NeoForm version property." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
