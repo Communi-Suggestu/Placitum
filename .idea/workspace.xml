@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Remove the modImplementation on interpolation." />
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Expand the version range pattern to include the required missing +">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -289,7 +292,7 @@
       <workItem from="1766926286678" duration="238000" />
       <workItem from="1767031492346" duration="6341000" />
       <workItem from="1767097368837" duration="2465000" />
-      <workItem from="1767104226493" duration="3961000" />
+      <workItem from="1767104226493" duration="4579000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -555,14 +558,21 @@
       <option name="project" value="LOCAL" />
       <updated>1767110571854</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Expand the version range pattern to include the required missing +">
+      <option name="closed" value="true" />
+      <created>1767112183242</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1767112183242</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Update neogradle version to 7.1.+ and fix registration issues in workspace.xml" />
     <MESSAGE value="Enhance Gradle configuration by exposing runtimeElements as a variant and adding an info task to log project version" />
     <MESSAGE value="Update neogradle version to a specific range and enhance workspace.xml configuration" />
     <MESSAGE value="Create a debugging task to emit interpolation keys" />
@@ -587,7 +597,8 @@
     <MESSAGE value="Request joined artifact" />
     <MESSAGE value="Use a common published configuration." />
     <MESSAGE value="Remove the modImplementation on interpolation." />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove the modImplementation on interpolation." />
+    <MESSAGE value="Expand the version range pattern to include the required missing +" />
+    <option name="LAST_COMMIT_MESSAGE" value="Expand the version range pattern to include the required missing +" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -503,13 +503,11 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
 
         private String toRange(boolean npmCompatible) {
             if (max == null || max.isBlank()) {
-                if (maxInclusive)
-                    throw new InvalidUserDataException("Dependency bound without maximum is specified as having a maximum that is inclusive");
-
-                return npmCompatible ? ">=%s".formatted(min) : "[%s,)".formatted(min);
+                if (!maxInclusive)
+                    return npmCompatible ? ">=%s".formatted(min) : "[%s,)".formatted(min);
             }
 
-            if (min.equals(max)) {
+            if (((max == null || max.isBlank()) && maxInclusive) || min.equals(max)) {
                 return npmCompatible ? "=%s".formatted(min) : "[%s]".formatted(min);
             }
 
