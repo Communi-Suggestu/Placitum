@@ -56,7 +56,7 @@ public final class CorePlatformProject extends AbstractPlatformProject implement
         var neoformVersionRange = platform.getNeoFormVersion().map(v -> this.createVersionRange(v));
 
         project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, neoformVersionRange
-                        .map("net.minecraft:neoform_client:%s"::formatted));
+                        .map("net.minecraft:neoform_joined:%s"::formatted));
 
         final Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);
         subsystems.parchment(parchment -> {

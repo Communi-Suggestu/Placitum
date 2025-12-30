@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Support setting the common NeoForm version in Core modules as well.">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Actually wire it into the neoform call for core.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -289,7 +290,8 @@
       <workItem from="1766924861714" duration="205000" />
       <workItem from="1766926286678" duration="238000" />
       <workItem from="1767031492346" duration="6341000" />
-      <workItem from="1767097368837" duration="2213000" />
+      <workItem from="1767097368837" duration="2465000" />
+      <workItem from="1767104226493" duration="15000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -523,14 +525,21 @@
       <option name="project" value="LOCAL" />
       <updated>1767103637359</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Actually wire it into the neoform call for core.">
+      <option name="closed" value="true" />
+      <created>1767103885223</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1767103885223</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Use NeoForm modules for core and common instead of Vanilla." />
     <MESSAGE value="Actually register the neoform ng module." />
     <MESSAGE value="Use a version range for neoform to be able to resolve it directly from the mc version." />
     <MESSAGE value="Fix an issue where we did not register the range." />
@@ -555,7 +564,8 @@
     <MESSAGE value="Update to the new NG and add support for not mapped fabric." />
     <MESSAGE value="Add an overrideable NeoForm version property." />
     <MESSAGE value="Support setting the common NeoForm version in Core modules as well." />
-    <option name="LAST_COMMIT_MESSAGE" value="Support setting the common NeoForm version in Core modules as well." />
+    <MESSAGE value="Actually wire it into the neoform call for core." />
+    <option name="LAST_COMMIT_MESSAGE" value="Actually wire it into the neoform call for core." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
