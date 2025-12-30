@@ -475,7 +475,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
         throw new InvalidUserDataException("Dependency does not have a version constraint or version specified");
     }
 
-    private static final Pattern VERSION_RANGE_PATTERN = Pattern.compile("(?<range>([(\\[])(?<min>[0-9a-zA-Z.\\-]+)(, ?(?<max>[0-9a-zA-Z.\\-]*))?)(?<closer>[)\\]])");
+    private static final Pattern VERSION_RANGE_PATTERN = Pattern.compile("(?<range>([(\\[])(?<min>[0-9a-zA-Z.\\-+]+)(, ?(?<max>[0-9a-zA-Z.\\-+]*))?)(?<closer>[)\\]])");
 
     protected static String createSupportedVersionRange(String versionRange, boolean npmCompatible) {
         if (versionRange.equals("+")) {
