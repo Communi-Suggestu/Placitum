@@ -67,7 +67,9 @@ public abstract class NoneRemappingFabricPlatformProject extends AbstractFabricP
             ))
         );
 
+        final Attribute<@NotNull Boolean> bundledAttribute = Attribute.of("net.fabric.loom.bundled", Boolean.class);
         final Configuration commonBundledElements = commonProject.getConfigurations().maybeCreate("bundledElements");
+        commonBundledElements.getAttributes().attribute(bundledAttribute, true);
         commonProject.getArtifacts().add("bundledElements", bundleFmjTask.flatMap(Jar::getArchiveFile), artifact -> {
             artifact.builtBy(bundleFmjTask);
             artifact.setType("jar");
