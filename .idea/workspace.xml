@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Bump to the latest NG">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/AbstractFabricPlatformProject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/NoneRemappingFabricPlatformProject.java" afterDir="false" />
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Update to the new NG and add support for not mapped fabric.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/FabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/RemappingFabricPlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/util/ValueCallable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -295,7 +289,8 @@
       <workItem from="1766577440695" duration="6471000" />
       <workItem from="1766924861714" duration="205000" />
       <workItem from="1766926286678" duration="238000" />
-      <workItem from="1767031492346" duration="6040000" />
+      <workItem from="1767031492346" duration="6341000" />
+      <workItem from="1767097368837" duration="786000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -505,7 +500,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766926310865</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Update to the new NG and add support for not mapped fabric.">
+      <option name="closed" value="true" />
+      <created>1767041836993</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1767041836993</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -536,7 +539,8 @@
     <MESSAGE value="Disable transitive processing on plugins." />
     <MESSAGE value="Fix an issue with plugin projects not properly being detected by NF" />
     <MESSAGE value="Bump to the latest NG" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bump to the latest NG" />
+    <MESSAGE value="Update to the new NG and add support for not mapped fabric." />
+    <option name="LAST_COMMIT_MESSAGE" value="Update to the new NG and add support for not mapped fabric." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -553,7 +557,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java</url>
-          <line>30</line>
+          <line>31</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
