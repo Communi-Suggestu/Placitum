@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Actually wire it into the neoform call for core.">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Request joined artifact">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/NoneRemappingFabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/NoneRemappingFabricPlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -291,7 +291,7 @@
       <workItem from="1766926286678" duration="238000" />
       <workItem from="1767031492346" duration="6341000" />
       <workItem from="1767097368837" duration="2465000" />
-      <workItem from="1767104226493" duration="15000" />
+      <workItem from="1767104226493" duration="2511000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -533,14 +533,21 @@
       <option name="project" value="LOCAL" />
       <updated>1767103885223</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Request joined artifact">
+      <option name="closed" value="true" />
+      <created>1767104250491</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1767104250491</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Actually register the neoform ng module." />
     <MESSAGE value="Use a version range for neoform to be able to resolve it directly from the mc version." />
     <MESSAGE value="Fix an issue where we did not register the range." />
     <MESSAGE value="Update neogradle version to 7.1.+ and fix registration issues in workspace.xml" />
@@ -565,7 +572,8 @@
     <MESSAGE value="Add an overrideable NeoForm version property." />
     <MESSAGE value="Support setting the common NeoForm version in Core modules as well." />
     <MESSAGE value="Actually wire it into the neoform call for core." />
-    <option name="LAST_COMMIT_MESSAGE" value="Actually wire it into the neoform call for core." />
+    <MESSAGE value="Request joined artifact" />
+    <option name="LAST_COMMIT_MESSAGE" value="Request joined artifact" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
