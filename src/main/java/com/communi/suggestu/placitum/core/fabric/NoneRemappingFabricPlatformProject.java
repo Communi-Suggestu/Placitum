@@ -2,6 +2,7 @@ package com.communi.suggestu.placitum.core.fabric;
 
 import net.fabricmc.loom.LoomNoRemapGradlePlugin;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
+import net.fabricmc.loom.task.NestJarsAction;
 import net.fabricmc.loom.util.Constants;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Project;
@@ -9,6 +10,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConsumableConfiguration;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
@@ -20,6 +22,7 @@ import java.util.Set;
 
 public abstract class NoneRemappingFabricPlatformProject extends AbstractFabricPlatformProject
 {
+
     @Inject
     public NoneRemappingFabricPlatformProject()
     {
@@ -60,31 +63,13 @@ public abstract class NoneRemappingFabricPlatformProject extends AbstractFabricP
     @Override
     protected void includeAndExposeCommonProject(final Project project, final Project commonProject, final TaskProvider<Jar> bundleFmjTask, final String commonProjectName)
     {
+        final ConfigurableFileCollection collection = project.files(bundleFmjTask.flatMap(Jar::getArchiveFile));
+        collection.builtBy(bundleFmjTask);
 
-        final Configuration include = project.getConfigurations().maybeCreate(Constants.Configurations.INCLUDE);
-        include.getDependencies().add(
-            project.getDependencies().project(Map.of(
-                "path", commonProject.getPath(),
-                "configuration", "bundledElements"
-            ))
-        );
-
-        final Attribute<@NotNull Boolean> bundledAttribute = Attribute.of("net.fabric.loom.bundled", Boolean.class);
-        final NamedDomainObjectProvider<ConsumableConfiguration> bundledConfigProvider = commonProject.getConfigurations().consumable("bundledElements");
-        bundledConfigProvider
-            .configure(config -> {
-                config.getAttributes().attribute(bundledAttribute, true);
-            });
-        commonProject.getArtifacts().add("bundledElements", bundleFmjTask.flatMap(Jar::getArchiveFile), artifact -> {
-            artifact.builtBy(bundleFmjTask);
-            artifact.setType("jar");
-        });
-
-        commonProject.getComponents().named("java", AdhocComponentWithVariants.class, component -> {
-            component.addVariantsFromConfiguration(bundledConfigProvider.get(), variant -> {
-                variant.mapToMavenScope("runtime");
-                variant.mapToOptional();
-            });
+        final TaskProvider<Jar> jarTask = project.getTasks().named("jar", Jar.class);
+        jarTask.configure(task -> {
+            NestJarsAction.addToTask(task, collection);
+            task.dependsOn(bundleFmjTask);
         });
     }
 
