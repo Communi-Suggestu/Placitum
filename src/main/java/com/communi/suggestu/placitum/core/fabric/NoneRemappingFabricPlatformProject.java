@@ -2,10 +2,11 @@ package com.communi.suggestu.placitum.core.fabric;
 
 import net.fabricmc.loom.LoomNoRemapGradlePlugin;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
-import net.fabricmc.loom.task.RemapJarTask;
 import net.fabricmc.loom.util.Constants;
+import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConsumableConfiguration;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.plugins.JavaPlugin;
@@ -20,7 +21,8 @@ import java.util.Set;
 public abstract class NoneRemappingFabricPlatformProject extends AbstractFabricPlatformProject
 {
     @Inject
-    public NoneRemappingFabricPlatformProject() {
+    public NoneRemappingFabricPlatformProject()
+    {
         super();
     }
 
@@ -68,15 +70,18 @@ public abstract class NoneRemappingFabricPlatformProject extends AbstractFabricP
         );
 
         final Attribute<@NotNull Boolean> bundledAttribute = Attribute.of("net.fabric.loom.bundled", Boolean.class);
-        final Configuration commonBundledElements = commonProject.getConfigurations().maybeCreate("bundledElements");
-        commonBundledElements.getAttributes().attribute(bundledAttribute, true);
+        final NamedDomainObjectProvider<ConsumableConfiguration> bundledConfigProvider = commonProject.getConfigurations().consumable("bundledElements");
+        bundledConfigProvider
+            .configure(config -> {
+                config.getAttributes().attribute(bundledAttribute, true);
+            });
         commonProject.getArtifacts().add("bundledElements", bundleFmjTask.flatMap(Jar::getArchiveFile), artifact -> {
             artifact.builtBy(bundleFmjTask);
             artifact.setType("jar");
         });
 
         commonProject.getComponents().named("java", AdhocComponentWithVariants.class, component -> {
-            component.addVariantsFromConfiguration(commonBundledElements, variant -> {
+            component.addVariantsFromConfiguration(bundledConfigProvider.get(), variant -> {
                 variant.mapToMavenScope("runtime");
                 variant.mapToOptional();
             });
@@ -84,13 +89,13 @@ public abstract class NoneRemappingFabricPlatformProject extends AbstractFabricP
     }
 
     @Override
-    protected Set<Configuration> getDependencyInterpolationConfigurations(Project project) {
+    protected Set<Configuration> getDependencyInterpolationConfigurations(Project project)
+    {
         return Set.of(
             project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME),
             project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME)
         );
     }
-
 
     @Override
     protected boolean isObfuscated()
