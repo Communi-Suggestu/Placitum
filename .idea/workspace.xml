@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Bump NeoGradle">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Specify the attribute for the bundled configuration.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/NoneRemappingFabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/NoneRemappingFabricPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,29 +78,29 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.Placitum [assemble].executor": "Run",
-    "Gradle.Placitum [info].executor": "Run",
-    "Gradle.Placitum [publishToMavenLocal].executor": "Run",
-    "Gradle.Placitum [wrapper --gradle-version=9.1.0].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Remote JVM Debug.Unnamed.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last.edited.regexp": "[26.1.0.0-alpha.3+snapshot-1]",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Placitum [assemble].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Placitum [info].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Placitum [publishToMavenLocal].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Placitum [wrapper --gradle-version=9.1.0].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Remote JVM Debug.Unnamed.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last.edited.regexp&quot;: &quot;[26.1.0.0-alpha.3+snapshot-1]&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveMembersDialog.RECENTS_KEY">
       <recent name="com.communi.suggestu.placitum.core.AbstractPlatformProject" />
@@ -292,7 +292,8 @@
       <workItem from="1766926286678" duration="238000" />
       <workItem from="1767031492346" duration="6341000" />
       <workItem from="1767097368837" duration="2465000" />
-      <workItem from="1767104226493" duration="6626000" />
+      <workItem from="1767104226493" duration="6932000" />
+      <workItem from="1767176769993" duration="15000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -582,14 +583,21 @@
       <option name="project" value="LOCAL" />
       <updated>1767127281900</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Specify the attribute for the bundled configuration.">
+      <option name="closed" value="true" />
+      <created>1767129574830</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1767129574830</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Create a debugging task to emit interpolation keys" />
     <MESSAGE value="Fix bug" />
     <MESSAGE value="Add support for providers." />
     <MESSAGE value="Emit intermediary keys" />
@@ -614,7 +622,8 @@
     <MESSAGE value="Expand the version range pattern to include the required missing +" />
     <MESSAGE value="Support direct bounds" />
     <MESSAGE value="Bump NeoGradle" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bump NeoGradle" />
+    <MESSAGE value="Specify the attribute for the bundled configuration." />
+    <option name="LAST_COMMIT_MESSAGE" value="Specify the attribute for the bundled configuration." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
