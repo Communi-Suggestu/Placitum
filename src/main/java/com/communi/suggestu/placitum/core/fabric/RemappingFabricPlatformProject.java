@@ -7,6 +7,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.jetbrains.annotations.NotNull;
@@ -67,6 +68,8 @@ public abstract class RemappingFabricPlatformProject extends AbstractFabricPlatf
 
     protected void includeAndExposeCommonProject(final Project project, final Project commonProject, final TaskProvider<@NotNull Jar> bundleFmjTask, final String commonProjectName)
     {
+        commonProject.getPlugins().apply("java");
+
         final TaskProvider<@NotNull RemapJarTask> remapBundledTask = project.getTasks().register("remapBundled%s".formatted(commonProject.getName()), RemapJarTask.class, task -> {
             task.dependsOn(bundleFmjTask);
             task.getInputFile().set(bundleFmjTask.flatMap(Jar::getArchiveFile));

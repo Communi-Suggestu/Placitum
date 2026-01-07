@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Fix issues with including common projects.">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Handle project configuration order?">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/AbstractFabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/AbstractFabricPlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/RemappingFabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/RemappingFabricPlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -295,7 +294,7 @@
       <workItem from="1767097368837" duration="2465000" />
       <workItem from="1767104226493" duration="6932000" />
       <workItem from="1767176769993" duration="15000" />
-      <workItem from="1767807061898" duration="1930000" />
+      <workItem from="1767807061898" duration="3133000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -601,14 +600,21 @@
       <option name="project" value="LOCAL" />
       <updated>1767199769776</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="Handle project configuration order?">
+      <option name="closed" value="true" />
+      <created>1767815331661</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1767815331661</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add support for providers." />
     <MESSAGE value="Emit intermediary keys" />
     <MESSAGE value="When the version range for NeoForm contains a dash then limit the supported MC version to that exact version." />
     <MESSAGE value="Add support for distinct minecraft version on the fabric API" />
@@ -633,7 +639,8 @@
     <MESSAGE value="Bump NeoGradle" />
     <MESSAGE value="Specify the attribute for the bundled configuration." />
     <MESSAGE value="Fix issues with including common projects." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix issues with including common projects." />
+    <MESSAGE value="Handle project configuration order?" />
+    <option name="LAST_COMMIT_MESSAGE" value="Handle project configuration order?" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
