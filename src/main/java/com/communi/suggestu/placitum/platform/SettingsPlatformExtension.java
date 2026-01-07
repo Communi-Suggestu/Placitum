@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -27,7 +28,7 @@ public abstract class SettingsPlatformExtension {
     public static final String EXTENSION_NAME = "platforms";
 
     private final Settings settings;
-    private final Map<String, ProjectDescriptor> knownDynamicDescriptors = new HashMap<>();
+    private final Map<String, ProjectDescriptor> knownDynamicDescriptors = new LinkedHashMap<>();
 
     private final AbstractPlatformProject.Platform defaults;
 

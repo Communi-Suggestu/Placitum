@@ -253,7 +253,10 @@ public abstract class AbstractFabricPlatformProject extends AbstractPlatformProj
                     return targetFile;
                 });
 
-        final TaskProvider<@NotNull Jar> jarTask = commonProject.getTasks().named("jar", Jar.class);
+        final TaskProvider<@NotNull Jar> jarTask =
+            commonProject.getTasks().getNames().contains("jar") ?
+            commonProject.getTasks().named("jar", Jar.class) :
+            commonProject.getTasks().register("jar", Jar.class);
 
         final Provider<@NotNull FileTree> compiledJarTree = jarTask.flatMap(Jar::getArchiveFile).map(getArchiveOperations()::zipTree);
         final TaskProvider<@NotNull Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
