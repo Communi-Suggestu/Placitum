@@ -2,6 +2,7 @@ package com.communi.suggestu.placitum.core.fabric;
 
 import com.communi.suggestu.placitum.core.AbstractPlatformProject;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
+import org.apache.commons.lang3.StringUtils;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.InvalidUserDataException;
@@ -10,6 +11,7 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ModuleDependency;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.file.ArchiveOperations;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.file.RegularFileProperty;
@@ -253,12 +255,18 @@ public abstract class AbstractFabricPlatformProject extends AbstractPlatformProj
                     return targetFile;
                 });
 
-        final TaskProvider<@NotNull Jar> jarTask =
-            commonProject.getTasks().getNames().contains("jar") ?
-            commonProject.getTasks().named("jar", Jar.class) :
-            commonProject.getTasks().register("jar", Jar.class);
+        final Configuration consumesCommonProject = project.getConfigurations()
+            .create("consumes" + StringUtils.capitalize(commonProjectName));
+        consumesCommonProject.getDependencies().add(
+            project.getDependencies().create(commonProject)
+        );
 
-        final Provider<@NotNull FileTree> compiledJarTree = jarTask.flatMap(Jar::getArchiveFile).map(getArchiveOperations()::zipTree);
+        final Provider<@NotNull FileTree> compiledJarTree =
+            consumesCommonProject.getIncoming().getArtifacts()
+                .getResolvedArtifacts()
+                .map(resolvedArtifactResults -> resolvedArtifactResults.iterator().next())
+                .map(ResolvedArtifactResult::getFile)
+                .map(project::zipTree);
         final TaskProvider<@NotNull Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
             task.from(compiledJarTree);
             task.from(metadataGenerationFile);

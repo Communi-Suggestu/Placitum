@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Try applying the java project to the common project?">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Depend on the evaluation of the plugin and common project?">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/AbstractFabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/AbstractFabricPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/RemappingFabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/RemappingFabricPlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -295,7 +297,8 @@
       <workItem from="1767104226493" duration="6932000" />
       <workItem from="1767176769993" duration="15000" />
       <workItem from="1767807061898" duration="5059000" />
-      <workItem from="1767886980608" duration="199000" />
+      <workItem from="1767886980608" duration="955000" />
+      <workItem from="1767891235598" duration="1736000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -617,14 +620,21 @@
       <option name="project" value="LOCAL" />
       <updated>1767817140876</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Depend on the evaluation of the plugin and common project?">
+      <option name="closed" value="true" />
+      <created>1767887198118</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1767887198118</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="When the version range for NeoForm contains a dash then limit the supported MC version to that exact version." />
     <MESSAGE value="Add support for distinct minecraft version on the fabric API" />
     <MESSAGE value="Fix Fabric extension initialization by passing project and settings" />
     <MESSAGE value="Force 1.13.6 loom" />
@@ -649,7 +659,8 @@
     <MESSAGE value="Fix issues with including common projects." />
     <MESSAGE value="Handle project configuration order?" />
     <MESSAGE value="Try applying the java project to the common project?" />
-    <option name="LAST_COMMIT_MESSAGE" value="Try applying the java project to the common project?" />
+    <MESSAGE value="Depend on the evaluation of the plugin and common project?" />
+    <option name="LAST_COMMIT_MESSAGE" value="Depend on the evaluation of the plugin and common project?" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
