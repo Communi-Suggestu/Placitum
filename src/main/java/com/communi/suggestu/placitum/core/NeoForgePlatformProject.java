@@ -95,6 +95,8 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
             jarJar.pin(commonProjectDependency, commonProject.getVersion().toString());
 
             project.getDependencies().add(JarJar.EXTENSION_NAME, commonProjectDependency);
+
+            project.evaluationDependsOn(commonProject.getPath());
         }
 
         for (Project pluginProject : pluginProjects)
@@ -112,6 +114,8 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
             jarJar.pin(pluginProjectDependency, pluginProject.getVersion().toString());
 
             project.getDependencies().add(JarJar.EXTENSION_NAME, pluginProjectDependency);
+
+            project.evaluationDependsOn(pluginProject.getPath());
         }
 
         final Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);
