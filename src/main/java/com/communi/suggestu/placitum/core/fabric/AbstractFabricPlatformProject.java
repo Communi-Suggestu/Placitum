@@ -266,7 +266,7 @@ public abstract class AbstractFabricPlatformProject extends AbstractPlatformProj
                 .getResolvedArtifacts()
                 .map(resolvedArtifactResults -> resolvedArtifactResults.iterator().next())
                 .map(ResolvedArtifactResult::getFile)
-                .map(project::zipTree);
+                .map(getArchiveOperations()::zipTree);
         final TaskProvider<@NotNull Jar> bundleFmjTask = project.getTasks().register("bundleFmj%s".formatted(commonProject.getName()), Jar.class, task -> {
             task.from(compiledJarTree);
             task.from(metadataGenerationFile);
