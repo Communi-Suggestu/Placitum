@@ -562,6 +562,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
     private static @NotNull String createSupportedVersionRange(boolean npmCompatible, List<ComparableVersion> versions) {
         if (!npmCompatible) {
             return versions.stream()
+                    .sorted(ComparableVersion::compareTo)
                     .map(ComparableVersion::toString)
                     .map("[%s]"::formatted)
                     .collect(Collectors.joining(","));
@@ -569,6 +570,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
 
         //This format supports all available versions directly.
         return versions.stream()
+                .sorted(ComparableVersion::compareTo)
                 .map(ComparableVersion::toString)
                 .map("\"=%s\""::formatted)
                 .collect(Collectors.joining(", "));
