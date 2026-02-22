@@ -11,6 +11,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.SourceSet;
@@ -54,10 +55,10 @@ public final class PluginPlatformProject extends AbstractPlatformProject impleme
             apiConfiguration.getDependencies().add(commonProjectDependency);
         }
 
-        var neoformVersionRange = platform.getMinecraft().getVersion().map(v -> this.createVersionRange(v));
+        var neoformVersionRange = platform.getNeoFormVersion().map(v -> this.createVersionRange(v));
 
         project.getDependencies().addProvider(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, neoformVersionRange
-                        .map("net.minecraft:neoform_client:%s"::formatted));
+            .map("net.minecraft:neoform_joined:%s"::formatted));
 
         final Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);
         subsystems.parchment(parchment -> {
@@ -103,9 +104,12 @@ public final class PluginPlatformProject extends AbstractPlatformProject impleme
         @Inject
         public Platform(Project project, final AbstractPlatformProject.Platform settings) {
             super(project, settings);
+            getNeoFormVersion().convention(project.getProviders().gradleProperty("common.neoform.version").map(String::trim).orElse(getMinecraft().getVersion()));
         }
 
         @InputFiles
         public abstract ConfigurableFileCollection getAccessTransformers();
+
+        public abstract Property<String> getNeoFormVersion();
     }
 }
