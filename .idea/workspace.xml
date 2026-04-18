@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Sort the comparable versions for multi minecraft versions.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" afterDir="false" />
-    </list>
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Update NeoForm version handling in PluginPlatformProject" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -307,7 +304,7 @@
       <workItem from="1769193758886" duration="1209000" />
       <workItem from="1769332136255" duration="297000" />
       <workItem from="1769333456586" duration="1600000" />
-      <workItem from="1771786595282" duration="121000" />
+      <workItem from="1771786595282" duration="188000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -661,7 +658,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767991212652</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="Update NeoForm version handling in PluginPlatformProject">
+      <option name="closed" value="true" />
+      <created>1771786737584</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1771786737584</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -679,7 +684,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Register loom companion gradle plugin to all projects." />
     <MESSAGE value="Add support for plugins." />
     <MESSAGE value="Wire plugins into the plugins directory." />
     <MESSAGE value="Fix issue where plugins and common projects where swapped" />
@@ -704,7 +708,8 @@
     <MESSAGE value="Handle fabric remapped project dependencies differently by not exposing them" />
     <MESSAGE value="Remove usage of project in project consumption." />
     <MESSAGE value="Sort the comparable versions for multi minecraft versions." />
-    <option name="LAST_COMMIT_MESSAGE" value="Sort the comparable versions for multi minecraft versions." />
+    <MESSAGE value="Update NeoForm version handling in PluginPlatformProject" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update NeoForm version handling in PluginPlatformProject" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
