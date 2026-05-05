@@ -60,6 +60,8 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
     protected static ProblemGroup NEOFORGE_GROUP      = ProblemGroup.create("placitum-neoforge", "Neoforge", PLACITUM_GROUP);
     protected static ProblemId    MISSING_NEOFORGE_ID = ProblemId.create("placitum-neoforge-missing-neoforge", "Missing neoforge version", NEOFORGE_GROUP);
 
+    private static final String COMPILE_ONLY_API_ELEMENTS_CONFIGURATION_NAME = "compileOnlyButApiElements";
+
     @SuppressWarnings({"UnstableApiUsage", "deprecation"})
     @Override
     public void configure(Project project, String coreProjectPath, final Set<String> pluginProjectPaths, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults)
@@ -83,13 +85,19 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
         final JarJar jarJar = project.getExtensions().getByType(JarJar.class);
         jarJar.enable();
 
+        final Configuration compileOnlyButApiElements = project.getConfigurations().maybeCreate(COMPILE_ONLY_API_ELEMENTS_CONFIGURATION_NAME);
+        final Configuration compileOnly = project.getConfigurations().maybeCreate(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME);
+        final Configuration apiElements = project.getConfigurations().maybeCreate(JavaPlugin.API_ELEMENTS_CONFIGURATION_NAME);
+
+        compileOnly.extendsFrom(compileOnlyButApiElements);
+        apiElements.extendsFrom(compileOnlyButApiElements);
+
         for (Project commonProject : commonProjects)
         {
             final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
             excludeMinecraftDependencies(commonProjectDependency);
 
-            final Configuration apiConfiguration = project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME);
-            apiConfiguration.getDependencies().add(commonProjectDependency);
+            compileOnlyButApiElements.getDependencies().add(commonProjectDependency);
 
             jarJar.ranged(commonProjectDependency, "[%s]".formatted(commonProject.getVersion()));
             jarJar.pin(commonProjectDependency, commonProject.getVersion().toString());
@@ -107,8 +115,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
                 moduleDependency.setTransitive(false);
             }
 
-            final Configuration apiConfiguration = project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME);
-            apiConfiguration.getDependencies().add(pluginProjectDependency);
+            compileOnlyButApiElements.getDependencies().add(pluginProjectDependency);
 
             jarJar.ranged(pluginProjectDependency, "[%s]".formatted(pluginProject.getVersion()));
             jarJar.pin(pluginProjectDependency, pluginProject.getVersion().toString());
@@ -319,7 +326,8 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
             project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME),
             project.getConfigurations().getByName(JavaPlugin.API_CONFIGURATION_NAME),
             project.getConfigurations().getByName("includedLibraries"),
-            project.getConfigurations().getByName(JavaPlugin.RUNTIME_ONLY_CONFIGURATION_NAME)
+            project.getConfigurations().getByName(JavaPlugin.RUNTIME_ONLY_CONFIGURATION_NAME),
+            project.getConfigurations().getByName(COMPILE_ONLY_API_ELEMENTS_CONFIGURATION_NAME)
         );
     }
 

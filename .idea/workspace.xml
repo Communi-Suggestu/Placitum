@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Update NeoGradle version to 7.1.22 and adjust workspace settings">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Update NeoGradle version to 7.1.25 and adjust workspace settings">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,30 +83,30 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.Placitum [assemble].executor": "Run",
-    "Gradle.Placitum [info].executor": "Run",
-    "Gradle.Placitum [publishToMavenLocal].executor": "Run",
-    "Gradle.Placitum [wrapper --gradle-version=9.1.0].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Remote JVM Debug.Unnamed.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last.edited.regexp": "[26.1.0.0-alpha.3+snapshot-1]",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Placitum [assemble].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Placitum [info].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Placitum [publishToMavenLocal].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Placitum [wrapper --gradle-version=9.1.0].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Remote JVM Debug.Unnamed.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last.edited.regexp&quot;: &quot;[26.1.0.0-alpha.3+snapshot-1]&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveMembersDialog.RECENTS_KEY">
       <recent name="com.communi.suggestu.placitum.core.AbstractPlatformProject" />
@@ -308,7 +309,8 @@
       <workItem from="1769332136255" duration="297000" />
       <workItem from="1769333456586" duration="1600000" />
       <workItem from="1771786595282" duration="188000" />
-      <workItem from="1776512046816" duration="836000" />
+      <workItem from="1776512046816" duration="1603000" />
+      <workItem from="1778011754645" duration="421000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -678,7 +680,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776512062042</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="Update NeoGradle version to 7.1.25 and adjust workspace settings">
+      <option name="closed" value="true" />
+      <created>1776526840121</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1776526840121</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -696,7 +706,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Wire plugins into the plugins directory." />
     <MESSAGE value="Fix issue where plugins and common projects where swapped" />
     <MESSAGE value="Disable transitive processing on plugins." />
     <MESSAGE value="Fix an issue with plugin projects not properly being detected by NF" />
@@ -721,19 +730,20 @@
     <MESSAGE value="Sort the comparable versions for multi minecraft versions." />
     <MESSAGE value="Update NeoForm version handling in PluginPlatformProject" />
     <MESSAGE value="Update NeoGradle version to 7.1.22 and adjust workspace settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update NeoGradle version to 7.1.22 and adjust workspace settings" />
+    <MESSAGE value="Update NeoGradle version to 7.1.25 and adjust workspace settings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update NeoGradle version to 7.1.25 and adjust workspace settings" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java</url>
-          <line>224</line>
+          <line>231</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java</url>
-          <line>211</line>
+          <line>218</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
