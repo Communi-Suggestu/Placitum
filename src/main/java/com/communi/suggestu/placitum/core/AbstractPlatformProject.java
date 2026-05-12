@@ -5,6 +5,8 @@ import com.communi.suggestu.placitum.platform.ProjectModules;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.fabricmc.loom.LoomCompanionGradlePlugin;
+import net.neoforged.gradle.common.extensions.IdeManagementExtension;
+import net.neoforged.gradle.dsl.common.runs.idea.extensions.IdeaRunsExtension;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.gradle.api.Action;
@@ -15,6 +17,7 @@ import org.gradle.api.artifacts.*;
 import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.BasePluginExtension;
+import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.problems.ProblemGroup;
 import org.gradle.api.provider.ListProperty;
@@ -28,6 +31,8 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.jvm.tasks.Jar;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.language.jvm.tasks.ProcessResources;
+import org.gradle.plugins.ide.idea.model.IdeaModel;
+import org.gradle.plugins.ide.idea.model.IdeaProject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -446,6 +451,12 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
 
             return createSupportedVersionRange(npmCompatible, versions);
         });
+    }
+
+    protected final boolean shouldAttachSources(Project project) {
+        final IdeManagementExtension ideManagementExtension = project.getExtensions().getByType(IdeManagementExtension.class);
+        return ideManagementExtension.isIdeaAttached() && ideManagementExtension.isIdeaSyncing() &&
+            isRunningWithIdea(project);
     }
 
     protected final boolean isRunningWithIdea(Project project) {

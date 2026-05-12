@@ -4,10 +4,12 @@ import com.communi.suggestu.placitum.platform.ProjectModules;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import net.neoforged.gradle.common.extensions.IdeManagementExtension;
 import net.neoforged.gradle.dsl.common.extensions.AccessTransformers;
 import net.neoforged.gradle.dsl.common.extensions.JarJar;
 import net.neoforged.gradle.dsl.common.extensions.Minecraft;
 import net.neoforged.gradle.dsl.common.extensions.sourceset.RunnableSourceSet;
+import net.neoforged.gradle.dsl.common.extensions.subsystems.Conventions;
 import net.neoforged.gradle.dsl.common.extensions.subsystems.Subsystems;
 import net.neoforged.gradle.dsl.common.runs.idea.extensions.IdeaRunsExtension;
 import net.neoforged.gradle.dsl.common.runs.run.RunManager;
@@ -40,7 +42,6 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
-import org.gradle.buildinit.plugins.internal.ProjectGenerator;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.gradle.plugins.ide.idea.model.IdeaProject;
@@ -73,6 +74,9 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
 
         project.getPlugins().apply(UserDevPlugin.class);
 
+        Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);
+        subsystems.getConventions().getIde().getIdea().getShouldUseCompilerDetection().set(true);
+
         final Set<Project> commonProjects = projectModules.commonProjects().stream()
             .map(project::project)
             .collect(Collectors.toSet());
@@ -100,6 +104,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
         final Configuration compileOnlyButApiElements = project.getConfigurations().maybeCreate(COMPILE_ONLY_API_ELEMENTS_CONFIGURATION_NAME);
         final Configuration compileOnly = project.getConfigurations().maybeCreate(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME);
         final Configuration apiElements = project.getConfigurations().maybeCreate(JavaPlugin.API_ELEMENTS_CONFIGURATION_NAME);
+        final Configuration api = project.getConfigurations().maybeCreate(JavaPlugin.API_CONFIGURATION_NAME);
 
         compileOnly.extendsFrom(compileOnlyButApiElements);
         apiElements.extendsFrom(compileOnlyButApiElements);
@@ -109,7 +114,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
             final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
             excludeMinecraftDependencies(commonProjectDependency);
 
-            compileOnlyButApiElements.getDependencies().add(commonProjectDependency);
+            api.getDependencies().add(commonProjectDependency);
 
             jarJar.ranged(commonProjectDependency, "[%s]".formatted(commonProject.getVersion()));
             jarJar.pin(commonProjectDependency, commonProject.getVersion().toString());
@@ -127,7 +132,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
                 moduleDependency.setTransitive(false);
             }
 
-            compileOnlyButApiElements.getDependencies().add(pluginProjectDependency);
+            api.getDependencies().add(pluginProjectDependency);
 
             if (includedPluginProjects.contains(pluginProject)) {
                 jarJar.ranged(pluginProjectDependency, "[%s]".formatted(pluginProject.getVersion()));
@@ -137,7 +142,6 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
             }
         }
 
-        final Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);
         subsystems.parchment(parchment -> {
             parchment.getMinecraftVersion().set(platform.getParchment().getMinecraftVersion());
             parchment.getMappingsVersion().set(platform.getParchment().getVersion());
@@ -233,7 +237,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
 
             // When we are running with IDEA, we need to add the common projects to the run configuration
             // When running with gradle or eclipse, they are automatically present.
-            if (isRunningWithIdea(project))
+            if (shouldAttachSources(project))
             {
                 run.modSources(
                     commonProjects.stream().map(p -> p.getExtensions().getByType(SourceSetContainer.class))
@@ -263,15 +267,6 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
         project.getTasks().named(BasePlugin.ASSEMBLE_TASK_NAME, task -> {
             task.dependsOn(jarJarTask);
         });
-
-        if (isRunningWithIdea(project))
-        {
-            final Project rootProject = project.getRootProject();
-            final IdeaModel ideaModel = rootProject.getExtensions().getByType(IdeaModel.class);
-            final IdeaProject ideaProject = ideaModel.getProject();
-            final IdeaRunsExtension ideaRunsExtension = ((ExtensionAware) ideaProject).getExtensions().getByType(IdeaRunsExtension.class);
-            ideaRunsExtension.getRunWithIdea().set(true);
-        }
     }
 
     private Action<@NotNull Task> setArchiveClassifier(String classifier)
