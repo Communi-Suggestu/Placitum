@@ -1,7 +1,9 @@
 package com.communi.suggestu.placitum.core;
 
+import com.communi.suggestu.placitum.platform.ProjectModules;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import net.neoforged.gradle.dsl.common.extensions.AccessTransformers;
 import net.neoforged.gradle.dsl.common.extensions.JarJar;
 import net.neoforged.gradle.dsl.common.extensions.Minecraft;
@@ -38,6 +40,7 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.buildinit.plugins.internal.ProjectGenerator;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.gradle.plugins.ide.idea.model.IdeaProject;
@@ -64,21 +67,30 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
 
     @SuppressWarnings({"UnstableApiUsage", "deprecation"})
     @Override
-    public void configure(Project project, String coreProjectPath, final Set<String> pluginProjectPaths, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults)
+    public void configure(Project project, final ProjectModules projectModules, AbstractPlatformProject.Platform defaults)
     {
-        super.configure(project, coreProjectPath, pluginProjectPaths, commonProjectPaths, defaults);
+        super.configure(project, projectModules, defaults);
 
         project.getPlugins().apply(UserDevPlugin.class);
 
-        commonProjectPaths.add(coreProjectPath);
-        final Set<Project> commonProjects = commonProjectPaths.stream()
+        final Set<Project> commonProjects = projectModules.commonProjects().stream()
             .map(project::project)
             .collect(Collectors.toSet());
-        final Set<Project> pluginProjects = pluginProjectPaths.stream()
+        commonProjects.add(project.project(projectModules.coreCodeProject()));
+
+        final Set<Project> allPluginProjects = projectModules.pluginProjects().stream()
             .map(project::project)
             .collect(Collectors.toSet());
 
-        final Project coreProject = project.project(coreProjectPath);
+        final Set<Project> includedPluginProjects = Sets.newHashSet(allPluginProjects);
+
+        allPluginProjects.addAll(
+            projectModules.devPluginProjects().stream()
+                .map(project::project)
+                .collect(Collectors.toSet())
+        );
+
+        final Project coreProject = project.project(projectModules.coreCodeProject());
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
 
@@ -107,7 +119,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
             project.evaluationDependsOn(commonProject.getPath());
         }
 
-        for (Project pluginProject : pluginProjects)
+        for (Project pluginProject : allPluginProjects)
         {
             final Dependency pluginProjectDependency = project.getDependencies().create(pluginProject);
             excludeMinecraftDependencies(pluginProjectDependency);
@@ -117,12 +129,12 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
 
             compileOnlyButApiElements.getDependencies().add(pluginProjectDependency);
 
-            jarJar.ranged(pluginProjectDependency, "[%s]".formatted(pluginProject.getVersion()));
-            jarJar.pin(pluginProjectDependency, pluginProject.getVersion().toString());
+            if (includedPluginProjects.contains(pluginProject)) {
+                jarJar.ranged(pluginProjectDependency, "[%s]".formatted(pluginProject.getVersion()));
+                jarJar.pin(pluginProjectDependency, pluginProject.getVersion().toString());
 
-            project.getDependencies().add(JarJar.EXTENSION_NAME, pluginProjectDependency);
-
-            project.evaluationDependsOn(pluginProject.getPath());
+                project.getDependencies().add(JarJar.EXTENSION_NAME, pluginProjectDependency);
+            }
         }
 
         final Subsystems subsystems = project.getExtensions().getByType(Subsystems.class);
@@ -204,7 +216,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
                     .map(p -> p.file("src/main/resources").getAbsolutePath())
                     .flatMap(f -> Stream.of("--existing", f))
                     .toList());
-                modOutputArguments.addAll(pluginProjects.stream()
+                modOutputArguments.addAll(allPluginProjects.stream()
                     .map(p -> p.file("src/main/resources").getAbsolutePath())
                     .flatMap(f -> Stream.of("--existing", f))
                     .toList());
@@ -230,7 +242,7 @@ public abstract class NeoForgePlatformProject extends AbstractPlatformProject
                 );
 
                 run.modSources(
-                    pluginProjects.stream().map(p -> p.getExtensions().getByType(SourceSetContainer.class))
+                    allPluginProjects.stream().map(p -> p.getExtensions().getByType(SourceSetContainer.class))
                         .map(ss -> ss.getByName("main"))
                         .toList()
                 );

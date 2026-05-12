@@ -1,6 +1,8 @@
 package com.communi.suggestu.placitum.core.fabric;
 
 import com.communi.suggestu.placitum.core.AbstractPlatformProject;
+import com.communi.suggestu.placitum.platform.ProjectModules;
+import com.google.common.collect.Sets;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
 import org.apache.commons.lang3.StringUtils;
 import org.gradle.api.Action;
@@ -52,28 +54,37 @@ public abstract class AbstractFabricPlatformProject extends AbstractPlatformProj
     public abstract ArchiveOperations getArchiveOperations();
 
     @Override
-    public void configure(Project project, String coreProjectPath, final Set<String> pluginProjectPaths, Set<String> commonProjectPaths, AbstractPlatformProject.Platform defaults) {
-        super.configure(project, coreProjectPath, pluginProjectPaths, commonProjectPaths, defaults);
+    public void configure(Project project, final ProjectModules projectModules, AbstractPlatformProject.Platform defaults) {
+        super.configure(project, projectModules, defaults);
 
         applyLoomPlugin(project);
 
-        commonProjectPaths.add(coreProjectPath);
-        final Set<Project> commonProjects = commonProjectPaths.stream()
+        final Set<Project> commonProjects = projectModules.commonProjects().stream()
                 .map(project::project)
                 .collect(Collectors.toSet());
-        final Set<Project> pluginProjects =
-            pluginProjectPaths.stream()
+        commonProjects.add(project.project(projectModules.coreCodeProject()));
+
+        final Set<Project> allPluginProjects =
+            projectModules.pluginProjects().stream()
                 .map(project::project)
                 .collect(Collectors.toSet());
+
+        final Set<Project> includedPluginProjects = Sets.newHashSet(allPluginProjects);
+
+        allPluginProjects.addAll(
+            projectModules.devPluginProjects().stream()
+                .map(project::project)
+                .collect(Collectors.toSet())
+        );
 
         final Platform platform = project.getExtensions().getByType(Platform.class);
 
         for (Project commonProject : commonProjects) {
-            processCommonLikeProject(project, commonProject, true);
+            processCommonLikeProject(project, commonProject, true, true);
         }
 
-        for (Project pluginProject : pluginProjects) {
-            processCommonLikeProject(project, pluginProject, false);
+        for (Project pluginProject : allPluginProjects) {
+            processCommonLikeProject(project, pluginProject, false, includedPluginProjects.contains(pluginProject));
         }
 
         setupMinecraftAndFabricDependencies(project, platform);
@@ -115,7 +126,7 @@ public abstract class AbstractFabricPlatformProject extends AbstractPlatformProj
                 final SourceSetContainer projectSourceSets = p.getExtensions().getByType(SourceSetContainer.class);
                 mod.sourceSet(projectSourceSets.getByName("main"), p);
             });
-            pluginProjects.forEach(p -> {
+            allPluginProjects.forEach(p -> {
                 final SourceSetContainer projectSourceSets = p.getExtensions().getByType(SourceSetContainer.class);
                 mod.sourceSet(projectSourceSets.getByName("main"), p);
             });
@@ -206,7 +217,7 @@ public abstract class AbstractFabricPlatformProject extends AbstractPlatformProj
 
     protected abstract void setupMinecraftAndFabricDependencies(final Project project, final Platform platform);
 
-    protected final void processCommonLikeProject(final Project project, final Project commonProject, final boolean allowTransitive)
+    protected final void processCommonLikeProject(final Project project, final Project commonProject, final boolean allowTransitive, final boolean includeInJar)
     {
         final Dependency commonProjectDependency = project.getDependencies().create(commonProject);
         excludeMinecraftDependencies(commonProjectDependency);
@@ -260,6 +271,10 @@ public abstract class AbstractFabricPlatformProject extends AbstractPlatformProj
         consumesCommonProject.getDependencies().add(
             project.getDependencies().create(commonProject)
         );
+
+        if (!includeInJar) {
+            return;
+        }
 
         final Provider<@NotNull FileTree> compiledJarTree =
             consumesCommonProject.getIncoming().getArtifacts()

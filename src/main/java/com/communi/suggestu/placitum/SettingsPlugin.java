@@ -2,6 +2,7 @@ package com.communi.suggestu.placitum;
 
 import com.communi.suggestu.placitum.core.AbstractPlatformProject;
 import com.communi.suggestu.placitum.platform.IPlatformProject;
+import com.communi.suggestu.placitum.platform.ProjectModules;
 import com.communi.suggestu.placitum.platform.SettingsPlatformExtension;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -54,10 +55,13 @@ public class SettingsPlugin implements Plugin<Settings>
                 final IPlatformProject platformProject = builder.apply(project);
                 platformProject.configure(
                     project,
-                    projectManagementExtension.getCoreProjectPath(),
-                    projectManagementExtension.getPluginProjectPaths(),
-                    projectManagementExtension.getCommonProjectPaths(),
-                    defaults
+                    new ProjectModules(
+                        projectManagementExtension.getCoreProjectPath(),
+                        projectManagementExtension.getCommonProjectPaths(),
+                        projectManagementExtension.getPluginProjectPaths(),
+                        projectManagementExtension.getDevOnlyPluginProjectPaths()
+                    )
+                    , defaults
                 );
             }
         }

@@ -1,6 +1,7 @@
 package com.communi.suggestu.placitum.core;
 
 import com.communi.suggestu.placitum.platform.IPlatformProject;
+import com.communi.suggestu.placitum.platform.ProjectModules;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.fabricmc.loom.LoomCompanionGradlePlugin;
@@ -84,7 +85,7 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
     }
 
     @Override
-    public void configure(Project project, String coreCodeProject, final Set<String> pluginProjects, Set<String> commonProjects, Platform defaults) {
+    public void configure(Project project, final ProjectModules projectModules, Platform defaults) {
         project.setGroup(project.getRootProject().getGroup());
         project.setVersion(project.getRootProject().getVersion());
 

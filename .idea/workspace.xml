@@ -4,14 +4,41 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Update NeoGradle version to 7.1.25 and adjust workspace settings">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Add compileOnlyButApiElements configuration to NeoForgePlatformProject">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/ProjectModules.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/SettingsPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/SettingsPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/AbstractFabricPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/fabric/AbstractFabricPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/IPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/IPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotChats">
+    <option name="panelChat">
+      <chat>
+        <option name="activeSessionId" value="69346a0e-dbe8-48fd-84c3-31bdadf3b4c8" />
+        <option name="sessions">
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="69346a0e-dbe8-48fd-84c3-31bdadf3b4c8" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+        </option>
+        <option name="type" value="PANEL" />
+      </chat>
+    </option>
   </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
@@ -310,7 +337,8 @@
       <workItem from="1769333456586" duration="1600000" />
       <workItem from="1771786595282" duration="188000" />
       <workItem from="1776512046816" duration="1603000" />
-      <workItem from="1778011754645" duration="421000" />
+      <workItem from="1778011754645" duration="1196000" />
+      <workItem from="1778611367571" duration="1107000" />
     </task>
     <task id="LOCAL-00001" summary="Introduce">
       <option name="closed" value="true" />
@@ -688,7 +716,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776526840121</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="Add compileOnlyButApiElements configuration to NeoForgePlatformProject">
+      <option name="closed" value="true" />
+      <created>1778012186740</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1778012186740</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -706,7 +742,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix issue where plugins and common projects where swapped" />
     <MESSAGE value="Disable transitive processing on plugins." />
     <MESSAGE value="Fix an issue with plugin projects not properly being detected by NF" />
     <MESSAGE value="Bump to the latest NG" />
@@ -731,24 +766,15 @@
     <MESSAGE value="Update NeoForm version handling in PluginPlatformProject" />
     <MESSAGE value="Update NeoGradle version to 7.1.22 and adjust workspace settings" />
     <MESSAGE value="Update NeoGradle version to 7.1.25 and adjust workspace settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update NeoGradle version to 7.1.25 and adjust workspace settings" />
+    <MESSAGE value="Add compileOnlyButApiElements configuration to NeoForgePlatformProject" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add compileOnlyButApiElements configuration to NeoForgePlatformProject" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java</url>
-          <line>231</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/NeoForgePlatformProject.java</url>
-          <line>218</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java</url>
-          <line>31</line>
+          <line>32</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>

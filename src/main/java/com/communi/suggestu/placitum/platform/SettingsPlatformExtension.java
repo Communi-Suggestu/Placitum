@@ -54,10 +54,17 @@ public abstract class SettingsPlatformExtension {
     }
 
     public void plugin(final String path) {
-        registerProject(path, ProjectDescriptor.plugin(p -> new PluginPlatformProject()));
+        registerProject(path, ProjectDescriptor.plugin(p -> new PluginPlatformProject(), false));
         settings.project(path)
             .setProjectDir(new File("plugins" + path.replace(":", "/")));
     }
+
+    public void devOnlyPlugin(final String path) {
+        registerProject(path, ProjectDescriptor.plugin(p -> new PluginPlatformProject(), true));
+        settings.project(path)
+            .setProjectDir(new File("plugins" + path.replace(":", "/")));
+    }
+
 
     public void fabric(final String path) {
         fabric(path, true);
@@ -122,26 +129,34 @@ public abstract class SettingsPlatformExtension {
     public Set<String> getPluginProjectPaths() {
         return knownDynamicDescriptors.entrySet()
             .stream()
-            .filter(entry -> entry.getValue().isPlugin())
+            .filter(entry -> entry.getValue().isPlugin() && !entry.getValue().isDevOnly())
             .map(Map.Entry::getKey)
             .collect(Collectors.toSet());
     }
 
-    private record ProjectDescriptor(boolean isCore, boolean isCommon, boolean isPlugin, Function<Project, IPlatformProject> builder) {
+    public Set<String> getDevOnlyPluginProjectPaths() {
+        return knownDynamicDescriptors.entrySet()
+            .stream()
+            .filter(entry -> entry.getValue().isPlugin() && entry.getValue().isDevOnly())
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
+    }
+
+    private record ProjectDescriptor(boolean isCore, boolean isCommon, boolean isPlugin, boolean isDevOnly, Function<Project, IPlatformProject> builder) {
         public static ProjectDescriptor core(Function<Project, IPlatformProject> builder) {
-            return new ProjectDescriptor(true, false, false, builder);
+            return new ProjectDescriptor(true, false, false, false, builder);
         }
 
         public static ProjectDescriptor common(Function<Project, IPlatformProject> builder) {
-            return new ProjectDescriptor(false, true, false, builder);
+            return new ProjectDescriptor(false, true, false, false, builder);
         }
 
-        public static ProjectDescriptor plugin(Function<Project, IPlatformProject> builder) {
-            return new ProjectDescriptor(false, false, true, builder);
+        public static ProjectDescriptor plugin(Function<Project, IPlatformProject> builder, boolean isDevOnly) {
+            return new ProjectDescriptor(false, false, true, isDevOnly, builder);
         }
 
         public static ProjectDescriptor loaderSpecific(Function<Project, IPlatformProject> builder) {
-            return new ProjectDescriptor(false, false, false, builder);
+            return new ProjectDescriptor(false, false, false, false, builder);
         }
     }
 
