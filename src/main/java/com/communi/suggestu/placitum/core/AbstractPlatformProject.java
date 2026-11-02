@@ -127,7 +127,8 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
                     "Implementation-Title", project.getName(),
                     "Implementation-Vendor", platform.getProject().getOwner(),
                     "Implementation-Version", project.getVersion(),
-                    "Automatic-Module-Name", moduleName
+                    "Automatic-Module-Name", moduleName,
+                    "FMLModType", platform.getProject().getType().map(ProjectType::toModType)
             ));
             jar.setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE);
         });
