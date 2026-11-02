@@ -100,6 +100,11 @@ public final class PluginPlatformProject extends AbstractPlatformProject impleme
         return Set.of();
     }
 
+    @Override
+    protected Map<String, String> getAdditionalJarAttributes() {
+        return Map.of("FMLModType", "LIBRARY");
+    }
+
     public abstract static class Platform extends AbstractPlatformProject.Platform {
 
         @Inject

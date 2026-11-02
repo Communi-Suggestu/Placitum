@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Don't set the FMLModType it is much cleaner to have each mod include this directly.">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Hardcode the FMLModType to LIBRARY, the mods.toml overrides it anyway.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/AbstractPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,61 +92,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0339339877284361" />
-      <entry key="MS500" value="2.103588668646357" />
-      <entry key="S2" value="6.802333984702902" />
-      <entry key="S5" value="13.128768608371278" />
-      <entry key="S10" value="17.69006336137294" />
-      <entry key="S30" value="22.155805381406314" />
-      <entry key="S60" value="23.558765123117904" />
-      <entry key="M2" value="25.384612688224063" />
-      <entry key="M5" value="33.38277876771608" />
-      <entry key="M10" value="42.01471518596063" />
-      <entry key="M15" value="46.45174897122469" />
-      <entry key="M30" value="52.01629141912011" />
-      <entry key="H1" value="55.30976487730434" />
-      <entry key="H2" value="57.10239078585924" />
-      <entry key="H4" value="58.03769181482613" />
-      <entry key="D1" value="58.8377065910338" />
-      <entry key="W1" value="58.976768043994134" />
+      <entry key="MS100" value="0.012255903680471084" />
+      <entry key="MS500" value="0.7439961291441416" />
+      <entry key="S2" value="2.077299204400014" />
+      <entry key="S5" value="2.586109471177435" />
+      <entry key="S10" value="2.784776636265826" />
+      <entry key="S30" value="3.1197273136030903" />
+      <entry key="S60" value="4.532756641128226" />
+      <entry key="M2" value="7.48805433671168" />
+      <entry key="M5" value="11.584354100052732" />
+      <entry key="M10" value="15.53463235038921" />
+      <entry key="M15" value="20.696139477886927" />
+      <entry key="M30" value="37.9596747030497" />
+      <entry key="H1" value="61.19447713615895" />
+      <entry key="H2" value="81.28870586082505" />
+      <entry key="H4" value="94.67889441599637" />
+      <entry key="D1" value="108.04894762214752" />
+      <entry key="W1" value="110.57237101980444" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="3.922247847315447E-88" />
-      <entry key="S5" value="2.1831370671409943E-35" />
-      <entry key="S10" value="1.070004318723768E-17" />
-      <entry key="S30" value="9.809722473092391E-6" />
-      <entry key="S60" value="0.010597882394146623" />
-      <entry key="M2" value="0.35453157324542034" />
-      <entry key="M5" value="2.9293132263531763" />
-      <entry key="M10" value="5.927525376010224" />
-      <entry key="M15" value="7.498145157052493" />
-      <entry key="M30" value="9.485417856203421" />
-      <entry key="H1" value="10.668812689154104" />
-      <entry key="H2" value="11.314828533596447" />
-      <entry key="H4" value="11.652374624193893" />
-      <entry key="D1" value="11.941349812432009" />
-      <entry key="W1" value="11.991603782042331" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0000000029208749" />
+      <entry key="S10" value="1.0001109607178538" />
+      <entry key="S30" value="1.1750669262835247" />
+      <entry key="S60" value="2.1685962141383577" />
+      <entry key="M2" value="4.047850120307919" />
+      <entry key="M5" value="6.434112394606933" />
+      <entry key="M10" value="7.631133833401672" />
+      <entry key="M15" value="8.293252573258796" />
+      <entry key="M30" value="10.272173166982382" />
+      <entry key="H1" value="13.357389300635848" />
+      <entry key="H2" value="16.31083004594679" />
+      <entry key="H4" value="18.38380947595444" />
+      <entry key="D1" value="20.520464078837676" />
+      <entry key="W1" value="20.930344842453348" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.0194880705154148" />
-      <entry key="MS500" value="2.0969607721558883" />
-      <entry key="S2" value="6.79697348435718" />
-      <entry key="S5" value="13.124543420302581" />
-      <entry key="S10" value="17.68717466593492" />
-      <entry key="S30" value="22.154594207644223" />
-      <entry key="S60" value="23.568465918544902" />
-      <entry key="M2" value="25.734646759501402" />
-      <entry key="M5" value="36.29812500243223" />
-      <entry key="M10" value="47.928150327107794" />
-      <entry key="M15" value="53.93801536677929" />
-      <entry key="M30" value="61.49419642587577" />
-      <entry key="H1" value="65.97435238771769" />
-      <entry key="H2" value="68.41497874678046" />
-      <entry key="H4" value="69.68891271191279" />
-      <entry key="D1" value="70.77885934371535" />
-      <entry key="W1" value="70.96834355608748" />
+      <entry key="MS100" value="0.013633766127591821" />
+      <entry key="MS500" value="0.8857096751865802" />
+      <entry key="S2" value="2.6708449310869686" />
+      <entry key="S5" value="3.39593337116666" />
+      <entry key="S10" value="3.6844310720747635" />
+      <entry key="S30" value="4.246846714849815" />
+      <entry key="S60" value="6.642161186942693" />
+      <entry key="M2" value="11.474176953292119" />
+      <entry key="M5" value="17.97774128652505" />
+      <entry key="M10" value="23.14144500663195" />
+      <entry key="M15" value="28.97184427008528" />
+      <entry key="M30" value="48.22134913207184" />
+      <entry key="H1" value="74.54535142534738" />
+      <entry key="H2" value="97.59568177516492" />
+      <entry key="H4" value="113.06056849721921" />
+      <entry key="D1" value="128.56902010158726" />
+      <entry key="W1" value="131.50265894222383" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -389,22 +393,6 @@
       <workItem from="1778611367571" duration="5395000" />
       <workItem from="1778944821819" duration="201000" />
       <workItem from="1780838782984" duration="621000" />
-    </task>
-    <task id="LOCAL-00004" summary="Actually register the neoform ng module.">
-      <option name="closed" value="true" />
-      <created>1759689089939</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1759689089939</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Use a version range for neoform to be able to resolve it directly from the mc version.">
-      <option name="closed" value="true" />
-      <created>1759689909764</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1759689909764</updated>
     </task>
     <task id="LOCAL-00006" summary="Use a version range for neoform to be able to resolve it directly from the mc version.">
       <option name="closed" value="true" />
@@ -782,7 +770,23 @@
       <option name="project" value="LOCAL" />
       <updated>1793636185316</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="Set the FML Mod Type again to handle this cleaner.">
+      <option name="closed" value="true" />
+      <created>1793637853877</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1793637853877</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Hardcode the FMLModType to LIBRARY, the mods.toml overrides it anyway.">
+      <option name="closed" value="true" />
+      <created>1793637987582</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1793637987582</updated>
+    </task>
+    <option name="localTasksCounter" value="55" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -800,8 +804,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add an overrideable NeoForm version property." />
-    <MESSAGE value="Support setting the common NeoForm version in Core modules as well." />
     <MESSAGE value="Actually wire it into the neoform call for core." />
     <MESSAGE value="Request joined artifact" />
     <MESSAGE value="Use a common published configuration." />
@@ -825,7 +827,9 @@
     <MESSAGE value="Update loom" />
     <MESSAGE value="Configure core, common and project libraries as LIBRARY." />
     <MESSAGE value="Don't set the FMLModType it is much cleaner to have each mod include this directly." />
-    <option name="LAST_COMMIT_MESSAGE" value="Don't set the FMLModType it is much cleaner to have each mod include this directly." />
+    <MESSAGE value="Set the FML Mod Type again to handle this cleaner." />
+    <MESSAGE value="Hardcode the FMLModType to LIBRARY, the mods.toml overrides it anyway." />
+    <option name="LAST_COMMIT_MESSAGE" value="Hardcode the FMLModType to LIBRARY, the mods.toml overrides it anyway." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

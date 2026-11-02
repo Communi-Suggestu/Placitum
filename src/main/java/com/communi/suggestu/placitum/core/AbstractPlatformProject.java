@@ -127,9 +127,10 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
                     "Implementation-Title", project.getName(),
                     "Implementation-Vendor", platform.getProject().getOwner(),
                     "Implementation-Version", project.getVersion(),
-                    "Automatic-Module-Name", moduleName,
-                    "FMLModType", "LIBRARY"
+                    "Automatic-Module-Name", moduleName
             ));
+            jar.getManifest().attributes(getAdditionalJarAttributes());
+
             jar.setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE);
         });
 
@@ -184,6 +185,10 @@ public abstract class AbstractPlatformProject implements IPlatformProject {
                             .map(project.getDependencies()::create)
             );
         });
+    }
+
+    protected Map<String, String> getAdditionalJarAttributes() {
+        return Map.of();
     }
 
     private static void emitInterpolationMap(final org.gradle.api.logging.Logger logger, final Map<?, ?> interpolate, final int depth)
