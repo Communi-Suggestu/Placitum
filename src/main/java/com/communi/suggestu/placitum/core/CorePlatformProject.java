@@ -104,6 +104,7 @@ public final class CorePlatformProject extends AbstractPlatformProject implement
         public Platform(Project project, final AbstractPlatformProject.Platform settings) {
             super(project, settings);
             getNeoFormVersion().convention(project.getProviders().gradleProperty("common.neoform.version").map(String::trim).orElse(getMinecraft().getVersion()));
+            getProject().getType().convention(ProjectType.LIBRARY);
         }
 
         @InputFiles

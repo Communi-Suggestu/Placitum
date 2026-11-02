@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Refactor project configuration to use ProjectModules for better structure and clarity&#10;Add support for dev only plugins.">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Update loom">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,23 +56,6 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="placitum" type="f1a62948:ProjectNode" />
               </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="placitum" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="placitum" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="publishing" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="placitum" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="verification" type="c8890929:TasksNode$1" />
-              </path>
             </expand>
             <select />
           </tree_state>
@@ -99,10 +85,76 @@
     &quot;accountId&quot;: &quot;1f703af3-5789-488e-9107-9520b8181e47&quot;
   }
 }</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0000000022305997" />
+      <entry key="MS500" value="1.0223102107736588" />
+      <entry key="S2" value="1.777306659708727" />
+      <entry key="S5" value="2.7480281432498153" />
+      <entry key="S10" value="3.5164381181517586" />
+      <entry key="S30" value="6.2431867186257435" />
+      <entry key="S60" value="8.981998713459436" />
+      <entry key="M2" value="11.387578751985512" />
+      <entry key="M5" value="13.374142639436897" />
+      <entry key="M10" value="14.153264082829354" />
+      <entry key="M15" value="14.427698068558731" />
+      <entry key="M30" value="14.709865837535965" />
+      <entry key="H1" value="14.853922301419896" />
+      <entry key="H2" value="14.926706619176553" />
+      <entry key="H4" value="14.963289440479148" />
+      <entry key="D1" value="14.993872682579857" />
+      <entry key="W1" value="14.999124450942379" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.059539874877746084" />
+      <entry key="MS500" value="0.5690891810743406" />
+      <entry key="S2" value="1.1277977363682512" />
+      <entry key="S5" value="2.1016455745009988" />
+      <entry key="S10" value="3.319898205710203" />
+      <entry key="S30" value="6.6410456661504025" />
+      <entry key="S60" value="8.719849084981842" />
+      <entry key="M2" value="10.169505939228655" />
+      <entry key="M5" value="11.215632930087416" />
+      <entry key="M10" value="11.598515552471685" />
+      <entry key="M15" value="11.73022930530063" />
+      <entry key="M30" value="11.864045305967904" />
+      <entry key="H1" value="11.931753012949498" />
+      <entry key="H2" value="11.965808806290202" />
+      <entry key="H4" value="11.982887441685039" />
+      <entry key="D1" value="11.997145548091856" />
+      <entry key="W1" value="11.999592163347653" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.10368439148110829" />
+      <entry key="MS500" value="0.7566534094933871" />
+      <entry key="S2" value="2.2568942697490666" />
+      <entry key="S5" value="4.313803651883423" />
+      <entry key="S10" value="6.405527469459049" />
+      <entry key="S30" value="12.588518721954873" />
+      <entry key="S60" value="17.503829098619196" />
+      <entry key="M2" value="21.44014461499197" />
+      <entry key="M5" value="24.53774831238264" />
+      <entry key="M10" value="25.724797867390734" />
+      <entry key="M15" value="26.139716935278063" />
+      <entry key="M30" value="26.564692706467056" />
+      <entry key="H1" value="26.78103742559938" />
+      <entry key="H2" value="26.890189267294524" />
+      <entry key="H4" value="26.945011993821858" />
+      <entry key="D1" value="26.990823830834508" />
+      <entry key="W1" value="26.99868883671222" />
+    </decayedShown>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
   <component name="ProjectId" id="2zrk5ELGWhB9mNNgiwjD0IAHBZM" />
+  <component name="ProjectSessionTemplates">
+    <option name="version" value="1" />
+  </component>
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
@@ -115,10 +167,13 @@
     &quot;Gradle.Placitum [wrapper --gradle-version=9.1.0].executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;Remote JVM Debug.Unnamed.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;copilot.chat.legacySessionMetadata.migrated&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last.edited.regexp&quot;: &quot;[26.1.0.0-alpha.3+snapshot-1]&quot;,
@@ -127,6 +182,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -290,8 +346,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.25134.95" />
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.25134.95" />
+        <option value="bundled-jdk-30f59d01ecdd-2df11533d9fe-intellij.indexing.shared.core-IU-262.11879.100" />
       </set>
     </attachedChunks>
   </component>
@@ -337,14 +392,6 @@
       <workItem from="1778611367571" duration="5395000" />
       <workItem from="1778944821819" duration="201000" />
       <workItem from="1780838782984" duration="621000" />
-    </task>
-    <task id="LOCAL-00001" summary="Introduce">
-      <option name="closed" value="true" />
-      <created>1752603654017</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1752603654017</updated>
     </task>
     <task id="LOCAL-00002" summary="Update Gradle and library versions">
       <option name="closed" value="true" />
@@ -730,7 +777,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778612486808</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="Update loom">
+      <option name="closed" value="true" />
+      <created>1793560659443</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1793560659443</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -748,7 +803,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix an issue with plugin projects not properly being detected by NF" />
     <MESSAGE value="Bump to the latest NG" />
     <MESSAGE value="Update to the new NG and add support for not mapped fabric." />
     <MESSAGE value="Add an overrideable NeoForm version property." />
@@ -773,7 +827,8 @@
     <MESSAGE value="Update NeoGradle version to 7.1.25 and adjust workspace settings" />
     <MESSAGE value="Add compileOnlyButApiElements configuration to NeoForgePlatformProject" />
     <MESSAGE value="Refactor project configuration to use ProjectModules for better structure and clarity&#10;Add support for dev only plugins." />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor project configuration to use ProjectModules for better structure and clarity&#10;Add support for dev only plugins." />
+    <MESSAGE value="Update loom" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update loom" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
