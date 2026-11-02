@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Update loom">
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Configure core, common and project libraries as LIBRARY.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,61 +88,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0000000022305997" />
-      <entry key="MS500" value="1.0223102107736588" />
-      <entry key="S2" value="1.777306659708727" />
-      <entry key="S5" value="2.7480281432498153" />
-      <entry key="S10" value="3.5164381181517586" />
-      <entry key="S30" value="6.2431867186257435" />
-      <entry key="S60" value="8.981998713459436" />
-      <entry key="M2" value="11.387578751985512" />
-      <entry key="M5" value="13.374142639436897" />
-      <entry key="M10" value="14.153264082829354" />
-      <entry key="M15" value="14.427698068558731" />
-      <entry key="M30" value="14.709865837535965" />
-      <entry key="H1" value="14.853922301419896" />
-      <entry key="H2" value="14.926706619176553" />
-      <entry key="H4" value="14.963289440479148" />
-      <entry key="D1" value="14.993872682579857" />
-      <entry key="W1" value="14.999124450942379" />
+      <entry key="MS100" value="1.0348778794816336" />
+      <entry key="MS500" value="1.912394391216802" />
+      <entry key="S2" value="3.567181094886157" />
+      <entry key="S5" value="5.040638885326863" />
+      <entry key="S10" value="7.976919334760278" />
+      <entry key="S30" value="15.939421069687455" />
+      <entry key="S60" value="21.649393616693356" />
+      <entry key="M2" value="26.49633697557981" />
+      <entry key="M5" value="30.57464522599132" />
+      <entry key="M10" value="32.20523027276394" />
+      <entry key="M15" value="32.78427561382843" />
+      <entry key="M30" value="33.382276981443844" />
+      <entry key="H1" value="33.68862414591728" />
+      <entry key="H2" value="33.843677229100344" />
+      <entry key="H4" value="33.92167911404931" />
+      <entry key="D1" value="33.98692429880417" />
+      <entry key="W1" value="33.99813149763741" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.059539874877746084" />
-      <entry key="MS500" value="0.5690891810743406" />
-      <entry key="S2" value="1.1277977363682512" />
-      <entry key="S5" value="2.1016455745009988" />
-      <entry key="S10" value="3.319898205710203" />
-      <entry key="S30" value="6.6410456661504025" />
-      <entry key="S60" value="8.719849084981842" />
-      <entry key="M2" value="10.169505939228655" />
-      <entry key="M5" value="11.215632930087416" />
-      <entry key="M10" value="11.598515552471685" />
-      <entry key="M15" value="11.73022930530063" />
-      <entry key="M30" value="11.864045305967904" />
-      <entry key="H1" value="11.931753012949498" />
-      <entry key="H2" value="11.965808806290202" />
-      <entry key="H4" value="11.982887441685039" />
-      <entry key="D1" value="11.997145548091856" />
-      <entry key="W1" value="11.999592163347653" />
+      <entry key="MS100" value="5.799572771900092E-112" />
+      <entry key="MS500" value="5.661062455555227E-23" />
+      <entry key="S2" value="3.5617269531827596E-6" />
+      <entry key="S5" value="0.013253520046604612" />
+      <entry key="S10" value="0.26363960268664055" />
+      <entry key="S30" value="2.8545112583338743" />
+      <entry key="S60" value="5.716847606792626" />
+      <entry key="M2" value="8.234242970037306" />
+      <entry key="M5" value="10.30749935852893" />
+      <entry key="M10" value="11.1190369603433" />
+      <entry key="M15" value="11.404677573900042" />
+      <entry key="M30" value="11.698254123211544" />
+      <entry key="H1" value="11.848091032490906" />
+      <entry key="H2" value="11.923784626488887" />
+      <entry key="H4" value="11.961826853941435" />
+      <entry key="D1" value="11.99362869724352" />
+      <entry key="W1" value="11.99908959048352" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.10368439148110829" />
-      <entry key="MS500" value="0.7566534094933871" />
-      <entry key="S2" value="2.2568942697490666" />
-      <entry key="S5" value="4.313803651883423" />
-      <entry key="S10" value="6.405527469459049" />
-      <entry key="S30" value="12.588518721954873" />
-      <entry key="S60" value="17.503829098619196" />
-      <entry key="M2" value="21.44014461499197" />
-      <entry key="M5" value="24.53774831238264" />
-      <entry key="M10" value="25.724797867390734" />
-      <entry key="M15" value="26.139716935278063" />
-      <entry key="M30" value="26.564692706467056" />
-      <entry key="H1" value="26.78103742559938" />
-      <entry key="H2" value="26.890189267294524" />
-      <entry key="H4" value="26.945011993821858" />
-      <entry key="D1" value="26.990823830834508" />
-      <entry key="W1" value="26.99868883671222" />
+      <entry key="MS100" value="1.0204037658701144" />
+      <entry key="MS500" value="1.9062206071974572" />
+      <entry key="S2" value="3.5639926117101757" />
+      <entry key="S5" value="5.046243134041596" />
+      <entry key="S10" value="8.199615147694018" />
+      <entry key="S30" value="18.661275801868744" />
+      <entry key="S60" value="27.23290433555189" />
+      <entry key="M2" value="34.63391519157717" />
+      <entry key="M5" value="40.83347983617609" />
+      <entry key="M10" value="43.29796551044217" />
+      <entry key="M15" value="44.17095557414386" />
+      <entry key="M30" value="45.07129402913484" />
+      <entry key="H1" value="45.53203578457096" />
+      <entry key="H2" value="45.765106780667956" />
+      <entry key="H4" value="45.88232456534937" />
+      <entry key="D1" value="45.98035555701299" />
+      <entry key="W1" value="45.997192869331414" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -392,14 +389,6 @@
       <workItem from="1778611367571" duration="5395000" />
       <workItem from="1778944821819" duration="201000" />
       <workItem from="1780838782984" duration="621000" />
-    </task>
-    <task id="LOCAL-00002" summary="Update Gradle and library versions">
-      <option name="closed" value="true" />
-      <created>1759258693206</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1759258693206</updated>
     </task>
     <task id="LOCAL-00003" summary="Use NeoForm modules for core and common instead of Vanilla.">
       <option name="closed" value="true" />
@@ -785,7 +774,15 @@
       <option name="project" value="LOCAL" />
       <updated>1793560659443</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="Configure core, common and project libraries as LIBRARY.">
+      <option name="closed" value="true" />
+      <created>1793635638995</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1793635638995</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -803,7 +800,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Bump to the latest NG" />
     <MESSAGE value="Update to the new NG and add support for not mapped fabric." />
     <MESSAGE value="Add an overrideable NeoForm version property." />
     <MESSAGE value="Support setting the common NeoForm version in Core modules as well." />
@@ -828,7 +824,8 @@
     <MESSAGE value="Add compileOnlyButApiElements configuration to NeoForgePlatformProject" />
     <MESSAGE value="Refactor project configuration to use ProjectModules for better structure and clarity&#10;Add support for dev only plugins." />
     <MESSAGE value="Update loom" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update loom" />
+    <MESSAGE value="Configure core, common and project libraries as LIBRARY." />
+    <option name="LAST_COMMIT_MESSAGE" value="Configure core, common and project libraries as LIBRARY." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
