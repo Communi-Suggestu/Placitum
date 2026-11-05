@@ -4,6 +4,8 @@ import com.communi.suggestu.placitum.core.AbstractPlatformProject;
 import com.communi.suggestu.placitum.platform.IPlatformProject;
 import com.communi.suggestu.placitum.platform.ProjectModules;
 import com.communi.suggestu.placitum.platform.SettingsPlatformExtension;
+import net.neoforged.gradle.common.CommonPlugin;
+import net.neoforged.gradle.userdev.UserDevPlugin;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

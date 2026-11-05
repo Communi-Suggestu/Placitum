@@ -96,7 +96,7 @@ public final class CommonPlatformProject extends AbstractPlatformProject impleme
 
     @Override
     protected Map<String, String> getAdditionalJarAttributes() {
-        return Map.of("FMLModType", "LIBRARY");
+        return Map.of("FMLModType", "GAMELIBRARY");
     }
 
     public abstract static class Platform extends AbstractPlatformProject.Platform {

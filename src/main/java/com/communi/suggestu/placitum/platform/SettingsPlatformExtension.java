@@ -3,6 +3,7 @@ package com.communi.suggestu.placitum.platform;
 import com.communi.suggestu.placitum.core.AbstractPlatformProject;
 import com.communi.suggestu.placitum.core.CommonPlatformProject;
 import com.communi.suggestu.placitum.core.CorePlatformProject;
+import com.communi.suggestu.placitum.core.RootPlatformProject;
 import com.communi.suggestu.placitum.core.fabric.NoneRemappingFabricPlatformProject;
 import com.communi.suggestu.placitum.core.fabric.RemappingFabricPlatformProject;
 import com.communi.suggestu.placitum.core.NeoForgePlatformProject;
@@ -102,6 +103,11 @@ public abstract class SettingsPlatformExtension {
 
     @Nullable
     public Function<Project, IPlatformProject> findProject(String path) {
+        if (path.equals(":")) {
+            //The root project is handled separately.
+            return project -> new RootPlatformProject();
+        }
+
         if (!knownDynamicDescriptors.containsKey(path)) {
             return null;
         }
