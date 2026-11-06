@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Modify how the FMLModType gets injected.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/RootPlatformProject.java" afterDir="false" />
+    <list default="true" id="9df9671d-66e8-4f44-bd94-c04ebeaa71c5" name="Changes" comment="Add a RootPlatformProject to configure the root project.&#10;&#10;- Handle the root path in findProject so the root gets NeoForge's CommonPlugin and a JDK toolchain from the platform settings.&#10;- Set the FMLModType to GAMELIBRARY instead of LIBRARY for the common, core and plugin platform projects.&#10;- Bump localVersion to 67.0.1-local.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/SettingsPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/SettingsPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CommonPlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/CorePlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/core/PluginPlatformProject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/communi/suggestu/placitum/platform/SettingsPlatformExtension.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,61 +89,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0001027914210223" />
-      <entry key="S2" value="1.1110368435871025" />
-      <entry key="S5" value="1.8181165709803253" />
-      <entry key="S10" value="3.3884268547221725" />
-      <entry key="S30" value="8.024275081466254" />
-      <entry key="S60" value="11.155853529731418" />
-      <entry key="M2" value="14.660894419514701" />
-      <entry key="M5" value="22.38572099094979" />
-      <entry key="M10" value="29.540800618705944" />
-      <entry key="M15" value="33.75243451331965" />
-      <entry key="M30" value="44.39019741655859" />
-      <entry key="H1" value="67.44492629392036" />
-      <entry key="H2" value="100.18341471300776" />
-      <entry key="H4" value="129.7533454774694" />
-      <entry key="D1" value="166.03871772763296" />
-      <entry key="W1" value="173.6796358924614" />
+      <entry key="MS100" value="1.1367867126575923" />
+      <entry key="MS500" value="1.6718207631737876" />
+      <entry key="S2" value="2.0058440625347425" />
+      <entry key="S5" value="2.7471999290956433" />
+      <entry key="S10" value="4.321685832581612" />
+      <entry key="S30" value="8.971241277333576" />
+      <entry key="S60" value="12.118926944656097" />
+      <entry key="M2" value="15.63661006043396" />
+      <entry key="M5" value="23.370881698125107" />
+      <entry key="M10" value="30.53100783021575" />
+      <entry key="M15" value="34.744974803137616" />
+      <entry key="M30" value="45.385291751073154" />
+      <entry key="H1" value="68.4411994419582" />
+      <entry key="H2" value="101.18064672189091" />
+      <entry key="H4" value="130.7515529722452" />
+      <entry key="D1" value="167.03833542922794" />
+      <entry key="W1" value="174.6795787650686" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.7684377343875006" />
-      <entry key="MS500" value="0.9914916338396265" />
-      <entry key="S2" value="1.4646110630294342" />
-      <entry key="S5" value="2.140002225080568" />
-      <entry key="S10" value="3.2754294336992986" />
-      <entry key="S30" value="6.236756141345301" />
-      <entry key="S60" value="8.06845467680837" />
-      <entry key="M2" value="9.684867118378317" />
-      <entry key="M5" value="13.711811403945278" />
-      <entry key="M10" value="19.32085822926766" />
-      <entry key="M15" value="23.087225674601317" />
-      <entry key="M30" value="30.091901580242787" />
-      <entry key="H1" value="38.44013019070282" />
-      <entry key="H2" value="47.12285889126146" />
-      <entry key="H4" value="54.06092270744435" />
-      <entry key="D1" value="62.07370598611776" />
-      <entry key="W1" value="63.71720528683293" />
+      <entry key="MS100" value="0.10511207156891438" />
+      <entry key="MS500" value="0.6660362033187719" />
+      <entry key="S2" value="1.3259419344857766" />
+      <entry key="S5" value="2.0565302553230778" />
+      <entry key="S10" value="3.2109140943613057" />
+      <entry key="S30" value="6.195536355101016" />
+      <entry key="S60" value="8.041747578399853" />
+      <entry key="M2" value="9.668825069099325" />
+      <entry key="M5" value="13.702721967663006" />
+      <entry key="M10" value="19.31445335620649" />
+      <entry key="M15" value="23.082123108966485" />
+      <entry key="M30" value="30.088576053176798" />
+      <entry key="H1" value="38.438006077259466" />
+      <entry key="H2" value="47.121556922715214" />
+      <entry key="H4" value="54.06017587131445" />
+      <entry key="D1" value="62.073563063556584" />
+      <entry key="W1" value="63.71718432871775" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.7684381271136967" />
-      <entry key="MS500" value="1.0045879682409116" />
-      <entry key="S2" value="1.6954761434990997" />
-      <entry key="S5" value="3.2703235557744317" />
-      <entry key="S10" value="6.075458661418017" />
-      <entry key="S30" value="13.81910030970496" />
-      <entry key="S60" value="18.9200525118651" />
-      <entry key="M2" value="24.159100048184143" />
-      <entry key="M5" value="36.00072871483379" />
-      <entry key="M10" value="48.800702157356916" />
-      <entry key="M15" value="56.79342209425954" />
-      <entry key="M30" value="74.45340005518801" />
-      <entry key="H1" value="105.867134278704" />
-      <entry key="H2" value="147.29542539056806" />
-      <entry key="H4" value="183.80809202035852" />
-      <entry key="D1" value="228.11125029579907" />
-      <entry key="W1" value="237.3966693404029" />
+      <entry key="MS100" value="0.24189883794623213" />
+      <entry key="MS500" value="1.3465854012456793" />
+      <entry key="S2" value="2.440268916635672" />
+      <entry key="S5" value="4.103757224896491" />
+      <entry key="S10" value="6.93609506780282" />
+      <entry key="S30" value="14.721158345444207" />
+      <entry key="S60" value="19.854115870457626" />
+      <entry key="M2" value="25.117426422944394" />
+      <entry key="M5" value="36.97620126502112" />
+      <entry key="M10" value="49.78419320253254" />
+      <entry key="M15" value="57.78064902513231" />
+      <entry key="M30" value="75.44506152186418" />
+      <entry key="H1" value="106.8612290459317" />
+      <entry key="H2" value="148.2913281013977" />
+      <entry key="H4" value="184.8055389496134" />
+      <entry key="D1" value="229.11072277506923" />
+      <entry key="W1" value="238.3965909260275" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -808,7 +802,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Request joined artifact" />
     <MESSAGE value="Use a common published configuration." />
     <MESSAGE value="Remove the modImplementation on interpolation." />
     <MESSAGE value="Expand the version range pattern to include the required missing +" />
@@ -833,7 +826,8 @@
     <MESSAGE value="Set the FML Mod Type again to handle this cleaner." />
     <MESSAGE value="Hardcode the FMLModType to LIBRARY, the mods.toml overrides it anyway." />
     <MESSAGE value="Modify how the FMLModType gets injected." />
-    <option name="LAST_COMMIT_MESSAGE" value="Modify how the FMLModType gets injected." />
+    <MESSAGE value="Add a RootPlatformProject to configure the root project.&#10;&#10;- Handle the root path in findProject so the root gets NeoForge's CommonPlugin and a JDK toolchain from the platform settings.&#10;- Set the FMLModType to GAMELIBRARY instead of LIBRARY for the common, core and plugin platform projects.&#10;- Bump localVersion to 67.0.1-local." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add a RootPlatformProject to configure the root project.&#10;&#10;- Handle the root path in findProject so the root gets NeoForge's CommonPlugin and a JDK toolchain from the platform settings.&#10;- Set the FMLModType to GAMELIBRARY instead of LIBRARY for the common, core and plugin platform projects.&#10;- Bump localVersion to 67.0.1-local." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
